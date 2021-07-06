@@ -22,6 +22,8 @@ import { useFormik } from "formik";
 import GoogleIcon from "../assets/images/search.png";
 import { APP_NAME } from "../utils/Constants";
 
+import { useAuth } from "../contexts/Auth";
+
 const validationSchema = Yup.object({
 	email: Yup.string("Enter your email")
 		.email("Enter a valid email")
@@ -36,6 +38,7 @@ function Signin() {
 	const [loginError, setLoginError] = useState([""]);
 
 	const handleShowPassword = () => setShowPassword(!showPassword);
+	const { signIn } = useAuth();
 
 	const formik = useFormik({
 		initialValues: {
@@ -46,12 +49,27 @@ function Signin() {
 		validationSchema: validationSchema,
 		onSubmit: (values) => {
 			alert(JSON.stringify(values, null, 2));
+			login(values)
 		},
 	});
 
+	const login = async (values) => {
+		const email = values.email;
+		const password = values.password;
+
+		const { error } = await signIn({ email, password });
+
+		if (error) {
+			console.log(" Error = " + error);
+		} else {
+			console.log("Signed Up!");
+		}
+	}
+
+
 	return (
 		<Flex height="100vh">
-			<Container p="8" maxW="lg" mt="8">
+			<Container p="8" maxW="lg" mt="2">
 				<VStack mb="2">
 					<Heading as="h3" size="xl" mb="4">
 						{APP_NAME}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import {
 	Container,
 	Box,
@@ -22,6 +22,9 @@ import { useFormik } from "formik";
 import GoogleIcon from "../assets/images/search.png";
 import { APP_NAME } from "../utils/Constants";
 
+import { auth, db, firestore } from "../firebase/Config";
+import { googleSign } from "../contexts/Auth";
+
 const validationSchema = Yup.object({
 	firstName: Yup.string("Enter your First Name!").required(
 		"First Name is required!",
@@ -41,9 +44,13 @@ const validationSchema = Yup.object({
 	terms: Yup.bool().oneOf([true], "Accept Terms & Conditions is required"),
 });
 
+//Global variable declaration
+let history;
+
 function SignUp() {
 	const [showPassword, setShowPassword] = useState(false);
-	const [signupError, setsignupError] = useState([""]);
+	const [signUpError, setSignUpError] = useState([""]);
+	history = useHistory();
 
 	const handleShowPassword = () => setShowPassword(!showPassword);
 
@@ -57,22 +64,27 @@ function SignUp() {
 			terms: false,
 		},
 		validationSchema: validationSchema,
-		onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 2));
+		onSubmit: async (values) => {
+			// login(values);
+			await emailSignUp(values, setSignUpError);
 		},
 	});
 
 	return (
 		<Flex>
-			<Container p="8" maxW="lg" mt="4">
+			<Container p="8" maxW="lg" mt="2">
 				<VStack mb="2">
 					<Heading as="h3" size="xl" mb="4">
 						{APP_NAME}
 					</Heading>
+
+					{signUpError && <Text color="error">{signUpError}</Text>}
+
 					<Button
 						leftIcon={<Image src={GoogleIcon} w="4" alt="" />}
 						colorScheme="teal"
 						variant="outline"
+						onClick={handlGoogleSign}
 					>
 						Sign in with Google
 					</Button>
@@ -210,6 +222,76 @@ function SignUp() {
 			</Container>
 		</Flex>
 	);
+}
+
+async function emailSignUp(values, setSignUpError) {
+	const displayName = values.fullName;
+	await auth
+		.createUserWithEmailAndPassword(values.email, values.password)
+		.then((response) => {
+			console.log("User Created successfully=================");
+			console.log("User ID :", response.user.uid);
+
+			//Add user to database
+			db.collection("Users")
+				.doc(response.user.uid)
+				.set({
+					uid: response.user.uid,
+					displayName: displayName,
+					email: response.user.email,
+					photoURL: response.user.photoURL,
+					created: firestore.Timestamp.fromDate(new Date()),
+				})
+				.then(function (userID) {
+					console.log("User Created with ID : " + userID);
+				})
+				.catch(function (error) {
+					console.log("Error adding user: " + error);
+				});
+
+			response.user.updateProfile({
+				displayName: displayName,
+			});
+
+			//SendEmailVerification
+			response.user
+				.sendEmailVerification()
+				.then(function () {
+					window.localStorage.setItem("sendEmailVerification", values.email);
+					auth.signOut();
+
+					history.push({
+						pathname: "/emailConfirmation",
+						state: { email: values.email },
+					});
+				})
+				.catch(function (error) {});
+		})
+		.catch((err) => {
+			console.log(err.message);
+			console.log(err.code);
+			switch (err.code) {
+				case "auth/email-already-in-use":
+					setSignUpError("Email address is already in use.");
+					break;
+
+				case "auth/network-request-failed":
+					setSignUpError("Network error. Check connection and try again.");
+					break;
+
+				default:
+					setSignUpError("An error has occurred during sign up.");
+					break;
+			}
+		});
+}
+
+//Authenticate Using Google Sign-In
+async function handlGoogleSign() {
+	try {
+		await googleSign();
+		history.push("/profile");
+	} catch {}
 }
 
 export default SignUp;

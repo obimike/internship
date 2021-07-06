@@ -6,4 +6,7 @@
 *   Chakra-UI
 *   Yup
 *   Formik
-*   dotenv
+
+
+## Backend
+*   Firebase
