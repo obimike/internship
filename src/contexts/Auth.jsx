@@ -8,7 +8,6 @@ export default function Auth({ children }) {
 	const [currentUser, setCurrentUser] = useState();
 	const [loading, setLoading] = useState(true);
 	const [isVerifiedEmail, setVerifiedEmail] = useState(false);
-	const [projectItem, setProjectItem] = useState({});
 	const [newNotifications, setNewNotifications] = useState(0);
 	const [loadingCards, setLoadingCards] = useState(true);
 
@@ -40,8 +39,6 @@ export default function Auth({ children }) {
 		setCurrentUser,
 		isVerifiedEmail,
 		setVerifiedEmail,
-		projectItem,
-		setProjectItem,
 		loadingCards,
 		setLoadingCards,
 		newNotifications,
