@@ -8,7 +8,6 @@ import {
 	Image,
 	Heading,
 	Button,
-	Link,
 	Box,
 	VStack,
 	useColorModeValue,
