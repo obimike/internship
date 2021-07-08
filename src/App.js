@@ -5,6 +5,8 @@ import  Auth  from "./contexts/Auth";
 import SignIn from "./pages/Signin";
 import SignUp from "./pages/Signup";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+
 
 function App() {
 	return (
@@ -15,6 +17,7 @@ function App() {
 					<Route path="/signin" exact component={SignIn} />
 					<Route path="/signup" exact component={SignUp} />
 					<Route path="/profile" exact component={Profile} />
+					<Route path="/edit_profile" exact component={EditProfile} />
 
 					<Route path="*" component={SignIn} />
 				</Switch>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -14,9 +15,19 @@ import {
 	useColorMode,
 	IconButton,
 	Divider,
+	Link,
+	LinkOverlay,
 } from "@chakra-ui/react";
-import { FiMail, FiPhone, FiUser } from "react-icons/fi";
-import { FaSun, FaMoon, FaSchool } from "react-icons/fa";
+import { FiMail, FiPhone, FiUser, FiLink } from "react-icons/fi";
+import {
+	FaSun,
+	FaMoon,
+	FaSchool,
+	FaFacebookF,
+	FaTwitter,
+	FaInstagram,
+	FaLinkedinIn,
+} from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
 
 function Profile() {
@@ -68,10 +79,58 @@ function Profile() {
 									ajolie@hollywood.com
 								</Text>
 							</Flex>
+							<Flex align="center">
+								<FiLink />
+								<Link
+									href="https://chakra-ui.com"
+									isExternal
+									color="teal.500"
+									ml="1.5"
+								>
+									angelinajolie.com
+								</Link>
+							</Flex>
+							<Flex align="center" justifyContent="space-between" w="280px">
+								<Text color={useColorModeValue("gray.600", "gray.400")}>
+									Socials:
+								</Text>
+								<IconButton
+									fontSize="20px"
+									variant="ghost"
+									aria-label="Twitter"
+									_hover={{ color: "#1da1f2" }}
+									icon={<FaTwitter />}
+								/>
 
-							<Button width="100%" colorScheme="teal" variant="outline">
+								<IconButton
+									fontSize="20px"
+									variant="ghost"
+									aria-label="Facebook"
+									_hover={{ color: "#1877f2" }}
+									icon={<FaFacebookF />}
+								/>
+								<IconButton
+									fontSize="20px"
+									variant="ghost"
+									aria-label="Facebook"
+									_hover={{ color: "#0a66c2" }}
+									icon={<FaLinkedinIn />}
+								/>
+								<IconButton
+									fontSize="20px"
+									variant="ghost"
+									aria-label="Facebook"
+									_hover={{ color: "#c32aa3" }}
+									icon={<FaInstagram />}
+								/>
+							</Flex>
+
+							<LinkOverlay  as={RouterLink} to="/edit_profile" >
+								<Button width="280px" colorScheme="teal" variant="outline">
 								Edit Profile
 							</Button>
+							</LinkOverlay>
+							
 						</VStack>
 					</Box>
 				</GridItem>
@@ -93,6 +152,7 @@ function Profile() {
 										fontSize="sm"
 										color={useColorModeValue("gray.600", "gray.400")}
 										ml="1.5"
+										fontWeight="bold"
 									>
 										Birthday
 									</Text>
@@ -103,7 +163,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									07, July
+									04, June
 								</Text>
 							</Flex>
 							<Flex
@@ -118,6 +178,7 @@ function Profile() {
 										fontSize="sm"
 										color={useColorModeValue("gray.600", "gray.400")}
 										ml="1.5"
+										fontWeight="bold"
 									>
 										Internship Duration
 									</Text>
@@ -143,17 +204,18 @@ function Profile() {
 										fontSize="sm"
 										color={useColorModeValue("gray.600", "gray.400")}
 										ml="1.5"
+										fontWeight="bold"
 									>
 										School
 									</Text>
 								</Flex>
 
 								<Text
-									fontSize="md"
+									fontSize="sm"
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									Juilliard
+									New York University (NYU)
 								</Text>
 							</Flex>
 							<Flex
@@ -168,6 +230,7 @@ function Profile() {
 										fontSize="sm"
 										color={useColorModeValue("gray.600", "gray.400")}
 										ml="1.5"
+										fontWeight="bold"
 									>
 										Supervisor
 									</Text>
@@ -179,6 +242,25 @@ function Profile() {
 									ml="1.5"
 								>
 									Seun Abolarin
+								</Text>
+							</Flex>
+							<Flex flexDir="column" mt="4">
+								<Text
+									fontSize="sm"
+									fontWeight="bold"
+									color={useColorModeValue("gray.600", "gray.400")}
+								>
+									About Me
+								</Text>
+								<Text
+									mt={1.5}
+									fontSize="sm"
+									color={useColorModeValue("gray.600", "gray.400")}
+								>
+									Angelina Jolie DCMG is an American actress, filmmaker, and
+									humanitarian. The recipient of numerous accolades, including
+									an Academy Award and three Golden Globe Awards, she has been
+									named Hollywood's highest-paid actress multiple times.
 								</Text>
 							</Flex>
 						</Flex>
@@ -195,6 +277,7 @@ function Profile() {
 									fontSize="md"
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
+									fontWeight="bold"
 								>
 									{colorMode === "light" ? "Dark" : "Light"} Theme
 								</Text>

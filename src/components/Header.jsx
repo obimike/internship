@@ -28,7 +28,7 @@ export default function Header({ children }) {
                 right={0}
                 bg={bg}
 			>
-				<Heading as="h2" letterSpacing="tight" color="teal.700">
+				<Heading as="h2" letterSpacing="tight" >
 					{APP_NAME}
 				</Heading>
 				<Flex as="nav" alignItems="center">
