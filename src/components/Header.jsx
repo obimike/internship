@@ -20,7 +20,7 @@ export default function Header({ children }) {
 				justifyContent="space-between"
 				px={{ base: 4, md: 8, lg: 16 }}
 				py={{ base: 4, md: 5, lg: 6 }}
-				boxShadow="dark-lg"
+				boxShadow="lg"
 				zIndex="3"
 				position="fixed"
 				top={0}
@@ -28,7 +28,7 @@ export default function Header({ children }) {
                 right={0}
                 bg={bg}
 			>
-				<Heading as="h2" letterSpacing="tight" >
+				<Heading as="h3" letterSpacing="tight" fontWeight='light' >
 					{APP_NAME}
 				</Heading>
 				<Flex as="nav" alignItems="center">

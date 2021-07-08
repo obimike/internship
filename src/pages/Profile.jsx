@@ -125,11 +125,11 @@ function Profile() {
 								/>
 							</Flex>
 
-							<LinkOverlay  as={RouterLink} to="/edit_profile" >
+							<Link  as={RouterLink} to="/edit_profile" textDecoration='none' >
 								<Button width="280px" colorScheme="teal" variant="outline">
 								Edit Profile
 							</Button>
-							</LinkOverlay>
+							</Link>
 							
 						</VStack>
 					</Box>
