@@ -16,7 +16,6 @@ import {
 	IconButton,
 	Divider,
 	Link,
-	LinkOverlay,
 } from "@chakra-ui/react";
 import { FiMail, FiPhone, FiUser, FiLink } from "react-icons/fi";
 import {

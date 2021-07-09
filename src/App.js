@@ -6,6 +6,7 @@ import SignIn from "./pages/Signin";
 import SignUp from "./pages/Signup";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import DashBoard from "./pages/Dashboard";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
 					<Route path="/signup" exact component={SignUp} />
 					<Route path="/profile" exact component={Profile} />
 					<Route path="/edit_profile" exact component={EditProfile} />
+					<Route path="/dashboard" exact component={DashBoard} />
 
 					<Route path="*" component={SignIn} />
 				</Switch>

@@ -293,7 +293,7 @@ async function emailSignUp(values, setSignUpError) {
 async function handlGoogleSign() {
 	try {
 		await googleSign();
-		history.push("/profile");
+		history.push("/dashboard");
 	} catch {}
 }
 
