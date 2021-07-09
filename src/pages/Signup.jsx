@@ -225,7 +225,9 @@ function SignUp() {
 }
 
 async function emailSignUp(values, setSignUpError) {
-	const displayName = values.fullName;
+	const _firstName = values.firstName;
+	const _lastName = values.lastName;
+
 	await auth
 		.createUserWithEmailAndPassword(values.email, values.password)
 		.then((response) => {
@@ -233,11 +235,12 @@ async function emailSignUp(values, setSignUpError) {
 			console.log("User ID :", response.user.uid);
 
 			//Add user to database
-			db.collection("Users")
+			db.collection("users")
 				.doc(response.user.uid)
 				.set({
 					uid: response.user.uid,
-					displayName: displayName,
+					firstName: _firstName,
+					lastName: _lastName,
 					email: response.user.email,
 					photoURL: response.user.photoURL,
 					created: firestore.Timestamp.fromDate(new Date()),
@@ -250,7 +253,7 @@ async function emailSignUp(values, setSignUpError) {
 				});
 
 			response.user.updateProfile({
-				displayName: displayName,
+				displayName: _lastName + _firstName,
 			});
 
 			//SendEmailVerification
