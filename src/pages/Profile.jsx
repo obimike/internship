@@ -40,6 +40,11 @@ function Profile() {
 				width="100%"
 				mt={24}
 			>
+				<GridItem colSpan={3} mb={5}>
+					<Text fontSize="xl" mr={1.5} fontWeight="bold">
+						Profile
+					</Text>
+				</GridItem>
 				<GridItem colSpan={{ md: 1 }}>
 					<Box px={[4, 0]}>
 						<VStack>
@@ -124,12 +129,11 @@ function Profile() {
 								/>
 							</Flex>
 
-							<Link  as={RouterLink} to="/edit_profile" textDecoration='none' >
+							<Link as={RouterLink} to="/edit_profile" textDecoration="none">
 								<Button width="280px" colorScheme="teal" variant="outline">
-								Edit Profile
-							</Button>
+									Edit Profile
+								</Button>
 							</Link>
-							
 						</VStack>
 					</Box>
 				</GridItem>

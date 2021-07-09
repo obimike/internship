@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { auth, auth_, db, firestore } from "../firebase/Config";
 
-
 const AuthContext = React.createContext();
 
 export default function Auth({ children }) {
@@ -12,25 +11,28 @@ export default function Auth({ children }) {
 	const [loadingCards, setLoadingCards] = useState(true);
 
 	useEffect(() => {
-	const unsubscribe = auth.onAuthStateChanged((user) => {
-		if (user) {
-			db.collection("notifications")
-				.where("uid", "==", user.uid)
-				.where("read", "==", false)
-				.onSnapshot(function (querySnapshot) {
-					setNewNotifications(querySnapshot.size);
-				});
+		const unsubscribe = auth.onAuthStateChanged((user) => {
+			if (user) {
+				db.collection("notifications")
+					.where("uid", "==", user.uid)
+					.where("read", "==", false)
+					.onSnapshot(function (querySnapshot) {
+						setNewNotifications(querySnapshot.size);
+					});
 
-			setCurrentUser(user);
-			setLoading(false);
-			// setIsLogged(true);
-			setVerifiedEmail(user.emailVerified);
-		} else {
-			setCurrentUser(null);
-			setLoading(false);
-		}
-	});
-	return unsubscribe;
+				setCurrentUser(user);
+				setLoading(false);
+				// setIsLogged(true);
+				setVerifiedEmail(user.emailVerified);
+				console.log("User Name = " + user.email);
+				console.log("isVerifiedEmail = " + user.emailVerified);
+			} else {
+				setCurrentUser(null);
+				setLoading(false);
+				console.log("User = " + user);
+			}
+		});
+		return unsubscribe;
 	}, []);
 
 	// Will be passed down to Signup, Login and Dashboard components
@@ -43,7 +45,6 @@ export default function Auth({ children }) {
 		setLoadingCards,
 		newNotifications,
 	};
-	
 
 	return (
 		<AuthContext.Provider value={values}>
@@ -81,7 +82,11 @@ export const googleSign = () => {
 	});
 };
 
-
 export function useAuth() {
 	return useContext(AuthContext);
 }
+
+export const signOut = () => {
+	auth.signOut();
+	console.log("Log Out");
+};

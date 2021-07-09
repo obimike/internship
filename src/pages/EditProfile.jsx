@@ -11,14 +11,13 @@ import {
 	Button,
 	Box,
 	VStack,
-	useColorModeValue,
-	useColorMode,
 	Textarea,
 	Select,
 	Link,
 	Input,
 } from "@chakra-ui/react";
-import { FiArrowLeft, FiPhone, FiUser, FiLink, FiUpload } from "react-icons/fi";
+import {  FiUpload } from "react-icons/fi";
+import { MdKeyboardArrowRight } from "react-icons/md";
 function EditProfile() {
 	return (
 		<Header>
@@ -30,14 +29,17 @@ function EditProfile() {
 				mt={20}
 			>
 				<GridItem colSpan={3} mb={5}>
-					<Link as={RouterLink} to="/profile" _hover={{ color: "teal" }}>
-						<Flex alignItems="center" flexDir="row" align="flex-start">
-							<FiArrowLeft fontSize="1rem" />
-							<Text fontSize="xl" ml={1.5}>
+					<Flex alignItems="center" flexDir="row" align="flex-start">
+						<Text fontSize="xl" mr={1.5} fontWeight="bold">
+							<Link as={RouterLink} to="/profile" _hover={{ color: "teal" }}>
 								Profile
-							</Text>
-						</Flex>
-					</Link>
+							</Link>
+						</Text>
+						<MdKeyboardArrowRight fontSize="1.5em" />
+						<Text Text fontSize="xl" ml={1.5} fontWeight="bold">
+							Edit Profile
+						</Text>
+					</Flex>
 				</GridItem>
 				<GridItem colSpan={{ md: 1 }}>
 					<Box px={[4, 0]}>
@@ -163,7 +165,7 @@ function EditProfile() {
 				</GridItem>
 				<GridItem mt={[5, null, 0]} colSpan={{ md: 1 }}>
 					<VStack>
-						<Heading as="h2" fontSize="2xl" mb='1.5'>
+						<Heading as="h2" fontSize="2xl" mb="1.5">
 							Profile Image
 						</Heading>
 						<Box>
@@ -174,7 +176,7 @@ function EditProfile() {
 								src="https://th.bing.com/th/id/OIP.jlUxbDUaJFdElVjeovue-QHaJA?pid=ImgDet&rs=1"
 								pos="relative"
 							/>
-							<Button bottom='12' left='2' colorScheme='teal'  >
+							<Button bottom="12" left="2" colorScheme="teal">
 								<Flex alignItems="center">
 									<FiUpload />
 									<Text ml="1" fontSize="sm">

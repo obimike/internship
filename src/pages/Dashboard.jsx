@@ -20,16 +20,18 @@ import {
 	Link,
 } from "@chakra-ui/react";
 
-
 function Dashboard() {
-    return (
-			<Header>
-            <Flex mt={24} flexDir='column'>
-                <Text fontSize='lg' fontWeight='bold'>DashBoard</Text>
-                
-            </Flex>
-			</Header>
-		);
+	return (
+		<Header>
+			<Flex mt={20} flexDir="column">
+				<Flex alignItems="center" flexDir="row" align="flex-start">
+					<Text fontSize="xl" fontWeight="bold">
+						DashBoard
+					</Text>
+				</Flex>
+			</Flex>
+		</Header>
+	);
 }
 
 export default Dashboard;
