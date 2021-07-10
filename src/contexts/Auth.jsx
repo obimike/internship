@@ -24,7 +24,8 @@ export default function Auth({ children }) {
 				setLoading(false);
 				// setIsLogged(true);
 				setVerifiedEmail(user.emailVerified);
-				console.log("User Name = " + user.email);
+				console.log(user);
+				console.log("User Email = " + user.email);
 				console.log("isVerifiedEmail = " + user.emailVerified);
 			} else {
 				setCurrentUser(null);
@@ -88,5 +89,5 @@ export function useAuth() {
 
 export const signOut = () => {
 	auth.signOut();
-	console.log("Log Out");
+	// console.log("Log Out");
 };

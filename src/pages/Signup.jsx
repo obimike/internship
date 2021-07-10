@@ -78,8 +78,6 @@ function SignUp() {
 						{APP_NAME}
 					</Heading>
 
-					{signUpError && <Text color="error">{signUpError}</Text>}
-
 					<Button
 						leftIcon={<Image src={GoogleIcon} w="4" alt="" />}
 						colorScheme="teal"
@@ -94,7 +92,11 @@ function SignUp() {
 						</Text>
 					</Flex>
 				</VStack>
-
+				{signUpError && (
+					<Text color="error" my="2.5">
+						{signUpError}
+					</Text>
+				)}
 				<form onSubmit={formik.handleSubmit}>
 					<Flex mb="4" justifyContent="space-between">
 						<Box w="47%">
@@ -254,6 +256,7 @@ async function emailSignUp(values, setSignUpError) {
 
 			response.user.updateProfile({
 				displayName: _lastName + _firstName,
+				// emailVerified: true,
 			});
 
 			//SendEmailVerification

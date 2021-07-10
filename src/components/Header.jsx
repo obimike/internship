@@ -1,5 +1,5 @@
-import React from "react";
-import { withRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { withRouter, Link as RouterLink, Redirect } from "react-router-dom";
 import {
 	Flex,
 	Heading,
@@ -10,17 +10,32 @@ import {
 	MenuButton,
 	MenuList,
 	MenuItem,
+	Link,
 } from "@chakra-ui/react";
 
 import { FiBell } from "react-icons/fi";
-import { RiLogoutCircleLine, RiInformationLine } from "react-icons/ri";
+import {
+	RiLogoutCircleLine,
+	RiInformationLine,
+	RiMailLine,
+	RiAdminLine,
+} from "react-icons/ri";
 
 import { APP_NAME } from "../utils/Constants";
-import { signOut } from "../contexts/Auth";
+import { signOut, useAuth } from "../contexts/Auth";
 
 const Header = (props) => {
-	const bg = useColorModeValue("white", "gray.800");
 	const { history } = props;
+	const bg = useColorModeValue("white", "gray.800");
+
+	const { setVerifiedEmail, currentUser, isVerifiedEmail } = useAuth();
+
+	useEffect(() => {
+		console.log("Header effect");
+		if (currentUser === null || isVerifiedEmail === false) {
+			history.push("/");
+		}
+	}, [currentUser, isVerifiedEmail, history]);
 
 	return (
 		<Flex flexDir="column">
@@ -38,30 +53,77 @@ const Header = (props) => {
 				bg={bg}
 			>
 				<Heading as="h3" letterSpacing="tight" fontWeight="light">
-					{APP_NAME}
+					<Link as={RouterLink} _hover="none" to="/dashboard">
+						{APP_NAME}
+					</Link>
 				</Heading>
 				<Flex as="nav" alignItems="center">
-					<IconButton
-						fontSize="20px"
-						variant="ghost"
-						aria-label="notification"
-						icon={<FiBell />}
-					/>
+					<Menu>
+						<MenuButton
+							fontSize="20px"
+							as={IconButton}
+							aria-label="notification"
+							icon={<FiBell />}
+							variant="ghost"
+							ml="4"
+						/>
+						<MenuList>
+							<Flex p="2" justifyContent="center">
+								No Notification
+							</Flex>
+						</MenuList>
+					</Menu>
 
 					<Menu>
 						<MenuButton
 							as={IconButton}
 							aria-label="Options"
-							icon={<Avatar size="sm" />}
+							icon={
+								<Avatar
+									size="sm"
+									src={
+										currentUser.photoUrl == null ? "" : currentUser.photoUrl
+									}
+								/>
+							}
 							variant="ghost"
 							ml="4"
 						/>
 						<MenuList>
 							<MenuItem
+								onClick={() => ""}
+								icon={
+									<RiMailLine
+										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
+										fontSize="24px"
+									/>
+								}
+							>
+								Inbox
+							</MenuItem>
+							<MenuItem
 								onClick={() => history.push("/profile")}
-								icon={<Avatar size="xs" />}
+								icon={
+									<Avatar
+										size="xs"
+										src={
+											currentUser.photoUrl == null ? "" : currentUser.photoUrl
+										}
+									/>
+								}
 							>
 								Profile
+							</MenuItem>
+							<MenuItem
+								onClick={() => ""}
+								icon={
+									<RiAdminLine
+										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
+										fontSize="24px"
+									/>
+								}
+							>
+								Administrator Page
 							</MenuItem>
 							<MenuItem
 								icon={
@@ -74,7 +136,11 @@ const Header = (props) => {
 								About
 							</MenuItem>
 							<MenuItem
-								onClick={signOut}
+								onClick={() => {
+									setVerifiedEmail(false);
+									signOut();
+									history.push("/");
+								}}
 								icon={
 									<RiLogoutCircleLine
 										fontSize="24px"
@@ -88,7 +154,11 @@ const Header = (props) => {
 					</Menu>
 				</Flex>
 			</Flex>
-			<Flex mx={{ base: 4, md: 8, lg: 16 }} my={{ base: 4, md: 5, lg: 6 }}>
+			<Flex
+				px={{ base: 4, md: 8, lg: 16 }}
+				py={{ base: 4, md: 5, lg: 6 }}
+				flexDir="column"
+			>
 				{props.children}
 			</Flex>
 		</Flex>

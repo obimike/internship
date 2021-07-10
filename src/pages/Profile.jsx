@@ -1,5 +1,5 @@
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -29,8 +29,14 @@ import {
 } from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
 
+import { useAuth } from "../contexts/Auth";
+
 function Profile() {
 	const { colorMode, toggleColorMode } = useColorMode();
+	const { currentUser } = useAuth();
+
+
+
 	return (
 		<Header>
 			<SimpleGrid
@@ -40,11 +46,11 @@ function Profile() {
 				width="100%"
 				mt={24}
 			>
-				<GridItem colSpan={3} mb={5}>
+				{/* <GridItem colSpan={3} mb={5}>
 					<Text fontSize="xl" mr={1.5} fontWeight="bold">
 						Profile
 					</Text>
-				</GridItem>
+				</GridItem> */}
 				<GridItem colSpan={{ md: 1 }}>
 					<Box px={[4, 0]}>
 						<VStack>
@@ -52,10 +58,10 @@ function Profile() {
 								w="280px"
 								h="280px"
 								borderRadius="50%"
-								src="https://th.bing.com/th/id/OIP.jlUxbDUaJFdElVjeovue-QHaJA?pid=ImgDet&rs=1"
+								src={currentUser.photoUrl}
 							/>
 							<Heading as="h2" fontSize="3xl" fontWeight="md" lineHeight="6">
-								Angelina Jolie
+								{currentUser.displayName}
 							</Heading>
 							<Text
 								fontSize="sm"
@@ -70,7 +76,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									09019122111
+									{currentUser.phoneNumber}
 								</Text>
 							</Flex>
 							<Flex align="center">
@@ -80,7 +86,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									ajolie@hollywood.com
+									{currentUser.email}
 								</Text>
 							</Flex>
 							<Flex align="center">
