@@ -53,7 +53,7 @@ const Header = (props) => {
 				bg={bg}
 			>
 				<Heading as="h3" letterSpacing="tight" fontWeight="light">
-					<Link as={RouterLink} _hover="none" to="/dashboard">
+					<Link as={RouterLink} textDecorationStyle='none' to="/dashboard">
 						{APP_NAME}
 					</Link>
 				</Heading>
