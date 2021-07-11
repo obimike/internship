@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { withRouter, Link as RouterLink, Redirect } from "react-router-dom";
+import { withRouter, Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
 	Heading,
@@ -81,9 +81,7 @@ const Header = (props) => {
 							icon={
 								<Avatar
 									size="sm"
-									src={
-										currentUser.photoUrl == null ? "" : currentUser.photoUrl
-									}
+									src={currentUser.photoURL == null ? "" : currentUser.photoURL}
 								/>
 							}
 							variant="ghost"
@@ -107,7 +105,7 @@ const Header = (props) => {
 									<Avatar
 										size="xs"
 										src={
-											currentUser.photoUrl == null ? "" : currentUser.photoUrl
+											currentUser.photoURL == null ? "" : currentUser.photoURL
 										}
 									/>
 								}

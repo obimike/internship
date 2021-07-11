@@ -7,6 +7,7 @@ import SignUp from "./pages/Signup";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import DashBoard from "./pages/Dashboard";
+import EmailConfirmation from "./pages/EmailConfirmation";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 					<Route path="/" exact component={SignIn} />
 					<Route path="/signin" exact component={SignIn} />
 					<Route path="/signup" exact component={SignUp} />
+					<Route path="/email_confirmation" exact component={EmailConfirmation} />
 					<Route path="/profile" exact component={Profile} />
 					<Route path="/edit_profile" exact component={EditProfile} />
 					<Route path="/dashboard" exact component={DashBoard} />

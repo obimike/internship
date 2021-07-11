@@ -93,7 +93,7 @@ function SignUp() {
 					</Flex>
 				</VStack>
 				{signUpError && (
-					<Text color="error" my="2.5">
+					<Text color="red" my="2.5" textAlign='center' fontSize='1.1rem'>
 						{signUpError}
 					</Text>
 				)}
@@ -255,8 +255,7 @@ async function emailSignUp(values, setSignUpError) {
 				});
 
 			response.user.updateProfile({
-				displayName: _lastName + _firstName,
-				// emailVerified: true,
+				displayName: _lastName + ' ' + _firstName,
 			});
 
 			//SendEmailVerification
@@ -266,8 +265,11 @@ async function emailSignUp(values, setSignUpError) {
 					window.localStorage.setItem("sendEmailVerification", values.email);
 					auth.signOut();
 
+					console.log("Email Sent!");
+					console.log(values.email);
+
 					history.push({
-						pathname: "/emailConfirmation",
+						pathname: "/email_confirmation",
 						state: { email: values.email },
 					});
 				})

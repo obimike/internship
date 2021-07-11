@@ -26,21 +26,27 @@ function Dashboard() {
 			<Flex mt={20} flexDir="column" h="100vh">
 				<Tabs variant="enclosed-colored" colorScheme="teal" isLazy isFitted>
 					<TabList>
-						<Tab fontSize="1.2rem">
+						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>
 							<Flex flexDir="row" align="center">
-								<RiDashboardFill fontSize="20px" />
+								<RiDashboardFill
+									fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}
+								/>
 								<Text ml="1.5">DashBoard</Text>
 							</Flex>
 						</Tab>
-						<Tab fontSize="1.2rem">
+						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>
 							<Flex flexDir="row" align="center">
-								<GiTeacher fontSize="20px" />
+								<GiTeacher
+									fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}
+								/>
 								<Text ml="1.5">Lessons</Text>
 							</Flex>
 						</Tab>
-						<Tab fontSize="1.2rem">
+						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>
 							<Flex flexDir="row" align="center">
-								<RiBook2Line fontSize="20px" />
+								<RiBook2Line
+									fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}
+								/>
 								<Text ml="1.5">Materials</Text>
 							</Flex>
 						</Tab>

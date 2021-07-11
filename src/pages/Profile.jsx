@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Link as RouterLink, Redirect } from "react-router-dom";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -58,7 +58,7 @@ function Profile() {
 								w="280px"
 								h="280px"
 								borderRadius="50%"
-								src={currentUser.photoUrl}
+								src={currentUser.photoURL}
 							/>
 							<Heading as="h2" fontSize="3xl" fontWeight="md" lineHeight="6">
 								{currentUser.displayName}
@@ -69,16 +69,18 @@ function Profile() {
 							>
 								Industrial Attachment
 							</Text>
-							<Flex align="center">
+
+							{currentUser.phoneNumber && <Flex align="center">
 								<FiPhone />
 								<Text
 									fontSize="sm"
-									color={useColorModeValue("gray.600", "gray.400")}
+									// color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
 									{currentUser.phoneNumber}
 								</Text>
-							</Flex>
+							</Flex>}
+							
 							<Flex align="center">
 								<FiMail />
 								<Text
