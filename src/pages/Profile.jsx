@@ -26,6 +26,7 @@ import {
 	FaTwitter,
 	FaInstagram,
 	FaLinkedinIn,
+	FaUserCircle,
 } from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
 
@@ -34,8 +35,7 @@ import { useAuth } from "../contexts/Auth";
 function Profile() {
 	const { colorMode, toggleColorMode } = useColorMode();
 	const { currentUser } = useAuth();
-
-
+	const textColor = useColorModeValue("gray.600", "gray.400");
 
 	return (
 		<Header>
@@ -58,6 +58,12 @@ function Profile() {
 								w="280px"
 								h="280px"
 								borderRadius="50%"
+								fallback={
+									<FaUserCircle
+										fontSize="280px"
+										color={useColorModeValue("#a5a5a5", "#d5d5d5")}
+									/>
+								}
 								src={currentUser.photoURL}
 							/>
 							<Heading as="h2" fontSize="3xl" fontWeight="md" lineHeight="6">
@@ -70,24 +76,18 @@ function Profile() {
 								Industrial Attachment
 							</Text>
 
-							{currentUser.phoneNumber && <Flex align="center">
-								<FiPhone />
-								<Text
-									fontSize="sm"
-									// color={useColorModeValue("gray.600", "gray.400")}
-									ml="1.5"
-								>
-									{currentUser.phoneNumber}
-								</Text>
-							</Flex>}
-							
+							{currentUser.phoneNumber && (
+								<Flex align="center">
+									<FiPhone />
+									<Text fontSize="sm" color={textColor} ml="1.5">
+										{currentUser.phoneNumber}
+									</Text>
+								</Flex>
+							)}
+
 							<Flex align="center">
 								<FiMail />
-								<Text
-									fontSize="sm"
-									color={useColorModeValue("gray.600", "gray.400")}
-									ml="1.5"
-								>
+								<Text fontSize="sm" color={textColor} ml="1.5">
 									{currentUser.email}
 								</Text>
 							</Flex>
