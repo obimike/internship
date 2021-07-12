@@ -12,13 +12,15 @@ import {
 	useDisclosure,
 	IconButton,
 } from "@chakra-ui/react";
-import { IoLogoJavascript, IoLogoPython ,IoIosClose} from "react-icons/io";
+import { IoLogoJavascript, IoLogoPython, IoIosClose } from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { FaPhp, FaCss3 } from "react-icons/fa";
+import { FaPhp, FaCss3, FaRegFilePdf, FaRegFileVideo } from "react-icons/fa";
 import { SiCsharp, SiJava, SiHtml5, SiMoleculer } from "react-icons/si";
+import { BiCloudDownload } from "react-icons/bi";
 
 function MaterialsCard({ name, totalContent }) {
-	const grayColor = useColorModeValue("gray.600", "gray.400"); const { isOpen, onOpen, onClose } = useDisclosure();
+	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const changeBackground = (language) => {
 		switch (language) {
@@ -83,61 +85,110 @@ function MaterialsCard({ name, totalContent }) {
 		}
 	};
 
-    return (
-			<>
-				<LinkBox to='#' as={RouterLink} onClick={onOpen}>
-					<Flex
-						flexDir="row"
-						borderRadius="4"
-						border="1px"
-						borderColor={grayColor}
-						p="1"
-						justifyContent="space-between"
-						alignItems="center"
-						mb="1.5"
-					>
-						<Flex flexDir="row" alignItems="center">
-							<Flex bg={changeBackground(name).bg} p="2" m="2" borderRadius="4">
-								{changeBackground(name).icon}
-							</Flex>
-							<Flex flexDir="column" justifyContent="space-between">
-								<Text fontSize="lg">{changeBackground(name).title}</Text>
-								<Text fontSize="sm" color={grayColor}>
-									Total Content {totalContent}
-								</Text>
-							</Flex>
+	return (
+		<>
+			<LinkBox to="#" as={RouterLink} onClick={onOpen}>
+				<Flex
+					flexDir="row"
+					borderRadius="4"
+					border="1px"
+					borderColor={grayColor}
+					p="1"
+					justifyContent="space-between"
+					alignItems="center"
+					mb="1.5"
+				>
+					<Flex flexDir="row" alignItems="center">
+						<Flex bg={changeBackground(name).bg} p="2" m="2" borderRadius="4">
+							{changeBackground(name).icon}
 						</Flex>
-						<Flex p="2">
-							<MdKeyboardArrowRight fontSize="24px" color={grayColor} />
+						<Flex flexDir="column" justifyContent="space-between">
+							<Text fontSize="lg">{changeBackground(name).title}</Text>
+							<Text fontSize="sm" color={grayColor}>
+								Total Content {totalContent}
+							</Text>
 						</Flex>
 					</Flex>
-				</LinkBox>
-			
-           {/* Bottom Drawer */}
-            <Drawer placement="left" isOpen={isOpen} size="full">
-					<DrawerOverlay />
-					<DrawerContent>
-						<DrawerHeader borderBottomWidth="1px">
-							<Flex flexDir="row" justifyContent="space-between" align="center">
-								{changeBackground(name).title}
-								<IconButton
-									onClick={onClose}
-									variant="ghost"
-									icon={<IoIosClose fontSize="32px" />}
-								/>
-							</Flex>
-						</DrawerHeader>
-						<DrawerBody>
-                        <Text fontSize='lg' textAlign='center' my='1.5'>Total Content {totalContent}</Text>
-							<MaterialsItems />
-						</DrawerBody>
-					</DrawerContent>
-				</Drawer>
-			</>
-		);
+					<Flex p="2">
+						<MdKeyboardArrowRight fontSize="24px" color={grayColor} />
+					</Flex>
+				</Flex>
+			</LinkBox>
+
+			{/* Bottom Drawer */}
+			<Drawer placement="left" isOpen={isOpen} size="full">
+				<DrawerOverlay />
+				<DrawerContent>
+					<DrawerHeader borderBottomWidth="1px">
+						<Flex flexDir="row" justifyContent="space-between" align="center">
+							{changeBackground(name).title}
+							<IconButton
+								onClick={onClose}
+								variant="ghost"
+								icon={<IoIosClose fontSize="32px" />}
+							/>
+						</Flex>
+					</DrawerHeader>
+					<DrawerBody w="100%">
+						<Text fontSize="lg" my="2.5">
+							Total Content {totalContent}
+						</Text>
+
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+						<MaterialsItems />
+					</DrawerBody>
+				</DrawerContent>
+			</Drawer>
+		</>
+	);
 }
 
 export default MaterialsCard;
-const MaterialsItems = () => {    
-    return <>MaterialsItems</>;
-}
+const MaterialsItems = () => {
+	const grayColor = useColorModeValue("gray.600", "gray.400");
+	return (
+		<Flex>
+			<Flex
+				flexDir="row"
+				borderRadius="4"
+				// border="1px"
+				// p="0.5"
+				justifyContent="space-between"
+				alignItems="center"
+				mb="1.5"
+				bg="gray.50"
+				w="100%"
+			>
+				<Flex flexDir="row" alignItems="center">
+					<Flex p="2" m="2" borderRadius="4">
+						<FaRegFilePdf fontSize="32px" />
+					</Flex>
+					<Flex flexDir="column" justifyContent="space-between">
+						<Text fontSize="lg">Python for beginners</Text>
+						<Flex flexDir="row" alignItems="center">
+							<Text fontSize="xs" color={grayColor}>
+								by: <b>Vine Uche</b>
+							</Text>
+							<Text fontSize="xs" color={grayColor} ml="1">
+								size: <b>1.2mb</b>
+							</Text>
+						</Flex>
+					</Flex>
+				</Flex>
+				<Flex p="2">
+					<IconButton
+						variant="ghost"
+						icon={<BiCloudDownload color="teal" fontSize="24px" />}
+					/>
+				</Flex>
+			</Flex>
+		</Flex>
+	);
+};
