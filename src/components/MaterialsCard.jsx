@@ -1,12 +1,24 @@
 import { Link as RouterLink } from "react-router-dom";
-import { Flex, Text, useColorModeValue, LinkBox } from "@chakra-ui/react";
-import { IoLogoJavascript, IoLogoPython } from "react-icons/io";
+import {
+	Flex,
+	Text,
+	useColorModeValue,
+	LinkBox,
+	Drawer,
+	DrawerContent,
+	DrawerOverlay,
+	DrawerHeader,
+	DrawerBody,
+	useDisclosure,
+	IconButton,
+} from "@chakra-ui/react";
+import { IoLogoJavascript, IoLogoPython ,IoIosClose} from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { FaPhp, FaCss3 } from "react-icons/fa";
-import { SiCsharp, SiJava, SiHtml5 } from "react-icons/si";
+import { SiCsharp, SiJava, SiHtml5, SiMoleculer } from "react-icons/si";
 
 function MaterialsCard({ name, totalContent }) {
-	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const grayColor = useColorModeValue("gray.600", "gray.400"); const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const changeBackground = (language) => {
 		switch (language) {
@@ -55,6 +67,13 @@ function MaterialsCard({ name, totalContent }) {
 					icon: <SiJava color="white" fontSize="32px" />,
 				};
 
+			case "Data Structure and Algorithm":
+				return {
+					bg: "teal.500",
+					title: "Data Structure and Algorithm",
+					icon: <SiMoleculer color="white" fontSize="32px" />,
+				};
+
 			default:
 				return {
 					bg: "",
@@ -64,35 +83,61 @@ function MaterialsCard({ name, totalContent }) {
 		}
 	};
 
-	return (
-		<LinkBox as={RouterLink} to={`materials/${name}`}>
-			<Flex
-				flexDir="row"
-				borderRadius="4"
-				border="1px"
-				borderColor={grayColor}
-				p="1"
-				justifyContent="space-between"
-				alignItems="center"
-				mb="1.5"
-			>
-				<Flex flexDir="row" alignItems="center">
-					<Flex bg={changeBackground(name).bg} p="2" m="2" borderRadius="4">
-						{changeBackground(name).icon}
+    return (
+			<>
+				<LinkBox to='#' as={RouterLink} onClick={onOpen}>
+					<Flex
+						flexDir="row"
+						borderRadius="4"
+						border="1px"
+						borderColor={grayColor}
+						p="1"
+						justifyContent="space-between"
+						alignItems="center"
+						mb="1.5"
+					>
+						<Flex flexDir="row" alignItems="center">
+							<Flex bg={changeBackground(name).bg} p="2" m="2" borderRadius="4">
+								{changeBackground(name).icon}
+							</Flex>
+							<Flex flexDir="column" justifyContent="space-between">
+								<Text fontSize="lg">{changeBackground(name).title}</Text>
+								<Text fontSize="sm" color={grayColor}>
+									Total Content {totalContent}
+								</Text>
+							</Flex>
+						</Flex>
+						<Flex p="2">
+							<MdKeyboardArrowRight fontSize="24px" color={grayColor} />
+						</Flex>
 					</Flex>
-					<Flex flexDir="column" justifyContent="space-between">
-						<Text fontSize="lg">{changeBackground(name).title}</Text>
-						<Text fontSize="sm" color={grayColor}>
-							Total Content {totalContent}
-						</Text>
-					</Flex>
-				</Flex>
-				<Flex p="2">
-					<MdKeyboardArrowRight fontSize="24px" fontColor={grayColor} />
-				</Flex>
-			</Flex>
-		</LinkBox>
-	);
+				</LinkBox>
+			
+           {/* Bottom Drawer */}
+            <Drawer placement="left" isOpen={isOpen} size="full">
+					<DrawerOverlay />
+					<DrawerContent>
+						<DrawerHeader borderBottomWidth="1px">
+							<Flex flexDir="row" justifyContent="space-between" align="center">
+								{changeBackground(name).title}
+								<IconButton
+									onClick={onClose}
+									variant="ghost"
+									icon={<IoIosClose fontSize="32px" />}
+								/>
+							</Flex>
+						</DrawerHeader>
+						<DrawerBody>
+                        <Text fontSize='lg' textAlign='center' my='1.5'>Total Content {totalContent}</Text>
+							<MaterialsItems />
+						</DrawerBody>
+					</DrawerContent>
+				</Drawer>
+			</>
+		);
 }
 
 export default MaterialsCard;
+const MaterialsItems = () => {    
+    return <>MaterialsItems</>;
+}
