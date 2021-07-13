@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 import MaterialsCard from "./MaterialsCard";
 
@@ -21,15 +21,46 @@ import {
 
 import { RiAddLine } from "react-icons/ri";
 
-function Materials() {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const {title, setTitle} = React.useState('')
-    const { upload, setUpload } = React.useState("");
-    
+import { db } from "../firebase/Config";
+import { useAuth } from "../contexts/Auth";
+	
 
-    const handleSubmit = () => {
-        alert(title)
-    }
+function Materials() {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+    const { error, setError } = React.useState("");
+    const { currentUser } = useAuth();
+	// const { upload, setUpload } = React.useState("");
+	// const { category, setCategory } = React.useState("");
+
+	// const handleTitle = (e) => setTitle(e.target.value);
+	// const handleUpload = (e) => setUpload(e.target.value);
+	// const handleCategory = (e) => setCategory(e.target.value);
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const title = e.target.title.value;
+		const category = e.target.category.value;
+		const upload = e.target.upload.value;
+
+		db.collection("materials")
+			.add({
+				title: title,
+				file: upload,
+				category: category,
+				time: "",
+				uploaderName: currentUser.displayName,
+				uploaderID: currentUser.uid,
+				fileSize: "",
+			})
+			.then((docRef) => {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
+
+		console.log(category);
+	};
 
 	return (
 		<Flex flexDir="column" pos="relative" h="100vh">
@@ -65,8 +96,9 @@ function Materials() {
 									type="text"
 									name="title"
 									placeholder="Enter Title"
-									// onChange={setTitle(title)}
-									value={title}
+									// onChange={handleTitle}
+									// value={title}
+									required
 								/>
 							</Box>
 							<Box mb="4">
@@ -75,13 +107,19 @@ function Materials() {
 									type="file"
 									name="upload"
 									placeholder="Enter Email"
-									// onChange={formik.handleChange}
-									// value={formik.values.email}
+									// onChange={handleUpload}
+									// value={upload}
+									required
 								/>
 							</Box>
 							<Box mb="4">
 								<Text fontSize="lg">Category</Text>
-								<Select placeholder="Select option" name="category">
+								<Select
+									placeholder="Select option"
+									name="category"
+									required
+									// onChange={handleCategory}
+								>
 									<option value="Data Structure and Algorithm">
 										Data Structure and Algorithm
 									</option>
