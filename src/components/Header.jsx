@@ -33,7 +33,7 @@ const Header = (props) => {
 	useEffect(() => {
 		console.log("Header effect");
 		if (currentUser === null || isVerifiedEmail === false) {
-			history.push("/");
+			history.push("/signin");
 		}
 	}, [currentUser, isVerifiedEmail, history]);
 
@@ -53,7 +53,7 @@ const Header = (props) => {
 				bg={bg}
 			>
 				<Heading as="h3" letterSpacing="tight" fontWeight="light">
-					<Link as={RouterLink} textDecorationStyle='none' to="/dashboard">
+					<Link as={RouterLink} textDecorationStyle="none" to="/dashboard">
 						{APP_NAME}
 					</Link>
 				</Heading>
@@ -137,7 +137,7 @@ const Header = (props) => {
 								onClick={() => {
 									setVerifiedEmail(false);
 									signOut();
-									history.push("/");
+									history.push("/signin");
 								}}
 								icon={
 									<RiLogoutCircleLine

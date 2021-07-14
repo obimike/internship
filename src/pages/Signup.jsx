@@ -247,8 +247,8 @@ async function emailSignUp(values, setSignUpError) {
 					photoURL: response.user.photoURL,
 					created: firestore.Timestamp.fromDate(new Date()),
 				})
-				.then(function (userID) {
-					console.log("User Created with ID : " + userID);
+				.then(function () {
+					console.log("User Created in firestore ");
 				})
 				.catch(function (error) {
 					console.log("Error adding user: " + error);
