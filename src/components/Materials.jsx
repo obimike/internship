@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 import MaterialsCard from "./MaterialsCard";
@@ -27,10 +27,84 @@ import { useAuth } from "../contexts/Auth";
 
 function Materials() {
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { currentUser } = useAuth();
+	//component state
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [submit, setSubmit] = useState(false);
-	const { currentUser } = useAuth();
+	const [javascriptCount, setJavascriptCount] = useState(0);
+	const [cssCount, setCSSCount] = useState(0);
+	const [phpCount, setPhpCount] = useState(0);
+	const [htmlCount, setHtmlCount] = useState(0);
+	const [pythonCount, setPythonCount] = useState(0);
+	const [csharpCount, setCsharpCount] = useState(0);
+	const [dsnaCount, setDsnaCount] = useState(0);
+	const [javaCount, setJavaCount] = useState(0);
+
+	useEffect(() => {
+		const unsubscribe = db
+			.collection("materials")
+			.where("approved", "==", false)
+			.onSnapshot(function (items) {
+				const fetchMaterialItems = [];
+
+				//initialize count
+				let js = 0;
+				let css = 0;
+				let php = 0;
+				let python = 0;
+				let html = 0;
+				let java = 0;
+				let csharp = 0;
+				let dsna = 0;
+
+				items.forEach((item) => {
+					const fetchItem = {
+						itemID: item.id,
+						...item.data(),
+					};
+					if (fetchItem.category === "Javascript") {
+						js += 1;
+					}
+					if (fetchItem.category === "Php") {
+						php += 1;
+					}
+					if (fetchItem.category === "CSS") {
+						css += 1;
+					}
+					if (fetchItem.category === "HTML") {
+						html += 1;
+					}
+					if (fetchItem.category === "Python") {
+						python += 1;
+					}
+					if (fetchItem.category === "Java") {
+						java += 1;
+					}
+					if (fetchItem.category === "Csharp") {
+						csharp += 1;
+					}
+					if (fetchItem.category === "Data Structure and Algorithm") {
+						dsna += 1;
+					}
+					fetchMaterialItems.push(fetchItem);
+				});
+
+				// setTotalItems(fetchTaskItems.length);
+
+				//Set count 
+				setJavascriptCount(js);
+				setCSSCount(css);
+				setPhpCount(php);
+				setHtmlCount(html);
+				setPythonCount(python);
+				setCsharpCount(csharp);
+				setDsnaCount(dsna);
+				setJavaCount(java);
+			});
+
+		return unsubscribe;
+	}, []);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -43,7 +117,7 @@ function Materials() {
 
 		//matching file type
 		if (!upload.name.match(/\.(mp4|pdf|mkv)$/)) {
-			setError("Please select valid format('.pdf, mkv or .mp4').");
+			setError("Please select valid  format('.pdf, mkv or .mp4').");
 			setSubmit(false);
 			return false;
 		}
@@ -55,9 +129,18 @@ function Materials() {
 			return false;
 		}
 
-		const uploadTask = fb.storage().ref(`/materials/`).put(upload);
-		//initiates the firebase side uploading
+		// Create a root reference
+		let storageRef = fb.storage().ref();
 
+		//getting fileName from title
+		const fileName = title.split(" ").join("_");
+
+		console.log(fileName);
+
+		// Upload file and metadata to the object 'images/mountains.jpg'
+		const uploadTask = storageRef.child("materials/" + fileName).put(upload);
+
+		// Listen for state changes, errors, and completion of the upload.
 		uploadTask.on(
 			"state_changed",
 			(snapshot) => {
@@ -112,14 +195,17 @@ function Materials() {
 
 	return (
 		<Flex flexDir="column" pos="relative" h="100vh">
-			<MaterialsCard name="Data Structure and Algorithm" totalContent={5} />
-			<MaterialsCard name="Javascript" totalContent={9} />
-			<MaterialsCard name="Python" totalContent={14} />
-			<MaterialsCard name="Php" totalContent={26} />
-			<MaterialsCard name="CSS" totalContent={15} />
-			<MaterialsCard name="HTML" totalContent={6} />
-			<MaterialsCard name="CSharp" totalContent={10} />
-			<MaterialsCard name="Java" totalContent={3} />
+			<MaterialsCard
+				name="Data Structure and Algorithm"
+				totalContent={dsnaCount}
+			/>
+			<MaterialsCard name="Javascript" totalContent={javascriptCount} />
+			<MaterialsCard name="Python" totalContent={pythonCount} />
+			<MaterialsCard name="Php" totalContent={phpCount} />
+			<MaterialsCard name="CSS" totalContent={cssCount} />
+			<MaterialsCard name="HTML" totalContent={htmlCount} />
+			<MaterialsCard name="CSharp" totalContent={csharpCount} />
+			<MaterialsCard name="Java" totalContent={javaCount} />
 
 			<IconButton
 				boxShadow="dark-lg"
@@ -140,13 +226,27 @@ function Materials() {
 						<ModalHeader align="center">Uplaod Material</ModalHeader>
 						<ModalBody>
 							{error && (
-								<Text textAlign="center" color="red" fontSize="md" my="1.5">
+								<Text
+									p="2"
+									bg="red.100"
+									textAlign="center"
+									color="red"
+									fontSize="md"
+									my="1.5"
+								>
 									{error}
 								</Text>
 							)}
 
 							{successMessage && (
-								<Text textAlign="center" color="green" fontSize="md" my="1.5">
+								<Text
+									p="2"
+									bg="green.100"
+									textAlign="center"
+									color="green"
+									fontSize="md"
+									my="1.5"
+								>
 									{successMessage}
 								</Text>
 							)}
