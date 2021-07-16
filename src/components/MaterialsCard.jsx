@@ -18,7 +18,7 @@ import { FaPhp, FaCss3, FaRegFilePdf, FaRegFileVideo } from "react-icons/fa";
 import { SiCsharp, SiJava, SiHtml5, SiMoleculer } from "react-icons/si";
 import { BiCloudDownload } from "react-icons/bi";
 
-function MaterialsCard({ name, totalContent }) {
+function MaterialsCard({ name, totalContent, content, loading }) {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -85,6 +85,8 @@ function MaterialsCard({ name, totalContent }) {
 		}
 	};
 
+	console.log(content);
+
 	return (
 		<>
 			<LinkBox to="#" as={RouterLink} onClick={onOpen}>
@@ -134,15 +136,24 @@ function MaterialsCard({ name, totalContent }) {
 							Total Content {totalContent}
 						</Text>
 
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
-						<MaterialsItems />
+						{/* {Object.keys(content).length === 0 && (
+							<flex style={{ textAlign: "center" }}>
+								<Text variant="subtitle1">No Task Item added yet</Text>
+								<Text variant="body2">
+									Type in the text box above and hit enter.
+								</Text>
+							</flex>
+						)} */}
+
+						{!loading && (
+							<>
+								{content.map((item) => (
+									<div key={item.itemID}>
+										<MaterialsItems item={item} />
+									</div>
+								))}
+							</>
+						)}
 					</DrawerBody>
 				</DrawerContent>
 			</Drawer>
@@ -151,8 +162,44 @@ function MaterialsCard({ name, totalContent }) {
 }
 
 export default MaterialsCard;
-const MaterialsItems = () => {
+
+const MaterialsItems = ({ item }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+
+	// console.log(item.fileType);
+
+	//selecting Icon
+	let icon = "";
+	switch (item.fileType) {
+		case "pdf":
+			icon = <FaRegFilePdf fontSize="32px" />;
+			break;
+		case "mkv":
+			icon = <FaRegFileVideo fontSize="32px" />;
+			break;
+		default:
+			icon = <FaRegFileVideo fontSize="32px" />;
+	}
+
+	const download = async () => {
+		let headers = new Headers();
+		headers.append("Access-Control-Allow-Origin", "http://localhost:3000");
+		headers.append("Access-Control-Allow-Credentials", "true");
+
+		await fetch(item.fileUrl, {
+			mode: 'no-cors',
+			credentials: "include",
+			method: "GET",
+			headers: headers,
+		}).then((response) => {
+			console.log(response.data);
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement("a");
+			link.href = url;
+			link.click();
+		});
+	};
+
 	return (
 		<Flex>
 			<Flex
@@ -168,16 +215,16 @@ const MaterialsItems = () => {
 			>
 				<Flex flexDir="row" alignItems="center">
 					<Flex p="2" m="2" borderRadius="4">
-						<FaRegFilePdf fontSize="32px" />
+						{icon}
 					</Flex>
 					<Flex flexDir="column" justifyContent="space-between">
-						<Text fontSize="lg">Python for beginners</Text>
+						<Text fontSize="lg">{item.title}</Text>
 						<Flex flexDir="row" alignItems="center">
 							<Text fontSize="xs" color={grayColor}>
-								by: <b>Vine Uche</b>
+								by: <b>{item.uploaderName}</b>
 							</Text>
 							<Text fontSize="xs" color={grayColor} ml="1">
-								size: <b>1.2mb</b>
+								size: <b>{(item.fileSize / (1024 * 1024)).toFixed(2)}mb</b>
 							</Text>
 						</Flex>
 					</Flex>
@@ -186,6 +233,7 @@ const MaterialsItems = () => {
 					<IconButton
 						variant="ghost"
 						icon={<BiCloudDownload color="teal" fontSize="24px" />}
+						onClick={download}
 					/>
 				</Flex>
 			</Flex>

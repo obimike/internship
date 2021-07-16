@@ -1,7 +1,13 @@
-import React from 'react'
+import React from "react";
+
+import Lessonscard from "./Lessonscard";
 
 function Lessons() {
-    return <div>Lessons</div>;
+	return (
+		<>
+			<Lessonscard />
+		</>
+	);
 }
 
-export default Lessons
+export default Lessons;

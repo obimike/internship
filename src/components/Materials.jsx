@@ -31,7 +31,9 @@ function Materials() {
 	//component state
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
-	const [submit, setSubmit] = useState(false);
+	const [submit, setSubmit] = useState(false);	
+	const [isLoading, setIsLoading] = useState(true);
+
 	const [javascriptCount, setJavascriptCount] = useState(0);
 	const [cssCount, setCSSCount] = useState(0);
 	const [phpCount, setPhpCount] = useState(0);
@@ -41,11 +43,16 @@ function Materials() {
 	const [dsnaCount, setDsnaCount] = useState(0);
 	const [javaCount, setJavaCount] = useState(0);
 
+	
+	const [javaItems, setJavaItems] = useState([]);
+
 	useEffect(() => {
 		const unsubscribe = db
 			.collection("materials")
 			.where("approved", "==", false)
 			.onSnapshot(function (items) {
+				// get material content in a n array
+				const fetchJavaItems = []
 				const fetchMaterialItems = [];
 
 				//initialize count
@@ -80,6 +87,7 @@ function Materials() {
 					}
 					if (fetchItem.category === "Java") {
 						java += 1;
+						fetchJavaItems.push(fetchItem)
 					}
 					if (fetchItem.category === "Csharp") {
 						csharp += 1;
@@ -92,7 +100,7 @@ function Materials() {
 
 				// setTotalItems(fetchTaskItems.length);
 
-				//Set count 
+				//Set count
 				setJavascriptCount(js);
 				setCSSCount(css);
 				setPhpCount(php);
@@ -101,6 +109,12 @@ function Materials() {
 				setCsharpCount(csharp);
 				setDsnaCount(dsna);
 				setJavaCount(java);
+
+				//set items
+				setJavaItems(fetchJavaItems)
+
+				//set loading to flase
+				setIsLoading(false)
 			});
 
 		return unsubscribe;
@@ -115,9 +129,23 @@ function Materials() {
 		let category = e.target.category.value;
 		let upload = e.target[1].files[0];
 
+		//Checkin the length of the title to more 3 character long
+		if (title.length <= 3) {
+			setError("Title should be more the 3 character long!");
+			setSubmit(false);
+			return false;
+		}
+
 		//matching file type
 		if (!upload.name.match(/\.(mp4|pdf|mkv)$/)) {
 			setError("Please select valid  format('.pdf, mkv or .mp4').");
+			setSubmit(false);
+			return false;
+		}
+
+		//Checking file is less or equal to 0
+		if (upload.length === 0) {
+			setError("Invalid file!");
 			setSubmit(false);
 			return false;
 		}
@@ -135,10 +163,12 @@ function Materials() {
 		//getting fileName from title
 		const fileName = title.split(" ").join("_");
 
-		console.log(fileName);
+		//getting file extension
+		const extension = upload.name.substring(upload.name.lastIndexOf('.') + 1);
+		// console.log(extension);
 
 		// Upload file and metadata to the object 'images/mountains.jpg'
-		const uploadTask = storageRef.child("materials/" + fileName).put(upload);
+		const uploadTask = storageRef.child("materials/" + fileName+'.'+extension).put(upload);
 
 		// Listen for state changes, errors, and completion of the upload.
 		uploadTask.on(
@@ -169,6 +199,7 @@ function Materials() {
 						.add({
 							title: title,
 							fileUrl: downloadURL,
+							fileType: extension,
 							category: category,
 							time: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
 							uploaderName: currentUser.displayName,
@@ -195,17 +226,17 @@ function Materials() {
 
 	return (
 		<Flex flexDir="column" pos="relative" h="100vh">
-			<MaterialsCard
+			{/* <MaterialsCard
 				name="Data Structure and Algorithm"
 				totalContent={dsnaCount}
-			/>
-			<MaterialsCard name="Javascript" totalContent={javascriptCount} />
+			/> */}
+			{/* <MaterialsCard name="Javascript" totalContent={javascriptCount} />
 			<MaterialsCard name="Python" totalContent={pythonCount} />
 			<MaterialsCard name="Php" totalContent={phpCount} />
 			<MaterialsCard name="CSS" totalContent={cssCount} />
 			<MaterialsCard name="HTML" totalContent={htmlCount} />
-			<MaterialsCard name="CSharp" totalContent={csharpCount} />
-			<MaterialsCard name="Java" totalContent={javaCount} />
+			<MaterialsCard name="CSharp" totalContent={csharpCount} /> */}
+			<MaterialsCard name="Java" totalContent={javaCount} content={javaItems} loading={isLoading} />
 
 			<IconButton
 				boxShadow="dark-lg"
@@ -308,13 +339,5 @@ function Materials() {
 		</Flex>
 	);
 }
-
-// function checkForErrors(title, category, upload, setError) {
-// 	if (title.length === 0) return setError("Title Cannot be empty!");
-// 	if (title.length <= 3)
-// 		return setError("Title should be more the 3 character long!");
-// 	if (category.length === 0) return setError("Please select a category!");
-// 	if (upload.length === 0) return setError("You need to upload a File!");
-// }
 
 export default Materials;
