@@ -45,6 +45,7 @@ function Materials() {
 
 	
 	const [javaItems, setJavaItems] = useState([]);
+	const [dsnaItems, setDsnaItems] = useState([]);
 
 	useEffect(() => {
 		const unsubscribe = db
@@ -53,6 +54,7 @@ function Materials() {
 			.onSnapshot(function (items) {
 				// get material content in a n array
 				const fetchJavaItems = []
+				const fetchDsnaItems = [];
 				const fetchMaterialItems = [];
 
 				//initialize count
@@ -94,6 +96,7 @@ function Materials() {
 					}
 					if (fetchItem.category === "Data Structure and Algorithm") {
 						dsna += 1;
+						fetchDsnaItems.push(fetchItem);
 					}
 					fetchMaterialItems.push(fetchItem);
 				});
@@ -112,6 +115,7 @@ function Materials() {
 
 				//set items
 				setJavaItems(fetchJavaItems)
+				setDsnaItems(fetchDsnaItems);
 
 				//set loading to flase
 				setIsLoading(false)
@@ -226,17 +230,23 @@ function Materials() {
 
 	return (
 		<Flex flexDir="column" pos="relative" h="100vh">
-			{/* <MaterialsCard
+			<MaterialsCard
 				name="Data Structure and Algorithm"
 				totalContent={dsnaCount}
-			/> */}
+				content={dsnaItems} loading={isLoading}
+			/>
 			{/* <MaterialsCard name="Javascript" totalContent={javascriptCount} />
 			<MaterialsCard name="Python" totalContent={pythonCount} />
 			<MaterialsCard name="Php" totalContent={phpCount} />
 			<MaterialsCard name="CSS" totalContent={cssCount} />
 			<MaterialsCard name="HTML" totalContent={htmlCount} />
 			<MaterialsCard name="CSharp" totalContent={csharpCount} /> */}
-			<MaterialsCard name="Java" totalContent={javaCount} content={javaItems} loading={isLoading} />
+			<MaterialsCard
+				name="Java"
+				totalContent={javaCount}
+				content={javaItems}
+				loading={isLoading}
+			/>
 
 			<IconButton
 				boxShadow="dark-lg"
