@@ -112,7 +112,7 @@ const LessonsHeader = () => {
 
 			// Upload file and metadata to the object 'images/mountains.jpg'
 			const uploadTask = storageRef
-				.child("materials/" + fileName + "." + extension)
+				.child("lessons/" + fileName + "." + extension)
 				.put(upload);
 
 			// Listen for state changes, errors, and completion of the upload.
