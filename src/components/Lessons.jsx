@@ -13,12 +13,15 @@ import {
 	Input,
 	Button,
 	Box,
-	Select,
+	Textarea,
+	RadioGroup,
+	Radio,
 } from "@chakra-ui/react";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
 
 import { useAuth } from "../contexts/Auth";
+import { db, fb } from "../firebase/Config";
 import Lessonscard from "./Lessonscard";
 
 function Lessons() {
@@ -39,20 +42,100 @@ const LessonsHeader = () => {
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [submit, setSubmit] = useState(false);
-
-	const handleSubmit = (e) => {};
+	const [type, setType] = React.useState("Live");
 
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
 	);
+	const [selectTime, setSelectTime] = useState(format(new Date(), "hh:mm"));
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		// setSubmit(true);
+		setError("");
+		setSuccessMessage("");
+		let title = e.target.title.value;
+		let date = e.target.date.value;
+		let timeFrom = e.target.timeFrom.value;
+		let timeTo = e.target.timeTo.value;
+		let type = e.target.type.value;
+		let upload = "";
+		let description = e.target.description.value;
+
+		//Checkin the length of the title to more 3 character long
+		if (title.length <= 3) {
+			setError("Title should be more the 3 character long!");
+			setSubmit(false);
+			return false;
+		}
+
+		if (type === "Video") {
+			upload = e.target[6].files[0];
+
+			//matching file type
+			if (!upload.name.match(/\.(mp4|mkv)$/)) {
+				setError("Please select valid  format('mkv or .mp4').");
+				setSubmit(false);
+				return false;
+			}
+
+			//Checking file is less or equal to 0
+			if (upload.length === 0) {
+				setError("Invalid file!");
+				setSubmit(false);
+				return false;
+			}
+
+			//if file is greater than 35mb - 1mb = 1024 * 1024
+			if (upload.size > 36700160) {
+				setError("File size exceeds 35mb!");
+				setSubmit(false);
+				return false;
+			}
+			console.log(upload);
+		} else {
+			db.collection("lessons")
+				.add({
+					title: title,
+					date: date,
+					timeFrom: timeFrom,
+					timeTo: timeTo,
+					classType: type,
+					description: description,
+					createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+					uploaderName: currentUser.displayName,
+					uploaderID: currentUser.uid,
+					approved: false,
+				})
+				.then((docRef) => {
+					console.log("Document written with ID: ", docRef.id);
+					setSuccessMessage("Class added successfully.");
+					setSubmit(false);
+					title = "";
+					upload = "";
+				})
+				.catch((error) => {
+					setError("Error adding class: ", error);
+					setSubmit(false);
+				});
+		}
+
+		console.log(title);
+		console.log(date);
+		console.log(timeFrom);
+		console.log(timeTo);
+		console.log(type);
+		console.log(description);
+		setSubmit(false);
+	};
 
 	return (
 		<>
 			<Flex
+				alignItems="center"
 				justifyContent="space-between"
 				mb="2.5"
 				w="100%"
-				alignItems="center"
 			>
 				<Input
 					type="date"
@@ -71,7 +154,7 @@ const LessonsHeader = () => {
 				<ModalOverlay />
 				<ModalContent>
 					<form onSubmit={handleSubmit}>
-						<ModalHeader align="center">Uplaod Material</ModalHeader>
+						<ModalHeader align="center">Add Class</ModalHeader>
 						<ModalBody>
 							{error && (
 								<Text
@@ -108,28 +191,64 @@ const LessonsHeader = () => {
 								/>
 							</Box>
 							<Box mb="4">
-								<Text fontSize="lg">Upload File</Text>
+								<Text fontSize="lg">Date</Text>
 								<Input
-									type="file"
-									name="upload"
-									placeholder="Upload File"
+									type="date"
+									name="date"
+									value={format(new Date(), "yyyy-MM-dd")}
 									required
 								/>
 							</Box>
+
+							<Flex justifyContent="space-between" mb="4">
+								<Box>
+									<Text fontSize="lg">From</Text>
+									<Input
+										type="time"
+										name="timeFrom"
+										required
+										// value={selectTime}
+									/>
+								</Box>
+								<Box>
+									<Text fontSize="lg">To</Text>
+									<Input type="time" name="timeTo" required />
+								</Box>
+							</Flex>
+
+							<RadioGroup
+								defaultValue={type}
+								onChange={setType}
+								mb={4}
+								name="type"
+							>
+								<Text>Choose Class Type</Text>
+								<Flex direction="row" justifyContent="space-between">
+									<Radio value="Live">Live Class</Radio>
+									<Radio value="Video">Video Calss</Radio>
+								</Flex>
+							</RadioGroup>
+							{type === "Video" && (
+								<Box mb="4">
+									<Text fontSize="lg">Upload Video</Text>
+									<Input
+										type="file"
+										name="upload"
+										placeholder="Upload Video"
+										required
+									/>
+								</Box>
+							)}
+
 							<Box mb="4">
-								<Text fontSize="lg">Category</Text>
-								<Select placeholder="Select option" name="category" required>
-									<option value="Data Structure and Algorithm">
-										Data Structure and Algorithm
-									</option>
-									<option value="CSS">CSS</option>
-									<option value="Php">Php</option>
-									<option value="Javascript">Javascript</option>
-									<option value="Csharp">CSharp</option>
-									<option value="Python">Python</option>
-									<option value="HTML">HTML</option>
-									<option value="Java">Java</option>
-								</Select>
+								<Text fontSize="lg">About this Class</Text>
+								<Textarea
+									placeholder="Description of the class content"
+									name="description"
+									size="sm"
+									resize="none"
+									required
+								/>
 							</Box>
 						</ModalBody>
 						<ModalFooter>

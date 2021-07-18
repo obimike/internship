@@ -39,7 +39,7 @@ function Lessonscard() {
 				<Flex
 					className="lessonIcon"
 					flexDir="column"
-					bg="teal.50"
+					bg="teal.100"
 					borderRadius="4"
 					alignItems="center"
 					justifyContent="center"
@@ -47,8 +47,10 @@ function Lessonscard() {
 					w="20%"
 					h="3.0rem"
 				>
-					<BiChalkboard fontSize="1.2em" />
-					<Text fontSize="0.5em">Live Class</Text>
+					<BiChalkboard fontSize="1.2em" color="black" />
+					<Text fontSize="0.7em" color="black">
+						Live Class
+					</Text>
 				</Flex>
 				<Flex
 					ml="1.5"

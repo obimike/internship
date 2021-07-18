@@ -265,8 +265,8 @@ async function emailSignUp(values, setSignUpError) {
 					window.localStorage.setItem("sendEmailVerification", values.email);
 					auth.signOut();
 
-					console.log("Email Sent!");
-					console.log(values.email);
+					// console.log("Email Sent!");
+					// console.log(values.email);
 
 					history.push({
 						pathname: "/email_confirmation",
