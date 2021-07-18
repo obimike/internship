@@ -46,12 +46,19 @@ const LessonsHeader = () => {
 
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
+	);const [selectModalDate, setSelectModalDate] = useState(
+		format(new Date(), "yyyy-MM-dd"),
 	);
-	const [selectTime, setSelectTime] = useState(format(new Date(), "hh:mm"));
+	const [selectTimeFrom, setSelectTimeFrom] = useState(format(new Date(), "HH:mm"));
+	const [selectTimeTo, setSelectTimeTo] = useState(
+		format(new Date().setHours(new Date().getHours() + 1), "HH:mm"),
+	);
+
+	// console.log(format(new Date().setHours(new Date().getMinutes()), "HH:mm"));
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		// setSubmit(true);
+		setSubmit(true);
 		setError("");
 		setSuccessMessage("");
 		let title = e.target.title.value;
@@ -92,6 +99,77 @@ const LessonsHeader = () => {
 				setSubmit(false);
 				return false;
 			}
+
+			// Create a root reference
+			let storageRef = fb.storage().ref();
+
+			//getting fileName from title
+			const fileName = title.split(" ").join("_");
+
+			//getting file extension
+			const extension = upload.name.substring(upload.name.lastIndexOf(".") + 1);
+			// console.log(extension);
+
+			// Upload file and metadata to the object 'images/mountains.jpg'
+			const uploadTask = storageRef
+				.child("materials/" + fileName + "." + extension)
+				.put(upload);
+
+			// Listen for state changes, errors, and completion of the upload.
+			uploadTask.on(
+				"state_changed",
+				(snapshot) => {
+					var progress =
+						(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+					console.log("Upload is " + progress + "% done");
+					// eslint-disable-next-line default-case
+					switch (snapshot.state) {
+						case fb.storage.TaskState.PAUSED: // or 'paused'
+							console.log("Upload is paused");
+							break;
+						case fb.storage.TaskState.RUNNING: // or 'running'
+							console.log("Upload is running");
+							break;
+					}
+				},
+				(err) => {
+					//catches the errors
+					console.log(err);
+					setError("Error uploading file.");
+					setSubmit(false);
+				},
+				() => {
+					// gets the functions from storage refences the image storage in firebase
+					uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+						db.collection("lessons")
+							.add({
+								title: title,
+								date: date,
+								videoUrl: downloadURL,
+								timeFrom: timeFrom,
+								timeTo: timeTo,
+								classType: type,
+								description: description,
+								createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+								uploaderName: currentUser.displayName,
+								uploaderID: currentUser.uid,
+								approved: false,
+							})
+							.then((docRef) => {
+								console.log("Document written with ID: ", docRef.id);
+								setSuccessMessage("Class added successfully.");
+								setSubmit(false);
+								title = "";
+								upload = "";
+							})
+							.catch((error) => {
+								setError("Error adding class: ", error);
+								setSubmit(false);
+							}); 
+					});
+				},
+			);
+
 			console.log(upload);
 		} else {
 			db.collection("lessons")
@@ -120,13 +198,12 @@ const LessonsHeader = () => {
 				});
 		}
 
-		console.log(title);
-		console.log(date);
-		console.log(timeFrom);
-		console.log(timeTo);
-		console.log(type);
-		console.log(description);
-		setSubmit(false);
+		// console.log(title);
+		// console.log(date);
+		// console.log(timeFrom);
+		// console.log(timeTo);
+		// console.log(type);
+		// console.log(description);
 	};
 
 	return (
@@ -195,7 +272,8 @@ const LessonsHeader = () => {
 								<Input
 									type="date"
 									name="date"
-									value={format(new Date(), "yyyy-MM-dd")}
+									value={selectModalDate}
+									onChange={(e) => setSelectModalDate(e.target.value)}
 									required
 								/>
 							</Box>
@@ -206,13 +284,20 @@ const LessonsHeader = () => {
 									<Input
 										type="time"
 										name="timeFrom"
+										value={selectTimeFrom}
+										onChange={(e) => setSelectTimeFrom(e.target.value)}
 										required
-										// value={selectTime}
 									/>
 								</Box>
 								<Box>
 									<Text fontSize="lg">To</Text>
-									<Input type="time" name="timeTo" required />
+									<Input
+										type="time"
+										name="timeTo"
+										value={selectTimeTo}
+										onChange={(e) => setSelectTimeTo(e.target.value)}
+										required
+									/>
 								</Box>
 							</Flex>
 
