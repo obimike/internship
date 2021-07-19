@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Flex,
 	Text,
@@ -16,6 +16,9 @@ import {
 	Textarea,
 	RadioGroup,
 	Radio,
+	Skeleton,
+	SkeletonCircle,
+	SkeletonText,
 } from "@chakra-ui/react";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
@@ -25,10 +28,50 @@ import { db, fb } from "../firebase/Config";
 import Lessonscard from "./Lessonscard";
 
 function Lessons() {
+	const [isLoading, setIsLoading] = useState(true);
+	const [lessonItems, setLessonItems] = useState([]);
+
+	useEffect(() => {
+		const unsubscribe = db
+			.collection("lessons")
+			.where("approved", "==", false)
+			.onSnapshot(function (items) {
+				// get lessons content in a n array
+				const fetchLessonItems = [];
+
+				items.forEach((item) => {
+					const fetchItem = {
+						itemID: item.id,
+						...item.data(),
+					};
+					fetchLessonItems.push(fetchItem);
+				});
+
+				// setTotalItems(fetchTaskItems.length);
+				setLessonItems(fetchLessonItems);
+				console.log(fetchLessonItems);
+
+				//set loading to false
+				setIsLoading(false);
+			});
+
+		return unsubscribe;
+	}, []);
+
 	return (
 		<>
 			<LessonsHeader />
-			<Lessonscard />
+			{/* <LessonSkeleton /> */}
+			{isLoading && <LessonSkeleton />}
+			{!isLoading && (
+				<>
+					{lessonItems.map((item) => (
+						<div key={item.itemID}>
+							<Lessonscard item={item} />
+						</div>
+					))}
+				</>
+			)}
 		</>
 	);
 }
@@ -46,10 +89,13 @@ const LessonsHeader = () => {
 
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
-	);const [selectModalDate, setSelectModalDate] = useState(
+	);
+	const [selectModalDate, setSelectModalDate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
 	);
-	const [selectTimeFrom, setSelectTimeFrom] = useState(format(new Date(), "HH:mm"));
+	const [selectTimeFrom, setSelectTimeFrom] = useState(
+		format(new Date(), "HH:mm"),
+	);
 	const [selectTimeTo, setSelectTimeTo] = useState(
 		format(new Date().setHours(new Date().getHours() + 1), "HH:mm"),
 	);
@@ -80,7 +126,7 @@ const LessonsHeader = () => {
 			upload = e.target[6].files[0];
 
 			//matching file type
-			if (!upload.name.match(/\.(mp4|mkv)$/)) {
+			if (!upload.name.match(/\.(mp4|mkv|webm)$/)) {
 				setError("Please select valid  format('mkv or .mp4').");
 				setSubmit(false);
 				return false;
@@ -165,7 +211,7 @@ const LessonsHeader = () => {
 							.catch((error) => {
 								setError("Error adding class: ", error);
 								setSubmit(false);
-							}); 
+							});
 					});
 				},
 			);
@@ -206,6 +252,12 @@ const LessonsHeader = () => {
 		// console.log(description);
 	};
 
+	const closeModal = () => {
+		setError("");
+		setSuccessMessage("");
+		onClose();
+	};
+
 	return (
 		<>
 			<Flex
@@ -216,7 +268,7 @@ const LessonsHeader = () => {
 			>
 				<Input
 					type="date"
-					w="50%"
+					w="-moz-fit-content"
 					value={selectDate}
 					onChange={(e) => setSelectdate(e.target.value)}
 				/>
@@ -341,7 +393,7 @@ const LessonsHeader = () => {
 								disabled={submit}
 								colorScheme="red"
 								mr={3}
-								onClick={onClose}
+								onClick={closeModal}
 							>
 								Cancel
 							</Button>
@@ -358,5 +410,49 @@ const LessonsHeader = () => {
 				</ModalContent>
 			</Modal>
 		</>
+	);
+};
+
+const LessonSkeleton = () => {
+	return (
+		<Flex
+			as="button"
+			flexDir="row"
+			p="2"
+			mb="3.5"
+			w="100%"
+			boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
+		>
+			<Skeleton
+				className="lessonIcon"
+				flexDir="column"
+				bg="teal.100"
+				borderRadius="4"
+				alignItems="center"
+				justifyContent="center"
+				p="1.5"
+				w="20%"
+				h="3.0rem"
+			/>
+			<Flex
+				ml="1.5"
+				flexDir="column"
+				justifyContent="space-between"
+				w="78%"
+				h="3.0rem"
+			>
+				<SkeletonText noOfLines={2} />
+				<Flex flexDir="row" justifyContent="space-between">
+					<Flex alignItems="center">
+						<SkeletonCircle size="3" />
+						<SkeletonText w="8" noOfLines={1} ml="0.5" />
+					</Flex>
+					<Flex alignItems="center">
+						<SkeletonCircle size="3" />
+						<SkeletonText w="8" noOfLines={1} ml="0.5" size="3" />
+					</Flex>
+				</Flex>
+			</Flex>
+		</Flex>
 	);
 };

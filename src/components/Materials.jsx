@@ -31,7 +31,7 @@ function Materials() {
 	//component state
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
-	const [submit, setSubmit] = useState(false);	
+	const [submit, setSubmit] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
 	const [javascriptCount, setJavascriptCount] = useState(0);
@@ -43,7 +43,6 @@ function Materials() {
 	const [dsnaCount, setDsnaCount] = useState(0);
 	const [javaCount, setJavaCount] = useState(0);
 
-	
 	const [javaItems, setJavaItems] = useState([]);
 	const [dsnaItems, setDsnaItems] = useState([]);
 
@@ -53,7 +52,7 @@ function Materials() {
 			.where("approved", "==", false)
 			.onSnapshot(function (items) {
 				// get material content in a n array
-				const fetchJavaItems = []
+				const fetchJavaItems = [];
 				const fetchDsnaItems = [];
 				const fetchMaterialItems = [];
 
@@ -89,7 +88,7 @@ function Materials() {
 					}
 					if (fetchItem.category === "Java") {
 						java += 1;
-						fetchJavaItems.push(fetchItem)
+						fetchJavaItems.push(fetchItem);
 					}
 					if (fetchItem.category === "Csharp") {
 						csharp += 1;
@@ -114,11 +113,11 @@ function Materials() {
 				setJavaCount(java);
 
 				//set items
-				setJavaItems(fetchJavaItems)
+				setJavaItems(fetchJavaItems);
 				setDsnaItems(fetchDsnaItems);
 
 				//set loading to flase
-				setIsLoading(false)
+				setIsLoading(false);
 			});
 
 		return unsubscribe;
@@ -168,11 +167,13 @@ function Materials() {
 		const fileName = title.split(" ").join("_");
 
 		//getting file extension
-		const extension = upload.name.substring(upload.name.lastIndexOf('.') + 1);
+		const extension = upload.name.substring(upload.name.lastIndexOf(".") + 1);
 		// console.log(extension);
 
 		// Upload file and metadata to the object 'images/mountains.jpg'
-		const uploadTask = storageRef.child("materials/" + fileName+'.'+extension).put(upload);
+		const uploadTask = storageRef
+			.child("materials/" + fileName + "." + extension)
+			.put(upload);
 
 		// Listen for state changes, errors, and completion of the upload.
 		uploadTask.on(
@@ -233,7 +234,8 @@ function Materials() {
 			<MaterialsCard
 				name="Data Structure and Algorithm"
 				totalContent={dsnaCount}
-				content={dsnaItems} loading={isLoading}
+				content={dsnaItems}
+				loading={isLoading}
 			/>
 			{/* <MaterialsCard name="Javascript" totalContent={javascriptCount} />
 			<MaterialsCard name="Python" totalContent={pythonCount} />

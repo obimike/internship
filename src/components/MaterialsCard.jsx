@@ -117,7 +117,7 @@ function MaterialsCard({ name, totalContent, content, loading }) {
 				</Flex>
 			</LinkBox>
 
-			{/* Bottom Drawer */}
+			{/* Left Drawer */}
 			<Drawer placement="left" isOpen={isOpen} size="full">
 				<DrawerOverlay />
 				<DrawerContent>
@@ -187,7 +187,7 @@ const MaterialsItems = ({ item }) => {
 		headers.append("Access-Control-Allow-Credentials", "true");
 
 		await fetch(item.fileUrl, {
-			mode: 'no-cors',
+			mode: "no-cors",
 			credentials: "include",
 			method: "GET",
 			headers: headers,
@@ -205,12 +205,14 @@ const MaterialsItems = ({ item }) => {
 			<Flex
 				flexDir="row"
 				borderRadius="4"
-				// border="1px"
+				border="0.5px"
 				// p="0.5"
 				justifyContent="space-between"
 				alignItems="center"
 				mb="1.5"
-				bg="gray.50"
+				// bg="gray.50"
+				boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
+				_hover={{ bg: "#ebedf0" }}
 				w="100%"
 			>
 				<Flex flexDir="row" alignItems="center">

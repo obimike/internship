@@ -13,6 +13,10 @@ import {
 	useDisclosure,
 	IconButton,
 	Avatar,
+	Tag,
+	TagLabel,
+	Divider,
+	Button,
 } from "@chakra-ui/react";
 import {
 	IoTimeOutline,
@@ -20,67 +24,215 @@ import {
 	IoPersonCircleSharp,
 } from "react-icons/io5";
 import { BiChalkboard } from "react-icons/bi";
+import { IoIosClose, IoIosCalendar } from "react-icons/io";
+import { RiAddLine } from "react-icons/ri";
+import { format } from "date-fns";
 
-function Lessonscard() {
+function Lessonscard({ item }) {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	let type = "";
+	if (item.classType === "Video") {
+		type = <IoVideocamOutline fontSize="1.2em" color="black" />;
+	} else {
+		type = <BiChalkboard fontSize="1.2em" color="black" />;
+	}
+
+	//getting the first name from user
+	let firstName = item.uploaderName.split(" ");
+	firstName = firstName[firstName.length - 1];
+
+	//formating time
+	let to = tConvert(item.timeTo);
+	let from = tConvert(item.timeFrom);
+
+	function tConvert(time) {
+		// Check correct time format and split into components
+		time = time
+			.toString()
+			.match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+		if (time.length > 1) {
+			// If time format correct
+			time = time.slice(1); // Remove full string match value
+			time[5] = +time[0] < 12 ? "am" : "pm"; // Set AM/PM
+			time[0] = +time[0] % 12 || 12; // Adjust hours
+		}
+		return time.join(""); // return adjusted time or original string
+	}
+
+	// console.log(to);
+	// console.log(" Not coverted"+item.timeTo);
 
 	return (
-		<LinkBox>
-			<Flex
-				flexDir="row"
-				borderRadius="4"
-				boxShadow="base"
-				borderColor={grayColor}
-				p="2"
-				mb="1.5"
-				w="100%"
-				as="button"
-			>
+		<>
+			<LinkBox to="#" as={RouterLink} onClick={onOpen}>
 				<Flex
-					className="lessonIcon"
-					flexDir="column"
-					bg="teal.100"
+					as="button"
+					flexDir="row"
 					borderRadius="4"
-					alignItems="center"
-					justifyContent="center"
-					p="1.5"
-					w="20%"
-					h="3.0rem"
+					// boxShadow="base"
+					borderColor={grayColor}
+					p="2"
+					mb="3.5"
+					w="100%"
+					boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
+					// transition="all 0.2s cubic-bezier(.08,.52,.52,1)"
+					_hover={{ bg: "#ebedf0" }}
 				>
-					<BiChalkboard fontSize="1.2em" color="black" />
-					<Text fontSize="0.7em" color="black">
-						Live Class
-					</Text>
-				</Flex>
-				<Flex
-					ml="1.5"
-					flexDir="column"
-					justifyContent="space-between"
-					w="78%"
-					h="3.0rem"
-				>
-					<Text isTruncated>
-						Export Firebase Data to a .json file and import to another project
-						Export Firebase Data to a .json file and import to another project
-					</Text>
-					<Flex flexDir="row" justifyContent="space-between">
-						<Flex alignItems="center">
-							<IoPersonCircleSharp color={grayColor} />
-							<Text color={grayColor} fontSize="xs" ml="0.5">
-								Jolie
-							</Text>
-						</Flex>
-						<Flex alignItems="center">
-							<IoTimeOutline color={grayColor} />
-							<Text color={grayColor} fontSize="xs" ml="0.5">
-								3:00pm - 4:30pm
-							</Text>
+					<Flex
+						className="lessonIcon"
+						flexDir="column"
+						bg="teal.100"
+						borderRadius="4"
+						alignItems="center"
+						justifyContent="center"
+						p="1.5"
+						w="20%"
+						h="3.0rem"
+					>
+						{type}
+						<Text fontSize="0.5em" fontWeight="black" color="black">
+							{item.classType} Class
+						</Text>
+					</Flex>
+					<Flex
+						ml="1.5"
+						flexDir="column"
+						justifyContent="space-between"
+						w="78%"
+						h="3.0rem"
+					>
+						<Text textAlign="start" isTruncated>
+							{item.title}
+						</Text>
+						<Flex flexDir="row" justifyContent="space-between">
+							<Flex alignItems="center">
+								<IoPersonCircleSharp color={grayColor} />
+								<Text color={grayColor} fontSize="xs" ml="0.5">
+									{firstName}
+								</Text>
+							</Flex>
+							<Flex alignItems="center">
+								<IoTimeOutline color={grayColor} />
+								<Text color={grayColor} fontSize="xs" ml="0.5">
+									{from} - {to}
+								</Text>
+							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
-			</Flex>
-		</LinkBox>
+			</LinkBox>
+
+			{/* Left Drawer */}
+			<Drawer placement="left" isOpen={isOpen} size="full">
+				<DrawerOverlay />
+				<DrawerContent>
+					<DrawerHeader borderBottomWidth="1px">
+						<Flex flexDir="row" justifyContent="space-between" align="center">
+							Class details
+							<IconButton
+								onClick={onClose}
+								variant="ghost"
+								icon={<IoIosClose fontSize="32px" />}
+							/>
+						</Flex>
+					</DrawerHeader>
+					<DrawerBody w="100%">
+						<LessonDetail item={item} />
+					</DrawerBody>
+				</DrawerContent>
+			</Drawer>
+		</>
 	);
 }
 
 export default Lessonscard;
+
+const LessonDetail = ({ item }) => {
+	//formating time
+	let to = tConvert(item.timeTo);
+	let from = tConvert(item.timeFrom);
+
+	function tConvert(time) {
+		// Check correct time format and split into components
+		time = time
+			.toString()
+			.match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+		if (time.length > 1) {
+			// If time format correct
+			time = time.slice(1); // Remove full string match value
+			time[5] = +time[0] < 12 ? "am" : "pm"; // Set AM/PM
+			time[0] = +time[0] % 12 || 12; // Adjust hours
+		}
+		return time.join(""); // return adjusted time or original string
+	}
+
+	return (
+		<Flex flexDir="column">
+			<Text fontSize="large" fontWeight="bold" my="2">
+				{item.title}
+			</Text>
+
+			{/* {item.classType === "Video" && <Flex>Video</Flex>} */}
+
+			<Flex flexDir="row" justifyContent="space-between" mt="2.5">
+				<Tag size="lg" colorScheme="teal" borderRadius="full">
+					<IoTimeOutline />
+					<TagLabel ml="1.5">
+						{from} - {to}
+					</TagLabel>
+				</Tag>
+
+				<Tag size="lg" colorScheme="teal" borderRadius="full">
+					<IoIosCalendar />
+					<TagLabel ml="1.5">
+						{format(new Date(item.date), "dd, MMMM yyyy")}
+					</TagLabel>
+				</Tag>
+			</Flex>
+			<Divider my="2.5" />
+			<Flex flexDir="column">
+				<Text fontSize="large" fontWeight="semibold">
+					Participants (0)
+				</Text>
+				<Flex></Flex>
+			</Flex>
+			<Divider my="2.5" />
+			<Flex flexDir="column">
+				<Text fontSize="large" fontWeight="semibold">
+					Class Description{" "}
+				</Text>
+				<Text>{item.description}</Text>
+			</Flex>
+			<Divider my="2.5" />
+			<Flex flexDir="column">
+				<Flex justifyContent="space-between" alignItems="center">
+					<Text fontSize="large" fontWeight="semibold">
+						Resources (0)
+					</Text>
+					<IconButton
+						icon={<RiAddLine color="teal" fontSize="24px" />}
+						variant="ghost"
+						// onClick={onOpen}
+					/>
+				</Flex>
+				<Text fontSize="sm" textAlign="center">
+					(Note: All resources must be text base file and maximum of 3 items per
+					class)
+				</Text>
+				<Flex></Flex>
+			</Flex>
+			<Flex flexDir="row" mt="8" justifyContent="flex-end">
+				<Button colorScheme="teal" variant="outline">
+					Join +
+				</Button>
+				<Button colorScheme="teal" ml="1.5">
+					Reschedule
+				</Button>
+			</Flex>
+		</Flex>
+	);
+};
