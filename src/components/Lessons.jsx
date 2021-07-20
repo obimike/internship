@@ -35,6 +35,7 @@ function Lessons() {
 		const unsubscribe = db
 			.collection("lessons")
 			.where("approved", "==", false)
+			// .orderBy("createdAt", "desc")
 			.onSnapshot(function (items) {
 				// get lessons content in a n array
 				const fetchLessonItems = [];
@@ -244,12 +245,6 @@ const LessonsHeader = () => {
 				});
 		}
 
-		// console.log(title);
-		// console.log(date);
-		// console.log(timeFrom);
-		// console.log(timeTo);
-		// console.log(type);
-		// console.log(description);
 	};
 
 	const closeModal = () => {

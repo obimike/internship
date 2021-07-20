@@ -27,6 +27,8 @@ import { BiChalkboard } from "react-icons/bi";
 import { IoIosClose, IoIosCalendar } from "react-icons/io";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
+import VideoPlayer from "react-video-js-player";
+
 
 function Lessonscard({ item }) {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
@@ -63,7 +65,6 @@ function Lessonscard({ item }) {
 	}
 
 	// console.log(to);
-	// console.log(" Not coverted"+item.timeTo);
 
 	return (
 		<>
@@ -170,13 +171,25 @@ const LessonDetail = ({ item }) => {
 		return time.join(""); // return adjusted time or original string
 	}
 
+
 	return (
 		<Flex flexDir="column">
 			<Text fontSize="large" fontWeight="bold" my="2">
 				{item.title}
 			</Text>
 
-			{/* {item.classType === "Video" && <Flex>Video</Flex>} */}
+			{item.classType === "Video" && (
+				<Flex justifyContent="center">
+					<VideoPlayer
+						controls={true}
+						src={item.videoUrl}
+						// src={Video}
+						poster=""
+						width="720"
+						height="420"
+					/>
+				</Flex>
+			)}
 
 			<Flex flexDir="row" justifyContent="space-between" mt="2.5">
 				<Tag size="lg" colorScheme="teal" borderRadius="full">

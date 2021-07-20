@@ -45,6 +45,12 @@ function Materials() {
 
 	const [javaItems, setJavaItems] = useState([]);
 	const [dsnaItems, setDsnaItems] = useState([]);
+	const [csharpItems, setCsharpItems] = useState([]);
+	const [pythonItems, setPythonItems] = useState([]);
+	const [jsItems, setJsItems] = useState([]);
+	const [htmlItems, setHtmlItems] = useState([]);
+	const [phpItems, setPhpItems] = useState([]);
+	const [cssItems, setCssItems] = useState([]);
 
 	useEffect(() => {
 		const unsubscribe = db
@@ -54,6 +60,12 @@ function Materials() {
 				// get material content in a n array
 				const fetchJavaItems = [];
 				const fetchDsnaItems = [];
+				const fetchCsharpItems = [];
+				const fetchPythonItems = [];
+				const fetchHtmlItems = [];
+				const fetchPhpItems = [];
+				const fetchJsItems = [];
+				const fetchCssItems = [];
 				const fetchMaterialItems = [];
 
 				//initialize count
@@ -73,18 +85,23 @@ function Materials() {
 					};
 					if (fetchItem.category === "Javascript") {
 						js += 1;
+						fetchJsItems.push(fetchItem);
 					}
 					if (fetchItem.category === "Php") {
 						php += 1;
+						fetchPhpItems.push(fetchItem);
 					}
 					if (fetchItem.category === "CSS") {
 						css += 1;
+						fetchCssItems.push(fetchItem);
 					}
 					if (fetchItem.category === "HTML") {
 						html += 1;
+						fetchHtmlItems.push(fetchItem);
 					}
 					if (fetchItem.category === "Python") {
 						python += 1;
+						fetchPythonItems.push(fetchItem);
 					}
 					if (fetchItem.category === "Java") {
 						java += 1;
@@ -92,6 +109,7 @@ function Materials() {
 					}
 					if (fetchItem.category === "Csharp") {
 						csharp += 1;
+						fetchCsharpItems.push(fetchItem)
 					}
 					if (fetchItem.category === "Data Structure and Algorithm") {
 						dsna += 1;
@@ -115,6 +133,12 @@ function Materials() {
 				//set items
 				setJavaItems(fetchJavaItems);
 				setDsnaItems(fetchDsnaItems);
+				setCsharpItems(fetchCsharpItems);
+				setPythonItems(fetchPythonItems);
+				setJsItems(fetchJsItems);
+				setCssItems(fetchCssItems);
+				setPhpItems(fetchPhpItems);
+				setHtmlItems(fetchHtmlItems);
 
 				//set loading to flase
 				setIsLoading(false);
@@ -237,12 +261,24 @@ function Materials() {
 				content={dsnaItems}
 				loading={isLoading}
 			/>
-			{/* <MaterialsCard name="Javascript" totalContent={javascriptCount} />
-			<MaterialsCard name="Python" totalContent={pythonCount} />
-			<MaterialsCard name="Php" totalContent={phpCount} />
-			<MaterialsCard name="CSS" totalContent={cssCount} />
-			<MaterialsCard name="HTML" totalContent={htmlCount} />
-			<MaterialsCard name="CSharp" totalContent={csharpCount} /> */}
+			<MaterialsCard name="Javascript" totalContent={javascriptCount} 
+				content={jsItems}
+				loading={isLoading} />
+			<MaterialsCard name="Python" totalContent={pythonCount} 
+				content={pythonItems}
+				loading={isLoading} />
+			<MaterialsCard name="Php" totalContent={phpCount} 
+				content={phpItems}
+				loading={isLoading}/>
+			<MaterialsCard name="CSS" totalContent={cssCount} 
+				content={cssItems}
+				loading={isLoading} />
+			<MaterialsCard name="HTML" totalContent={htmlCount} 
+				content={htmlItems}
+				loading={isLoading} />
+			<MaterialsCard name="CSharp" totalContent={csharpCount} 
+				content={csharpItems}
+				loading={isLoading} />
 			<MaterialsCard
 				name="Java"
 				totalContent={javaCount}

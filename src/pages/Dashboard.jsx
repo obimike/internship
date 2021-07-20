@@ -31,7 +31,7 @@ function Dashboard() {
 								<RiDashboardFill
 									fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}
 								/>
-								<Text ml="1.5">DashBoard</Text>
+								<Text ml="1.5">Feeds</Text>
 							</Flex>
 						</Tab>
 						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>
@@ -39,7 +39,7 @@ function Dashboard() {
 								<GiTeacher
 									fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}
 								/>
-								<Text ml="1.5">Lessons</Text>
+								<Text ml="1.5">Classes</Text>
 							</Flex>
 						</Tab>
 						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>
