@@ -35,7 +35,7 @@ function Lessons() {
 		const unsubscribe = db
 			.collection("lessons")
 			.where("approved", "==", false)
-			// .orderBy("createdAt", "desc")
+			.orderBy("createdAt", "desc")
 			.onSnapshot(function (items) {
 				// get lessons content in a n array
 				const fetchLessonItems = [];

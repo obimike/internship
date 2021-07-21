@@ -12,7 +12,6 @@ import {
 	DrawerBody,
 	useDisclosure,
 	IconButton,
-	Avatar,
 	Tag,
 	TagLabel,
 	Divider,

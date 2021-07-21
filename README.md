@@ -8,6 +8,7 @@
 *   Yup
 *   Formik
 *   date-fns
+*   VideoJs
 
 
 ## Backend
