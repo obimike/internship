@@ -32,6 +32,7 @@ import {
 	SimpleGrid,
 	GridItem,
 	Link,
+	useToast,
 } from "@chakra-ui/react";
 import { IoShareOutline } from "react-icons/io5";
 import { FaRegComment } from "react-icons/fa";
@@ -169,7 +170,6 @@ function DashboardContents() {
 								imageUrl: downloadURL,
 								writeUp: writeUp,
 								like: 0,
-								comment: 0,
 								createdAt: firestore.Timestamp.fromDate(new Date()),
 								posterName: currentUser.displayName,
 								posterID: currentUser.uid,
@@ -197,7 +197,6 @@ function DashboardContents() {
 					link: link,
 					writeUp: writeUp,
 					like: 0,
-					comment: 0,
 					createdAt: firestore.Timestamp.fromDate(new Date()),
 					posterName: currentUser.displayName,
 					posterID: currentUser.uid,
@@ -361,10 +360,37 @@ function DashboardContents() {
 export default DashboardContents;
 
 const FeedCard = ({ item }) => {
-	// console.log(item.createdAt.toDate());
-
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const [commentItems, setCommentItems] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const unsubscribe = db
+			.collection("comments")
+			.where("postID", "==", item.itemID)
+			.orderBy("createdAt", "desc")
+			.onSnapshot(function (items) {
+				// get lessons content in a n array
+				const fetchCommentItems = [];
+
+				items.forEach((item) => {
+					const fetchItem = {
+						itemID: item.id,
+						...item.data(),
+					};
+					fetchCommentItems.push(fetchItem);
+				});
+
+				// setTotalItems(fetchTaskItems.length);
+				setCommentItems(fetchCommentItems);
+
+				//set loading to false
+				setIsLoading(false);
+			});
+
+		return unsubscribe;
+	}, [item.itemID]);
 
 	let time = formatDistance(new Date(item.createdAt.toDate()), new Date(), {
 		includeSeconds: true,
@@ -373,10 +399,10 @@ const FeedCard = ({ item }) => {
 	return (
 		<>
 			<Flex
-				borderRadius="4"
+				borderRadius="8"
 				flexDir="column"
 				boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
-				p="2"
+				p="4"
 				mb="4"
 			>
 				<LinkBox to="#" as={RouterLink} onClick={onOpen}>
@@ -411,11 +437,8 @@ const FeedCard = ({ item }) => {
 							<Text>{item.like}</Text>
 						</Flex>
 						<Flex alignItems="center" ml="1.5rem">
-							<IconButton
-								variant="ghost"
-								icon={<FaRegComment fontSize="24px" />}
-							/>
-							<Text>{item.comment}</Text>
+							<FaRegComment fontSize="24px" />
+							<Text ml="2">{commentItems.length}</Text>
 						</Flex>
 					</Flex>
 
@@ -442,7 +465,11 @@ const FeedCard = ({ item }) => {
 						</Flex>
 					</DrawerHeader>
 					<DrawerBody w="100%">
-						<FeedDetail item={item} />
+						<FeedDetail
+							item={item}
+							isLoading={isLoading}
+							comment={commentItems}
+						/>
 					</DrawerBody>
 				</DrawerContent>
 			</Drawer>
@@ -450,13 +477,51 @@ const FeedCard = ({ item }) => {
 	);
 };
 
-const FeedDetail = ({ item }) => {
+const FeedDetail = ({ item, comment, isLoading }) => {
+	const { currentUser } = useAuth();
+	const [submit, setSubmit] = useState(false);
+	const toast = useToast();
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 
 	let time = formatDistance(new Date(item.createdAt.toDate()), new Date(), {
 		includeSeconds: true,
 		addSuffix: true,
 	});
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const comment = e.target.coment.value;
+
+		db.collection("comments")
+			.add({
+				comment: comment,
+				postID: item.itemID,
+				createdAt: firestore.Timestamp.fromDate(new Date()),
+				commenterName: currentUser.displayName,
+				commenterID: currentUser.uid,
+				commenterImage: currentUser.photoURL,
+			})
+			.then((docRef) => {
+				console.log("Document written with ID: ", docRef.id);
+				toast({
+					title: "Comment added.",
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+				setSubmit(false);
+				e.target.coment.value = "";
+			})
+			.catch((error) => {
+				toast({
+					title: "Error adding error.",
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+				setSubmit(false);
+			});
+	};
 	return (
 		<>
 			<Flex flexDir="column">
@@ -497,22 +562,13 @@ const FeedDetail = ({ item }) => {
 					)}
 				</Flex>
 				<Divider my="1.5" />
-				<Flex justifyContent="space-between">
-					<Flex>
-						<Flex alignItems="center">
-							<IconButton
-								variant="ghost"
-								icon={<HiOutlineThumbUp fontSize="24px" />}
-							/>
-							<Text>{item.like}</Text>
-						</Flex>
-						<Flex alignItems="center" ml="1.5rem">
-							<IconButton
-								variant="ghost"
-								icon={<FaRegComment fontSize="24px" />}
-							/>
-							<Text>{item.comment}</Text>
-						</Flex>
+				<Flex justifyContent="space-around">
+					<Flex alignItems="center">
+						<IconButton
+							variant="ghost"
+							icon={<HiOutlineThumbUp fontSize="24px" />}
+						/>
+						<Text>{item.like}</Text>
 					</Flex>
 
 					<IconButton
@@ -522,24 +578,65 @@ const FeedDetail = ({ item }) => {
 				</Flex>
 				<Divider my="1.5" />
 
-				<Flex flexDir="column" my='2.5'>
-					<Box mb="4">
+				<Flex flexDir="column" my="2.5">
+					<Flex flexDir="column" mb="4">
 						<Text fontSize="lg" fontWeight="bold">
-							Comments
+							Comments ({comment.length})
 						</Text>
-						<Textarea
-							placeholder="Share your thoughts"
-							name="writeUp"
-							size="sm"
-							resize="none"
-							required
-						/>
-					</Box>
-				</Flex>
+						<form onSubmit={handleSubmit}>
+							<Textarea
+								placeholder="Share your thoughts"
+								name="coment"
+								size="sm"
+								resize="none"
+								required
+							/>
+							<Button
+								colorScheme="teal"
+								alignSelf="flex-start"
+								my="1.5"
+								type="submit"
+								isLoading={submit ? true : false}
+								loadingText="Subitting"
+							>
+								Add comment
+							</Button>
+						</form>
+					</Flex>
 
-				<Flex flexDir="row"></Flex>
+					{!isLoading && (
+						<>
+							{comment.map((item) => (
+								<div key={item.itemID}>
+									<FeedComments item={item} />
+								</div>
+							))}
+						</>
+					)}
+				</Flex>
 			</Flex>
 		</>
+	);
+};
+
+const FeedComments = ({ item }) => {
+	let time = formatDistance(new Date(item.createdAt.toDate()), new Date(), {
+		includeSeconds: true,
+		addSuffix: true,
+	});
+	return (
+		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
+			<Avatar size="sm" />
+			<Flex flexDir="column" ml="1.5">
+				<Text mb="1" pt="1" fontWeight="bold">
+					{item.commenterName}
+				</Text>
+				<Text>{item.comment}</Text>
+				<Text fontSize="sm" fontStyle="italic" textAlign="right">
+					{time}
+				</Text>
+			</Flex>
+		</Flex>
 	);
 };
 
