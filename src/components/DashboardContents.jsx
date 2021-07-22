@@ -372,7 +372,7 @@ const FeedCard = ({ item }) => {
 
 	useEffect(() => {
 		const unsubscribe = () => {
-			console.log("eeeeeeeeeeeee");
+			// console.log("eeeeeeeeeeeee");
 
 			db.collection("comments")
 				.where("postID", "==", item.itemID)
@@ -405,11 +405,23 @@ const FeedCard = ({ item }) => {
 		addSuffix: true,
 	});
 
+	let uid = "";
+
+	for (const uuid in item.like) {
+		if (Object.hasOwnProperty.call(item.like, uuid)) {
+			if (item.like[uuid] === currentUser.uid) uid = item.like[uuid];
+			// console.log(uid);
+		}
+	}
+
 	const handleLike = () => {
 		setIsLiked(!isLIked);
-		if (item.like.userID === currentUser.uid) {
-			// let likes = likeItems - 1;
-			// setLikeItems(likes);
+		if (uid === currentUser.uid) {
+			db.collection("posts")
+				.doc(item.itemID)
+				.update({
+					like: firestore.FieldValue.arrayRemove(currentUser.uid),
+				});
 		} else {
 			db.collection("posts")
 				.doc(item.itemID)
@@ -419,20 +431,8 @@ const FeedCard = ({ item }) => {
 		}
 	};
 
-	// console.log(item.like + ' === ' + currentUser.uid);
-	let uid = "";
-
-	for (const uuid in item.like) {
-		if (Object.hasOwnProperty.call(item.like, uuid)) {
-			if (uid === currentUser.uid) uid = item.like[uuid];
-			// console.log(uid);
-		}
-	}
-
-	// console.log(item.like);
-
-	console.log(uid + " === " + currentUser.uid);
-	console.log(uid === currentUser.uid);
+	// console.log(uid);
+	// console.log(uid === currentUser.uid);
 
 	return (
 		<>
@@ -472,7 +472,7 @@ const FeedCard = ({ item }) => {
 							<IconButton
 								variant="ghost"
 								icon={
-									uid == currentUser.uid ? (
+									uid === currentUser.uid ? (
 										<>
 											<HiThumbUp fontSize="24px" />
 											<Text ml="2">{item.like.length}</Text>
@@ -579,17 +579,32 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 			});
 	};
 
+	let uid = "";
+
+	for (const uuid in item.like) {
+		if (Object.hasOwnProperty.call(item.like, uuid)) {
+			if (item.like[uuid] === currentUser.uid) uid = item.like[uuid];
+			// console.log(uid);
+		}
+	}
+
 	const handleLike = () => {
 		setIsLiked(!isLIked);
-
-		if (isLIked) {
-			// 	if (item.like >= 0) {
-			// 		setLike(like - 1);
-			// 	}
-			// } else {
-			// 	setLike(like + 1);
+		if (uid === currentUser.uid) {
+			db.collection("posts")
+				.doc(item.itemID)
+				.update({
+					like: firestore.FieldValue.arrayRemove(currentUser.uid),
+				});
+		} else {
+			db.collection("posts")
+				.doc(item.itemID)
+				.update({
+					like: firestore.FieldValue.arrayUnion(currentUser.uid),
+				});
 		}
 	};
+
 	return (
 		<>
 			<Flex flexDir="column">
@@ -635,15 +650,15 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 						<IconButton
 							variant="ghost"
 							icon={
-								isLIked ? (
+								uid === currentUser.uid ? (
 									<>
 										<HiThumbUp fontSize="24px" />
-										<Text ml="2">{like}</Text>
+										<Text ml="2">{item.like.length}</Text>
 									</>
 								) : (
 									<>
 										<HiOutlineThumbUp fontSize="24px" />
-										<Text ml="2">{like}</Text>
+										<Text ml="2">{item.like.length}</Text>
 									</>
 								)
 							}
@@ -704,6 +719,7 @@ const FeedComments = ({ item }) => {
 		includeSeconds: true,
 		addSuffix: true,
 	});
+
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
 			<Avatar size="sm" />
