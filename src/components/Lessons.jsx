@@ -50,7 +50,7 @@ function Lessons() {
 
 				// setTotalItems(fetchTaskItems.length);
 				setLessonItems(fetchLessonItems);
-				console.log(fetchLessonItems);
+				// console.log(fetchLessonItems);
 
 				//set loading to false
 				setIsLoading(false);

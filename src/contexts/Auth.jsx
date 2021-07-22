@@ -24,9 +24,9 @@ export default function Auth({ children }) {
 				setLoading(false);
 				// setIsLogged(true);
 				setVerifiedEmail(user.emailVerified);
-				console.log(user);
-				console.log("User Email = " + user.email);
-				console.log("isVerifiedEmail = " + user.emailVerified);
+				// console.log(user);
+				// console.log("User Email = " + user.email);
+				// console.log("isVerifiedEmail = " + user.emailVerified);
 			} else {
 				setCurrentUser(null);
 				setLoading(false);

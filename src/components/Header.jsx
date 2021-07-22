@@ -31,7 +31,7 @@ const Header = (props) => {
 	const { setVerifiedEmail, currentUser, isVerifiedEmail } = useAuth();
 
 	useEffect(() => {
-		console.log("Header effect");
+		// console.log("Header effect");
 		if (currentUser === null || isVerifiedEmail === false) {
 			history.push("/signin");
 		}

@@ -36,7 +36,7 @@ import {
 } from "@chakra-ui/react";
 import { IoShareOutline } from "react-icons/io5";
 import { FaRegComment } from "react-icons/fa";
-import { HiOutlineThumbUp } from "react-icons/hi";
+import { HiOutlineThumbUp, HiThumbUp } from "react-icons/hi";
 import { RiQuillPenFill } from "react-icons/ri";
 import { IoIosClose } from "react-icons/io";
 
@@ -169,7 +169,7 @@ function DashboardContents() {
 								link: link,
 								imageUrl: downloadURL,
 								writeUp: writeUp,
-								like: 0,
+								like: firestore.FieldValue.arrayUnion(),
 								createdAt: firestore.Timestamp.fromDate(new Date()),
 								posterName: currentUser.displayName,
 								posterID: currentUser.uid,
@@ -177,11 +177,13 @@ function DashboardContents() {
 								approved: false,
 							})
 							.then((docRef) => {
-								console.log("Document written with ID: ", docRef.id);
+								console.log("Post ID: ", docRef.id);
 								setSuccessMessage("Post added successfully.");
 								setSubmit(false);
-								title = "";
-								image = "";
+								e.target.title.value = "";
+								e.target.link.value = "";
+								e.target.writeUp.value = "";
+								e.target.image.value = "";
 							})
 							.catch((error) => {
 								setError("Error adding post: ", error);
@@ -196,7 +198,7 @@ function DashboardContents() {
 					title: title,
 					link: link,
 					writeUp: writeUp,
-					like: 0,
+					like: firestore.FieldValue.arrayUnion(),
 					createdAt: firestore.Timestamp.fromDate(new Date()),
 					posterName: currentUser.displayName,
 					posterID: currentUser.uid,
@@ -204,11 +206,12 @@ function DashboardContents() {
 					approved: false,
 				})
 				.then((docRef) => {
-					console.log("Document written with ID: ", docRef.id);
+					console.log("Post ID: ", docRef.id);
 					setSuccessMessage("Post added successfully.");
 					setSubmit(false);
-					title = "";
-					image = "";
+					e.target.title.value = "";
+					e.target.link.value = "";
+					e.target.writeUp.value = "";
 				})
 				.catch((error) => {
 					setError("Error adding post: ", error);
@@ -360,42 +363,77 @@ function DashboardContents() {
 export default DashboardContents;
 
 const FeedCard = ({ item }) => {
+	const { currentUser } = useAuth();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const [commentItems, setCommentItems] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLIked, setIsLiked] = useState(false);
 
 	useEffect(() => {
-		const unsubscribe = db
-			.collection("comments")
-			.where("postID", "==", item.itemID)
-			.orderBy("createdAt", "desc")
-			.onSnapshot(function (items) {
-				// get lessons content in a n array
-				const fetchCommentItems = [];
+		const unsubscribe = () => {
+			console.log("eeeeeeeeeeeee");
 
-				items.forEach((item) => {
-					const fetchItem = {
-						itemID: item.id,
-						...item.data(),
-					};
-					fetchCommentItems.push(fetchItem);
+			db.collection("comments")
+				.where("postID", "==", item.itemID)
+				.orderBy("createdAt", "desc")
+				.onSnapshot(function (items) {
+					// get lessons content in a n array
+					const fetchCommentItems = [];
+
+					items.forEach((item) => {
+						const fetchItem = {
+							itemID: item.id,
+							...item.data(),
+						};
+						fetchCommentItems.push(fetchItem);
+					});
+
+					// setTotalItems(fetchTaskItems.length);
+					setCommentItems(fetchCommentItems);
+
+					//set loading to false
+					setIsLoading(false);
 				});
-
-				// setTotalItems(fetchTaskItems.length);
-				setCommentItems(fetchCommentItems);
-
-				//set loading to false
-				setIsLoading(false);
-			});
+		};
 
 		return unsubscribe;
-	}, [item.itemID]);
+	}, [item.itemID, currentUser.uid]);
 
 	let time = formatDistance(new Date(item.createdAt.toDate()), new Date(), {
 		includeSeconds: true,
 		addSuffix: true,
 	});
+
+	const handleLike = () => {
+		setIsLiked(!isLIked);
+		if (item.like.userID === currentUser.uid) {
+			// let likes = likeItems - 1;
+			// setLikeItems(likes);
+		} else {
+			db.collection("posts")
+				.doc(item.itemID)
+				.update({
+					like: firestore.FieldValue.arrayUnion(currentUser.uid),
+				});
+		}
+	};
+
+	// console.log(item.like + ' === ' + currentUser.uid);
+	let uid = "";
+
+	for (const uuid in item.like) {
+		if (Object.hasOwnProperty.call(item.like, uuid)) {
+			if (uid === currentUser.uid) uid = item.like[uuid];
+			// console.log(uid);
+		}
+	}
+
+	// console.log(item.like);
+
+	console.log(uid + " === " + currentUser.uid);
+	console.log(uid === currentUser.uid);
+
 	return (
 		<>
 			<Flex
@@ -424,6 +462,7 @@ const FeedCard = ({ item }) => {
 							w="100%"
 							mb="2.5"
 							objectFit="cover"
+							borderRadius="8"
 						/>
 					)}
 				</LinkBox>
@@ -432,13 +471,27 @@ const FeedCard = ({ item }) => {
 						<Flex alignItems="center">
 							<IconButton
 								variant="ghost"
-								icon={<HiOutlineThumbUp fontSize="24px" />}
+								icon={
+									uid == currentUser.uid ? (
+										<>
+											<HiThumbUp fontSize="24px" />
+											<Text ml="2">{item.like.length}</Text>
+										</>
+									) : (
+										<>
+											<HiOutlineThumbUp fontSize="24px" />
+											<Text ml="2">{item.like.length}</Text>
+										</>
+									)
+								}
+								onClick={handleLike}
 							/>
-							<Text>{item.like}</Text>
 						</Flex>
 						<Flex alignItems="center" ml="1.5rem">
 							<FaRegComment fontSize="24px" />
-							<Text ml="2">{commentItems.length}</Text>
+							<Text ml="2" fontWeight="bold">
+								{commentItems.length}
+							</Text>
 						</Flex>
 					</Flex>
 
@@ -466,6 +519,7 @@ const FeedCard = ({ item }) => {
 					</DrawerHeader>
 					<DrawerBody w="100%">
 						<FeedDetail
+							like={item.like.length}
 							item={item}
 							isLoading={isLoading}
 							comment={commentItems}
@@ -477,7 +531,9 @@ const FeedCard = ({ item }) => {
 	);
 };
 
-const FeedDetail = ({ item, comment, isLoading }) => {
+const FeedDetail = ({ item, comment, isLoading, like }) => {
+	const [isLIked, setIsLiked] = useState(false);
+
 	const { currentUser } = useAuth();
 	const [submit, setSubmit] = useState(false);
 	const toast = useToast();
@@ -521,6 +577,18 @@ const FeedDetail = ({ item, comment, isLoading }) => {
 				});
 				setSubmit(false);
 			});
+	};
+
+	const handleLike = () => {
+		setIsLiked(!isLIked);
+
+		if (isLIked) {
+			// 	if (item.like >= 0) {
+			// 		setLike(like - 1);
+			// 	}
+			// } else {
+			// 	setLike(like + 1);
+		}
 	};
 	return (
 		<>
@@ -566,9 +634,21 @@ const FeedDetail = ({ item, comment, isLoading }) => {
 					<Flex alignItems="center">
 						<IconButton
 							variant="ghost"
-							icon={<HiOutlineThumbUp fontSize="24px" />}
+							icon={
+								isLIked ? (
+									<>
+										<HiThumbUp fontSize="24px" />
+										<Text ml="2">{like}</Text>
+									</>
+								) : (
+									<>
+										<HiOutlineThumbUp fontSize="24px" />
+										<Text ml="2">{like}</Text>
+									</>
+								)
+							}
+							onClick={handleLike}
 						/>
-						<Text>{item.like}</Text>
 					</Flex>
 
 					<IconButton
