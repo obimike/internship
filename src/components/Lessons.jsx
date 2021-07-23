@@ -28,36 +28,39 @@ import { db, fb } from "../firebase/Config";
 import Lessonscard from "./Lessonscard";
 
 function Lessons() {
+	const { selectDate } = useAuth();
 	const [isLoading, setIsLoading] = useState(true);
 	const [lessonItems, setLessonItems] = useState([]);
 
 	useEffect(() => {
-		const unsubscribe = db
-			.collection("lessons")
-			.where("approved", "==", false)
-			.orderBy("createdAt", "desc")
-			.onSnapshot(function (items) {
-				// get lessons content in a n array
-				const fetchLessonItems = [];
+		const unsubscribe = async () => {
+			db.collection("lessons")
+				.where("approved", "==", false)
+				.orderBy("createdAt", "desc")
+				.onSnapshot(function (items) {
+					// get lessons content in a n array
+					const fetchLessonItems = [];
 
-				items.forEach((item) => {
-					const fetchItem = {
-						itemID: item.id,
-						...item.data(),
-					};
-					fetchLessonItems.push(fetchItem);
+					items.forEach((item) => {
+						const fetchItem = {
+							itemID: item.id,
+							...item.data(),
+						};
+						fetchLessonItems.push(fetchItem);
+					});
+
+					// setTotalItems(fetchTaskItems.length);
+					setLessonItems(fetchLessonItems);
+					// console.log(fetchLessonItems);
+
+					//set loading to false
+					setIsLoading(false);
 				});
-
-				// setTotalItems(fetchTaskItems.length);
-				setLessonItems(fetchLessonItems);
-				// console.log(fetchLessonItems);
-
-				//set loading to false
-				setIsLoading(false);
-			});
-
+		};
 		return unsubscribe;
 	}, []);
+
+	console.log(selectDate)
 
 	return (
 		<>
@@ -66,11 +69,13 @@ function Lessons() {
 			{isLoading && <LessonSkeleton />}
 			{!isLoading && (
 				<>
-					{lessonItems.map((item) => (
-						<div key={item.itemID}>
-							<Lessonscard item={item} />
-						</div>
-					))}
+					{lessonItems
+						.filter((lesson) => lesson.date === `${selectDate}`)
+						.map((item) => (
+							<div key={item.itemID}>
+								{item.size === 0 ? <>Empty</> : <Lessonscard item={item} />}
+							</div>
+						))}
 				</>
 			)}
 		</>
@@ -80,17 +85,15 @@ function Lessons() {
 export default Lessons;
 
 const LessonsHeader = () => {
+	const { currentUser, selectDate, setSelectdate } = useAuth();
+
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { currentUser } = useAuth();
 	//component state
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [submit, setSubmit] = useState(false);
 	const [type, setType] = React.useState("Live");
 
-	const [selectDate, setSelectdate] = useState(
-		format(new Date(), "yyyy-MM-dd"),
-	);
 	const [selectModalDate, setSelectModalDate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
 	);
@@ -244,7 +247,6 @@ const LessonsHeader = () => {
 					setSubmit(false);
 				});
 		}
-
 	};
 
 	const closeModal = () => {

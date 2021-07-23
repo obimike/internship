@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { auth, auth_, db, firestore } from "../firebase/Config";
+import { format } from "date-fns";
 
 const AuthContext = React.createContext();
 
@@ -9,6 +10,9 @@ export default function Auth({ children }) {
 	const [isVerifiedEmail, setVerifiedEmail] = useState(false);
 	const [newNotifications, setNewNotifications] = useState(0);
 	const [loadingCards, setLoadingCards] = useState(true);
+	const [selectDate, setSelectdate] = useState(
+		format(new Date(), "yyyy-MM-dd"),
+	);
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -45,6 +49,8 @@ export default function Auth({ children }) {
 		loadingCards,
 		setLoadingCards,
 		newNotifications,
+		selectDate,
+		setSelectdate,
 	};
 
 	return (
