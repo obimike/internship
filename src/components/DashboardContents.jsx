@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
@@ -55,9 +55,12 @@ function DashboardContents() {
 	const [isChecked, setIsChecked] = useState(false);
 	const [postItems, setPostItems] = useState([]);
 
+	const isMounted = useRef(false);
+
 	useEffect(() => {
-		const unsubscribe = db
-			.collection("posts")
+		isMounted.current = true;
+
+		db.collection("posts")
 			.where("approved", "==", false)
 			.orderBy("createdAt", "desc")
 			.onSnapshot(function (items) {
@@ -71,16 +74,20 @@ function DashboardContents() {
 					};
 					fetchPostItems.push(fetchItem);
 				});
+				if (isMounted.current) {
+					// set your state here.
+					// setTotalItems(fetchTaskItems.length);
+					setPostItems(fetchPostItems);
+					// console.log(fetchPostItems);
 
-				// setTotalItems(fetchTaskItems.length);
-				setPostItems(fetchPostItems);
-				// console.log(fetchPostItems);
-
-				//set loading to false
-				setIsLoading(false);
+					//set loading to false
+					setIsLoading(false);
+				}
 			});
 
-		return unsubscribe;
+		return () => {
+			isMounted.current = false;
+		};
 	}, []);
 
 	const closeModal = () => {
@@ -370,34 +377,39 @@ const FeedCard = ({ item }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isLIked, setIsLiked] = useState(false);
 
+	const isMounted = useRef(false);
+
 	useEffect(() => {
-		const unsubscribe = () => {
-			// console.log("eeeeeeeeeeeee");
+		// console.log("eeeeeeeeeeeee");
+		isMounted.current = true;
+		db.collection("comments")
+			.where("postID", "==", item.itemID)
+			.orderBy("createdAt", "desc")
+			.onSnapshot(function (items) {
+				// get lessons content in a n array
+				const fetchCommentItems = [];
 
-			db.collection("comments")
-				.where("postID", "==", item.itemID)
-				.orderBy("createdAt", "desc")
-				.onSnapshot(function (items) {
-					// get lessons content in a n array
-					const fetchCommentItems = [];
+				items.forEach((item) => {
+					const fetchItem = {
+						itemID: item.id,
+						...item.data(),
+					};
+					fetchCommentItems.push(fetchItem);
+				});
 
-					items.forEach((item) => {
-						const fetchItem = {
-							itemID: item.id,
-							...item.data(),
-						};
-						fetchCommentItems.push(fetchItem);
-					});
-
+				if (isMounted.current) {
+					// set your state here.
 					// setTotalItems(fetchTaskItems.length);
 					setCommentItems(fetchCommentItems);
 
 					//set loading to false
 					setIsLoading(false);
-				});
-		};
+				}
+			});
 
-		return unsubscribe;
+		return () => {
+			isMounted.current = false;
+		};
 	}, [item.itemID, currentUser.uid]);
 
 	let time = formatDistance(new Date(item.createdAt.toDate()), new Date(), {
@@ -430,9 +442,6 @@ const FeedCard = ({ item }) => {
 				});
 		}
 	};
-
-	// console.log(uid);
-	// console.log(uid === currentUser.uid);
 
 	return (
 		<>

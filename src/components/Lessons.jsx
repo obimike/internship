@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
 	Flex,
 	Text,
@@ -19,6 +19,7 @@ import {
 	Skeleton,
 	SkeletonCircle,
 	SkeletonText,
+	Center,
 } from "@chakra-ui/react";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
@@ -32,35 +33,49 @@ function Lessons() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [lessonItems, setLessonItems] = useState([]);
 
+	const isMounted = useRef(false); // note mutable flag
+
 	useEffect(() => {
-		const unsubscribe = async () => {
-			db.collection("lessons")
-				.where("approved", "==", false)
-				.orderBy("createdAt", "desc")
-				.onSnapshot(function (items) {
-					// get lessons content in a n array
-					const fetchLessonItems = [];
+		// console.log("Entering UseEffect");
 
-					items.forEach((item) => {
-						const fetchItem = {
-							itemID: item.id,
-							...item.data(),
-						};
-						fetchLessonItems.push(fetchItem);
-					});
+		isMounted.current = true;
 
+		db.collection("lessons")
+			.where("approved", "==", false)
+			.orderBy("createdAt", "desc")
+			.onSnapshot(function (items) {
+				// get lessons content in a n array
+				const fetchLessonItems = [];
+
+				items.forEach((item) => {
+					const fetchItem = {
+						itemID: item.id,
+						...item.data(),
+					};
+					fetchLessonItems.push(fetchItem);
+				});
+				if (isMounted.current) {
+					// add conditional check
 					// setTotalItems(fetchTaskItems.length);
 					setLessonItems(fetchLessonItems);
 					// console.log(fetchLessonItems);
 
 					//set loading to false
 					setIsLoading(false);
-				});
+				}
+			});
+
+		return () => {
+			isMounted.current = false;
+			// console.log("Entering UseEffect return");
 		};
-		return unsubscribe;
 	}, []);
 
-	console.log(selectDate)
+	const filteredOptions = lessonItems.filter(
+		(lesson) => lesson.date === `${selectDate}`,
+	);
+
+	// console.log(isLoading);
 
 	return (
 		<>
@@ -69,13 +84,19 @@ function Lessons() {
 			{isLoading && <LessonSkeleton />}
 			{!isLoading && (
 				<>
-					{lessonItems
-						.filter((lesson) => lesson.date === `${selectDate}`)
-						.map((item) => (
-							<div key={item.itemID}>
-								{item.size === 0 ? <>Empty</> : <Lessonscard item={item} />}
-							</div>
-						))}
+					{filteredOptions.length > 0 ? (
+						filteredOptions.map((item) => {
+							return (
+								<div key={item.itemID}>
+									<Lessonscard item={item} />
+								</div>
+							);
+						})
+					) : (
+						<Center>
+							<Text>No 'Class' found for this date.</Text>
+						</Center>
+					)}
 				</>
 			)}
 		</>
