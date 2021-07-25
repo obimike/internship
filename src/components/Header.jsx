@@ -81,7 +81,7 @@ const Header = (props) => {
 							icon={
 								<Avatar
 									size="sm"
-									src={currentUser.photoURL == null ? "" : currentUser.photoURL}
+									src={currentUser.photoURL && currentUser.photoURL}
 								/>
 							}
 							variant="ghost"
@@ -89,8 +89,8 @@ const Header = (props) => {
 						/>
 						<MenuList>
 							<MenuItem
-								onClick={() => ""}
-								icon={
+								onClick={() => history.push("/inbox")}
+								icon={ 
 									<RiMailLine
 										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
 										fontSize="24px"
@@ -104,9 +104,7 @@ const Header = (props) => {
 								icon={
 									<Avatar
 										size="xs"
-										src={
-											currentUser.photoURL == null ? "" : currentUser.photoURL
-										}
+										src={currentUser.photoURL && currentUser.photoURL}
 									/>
 								}
 							>
