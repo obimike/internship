@@ -20,6 +20,7 @@ import {
 	SkeletonCircle,
 	SkeletonText,
 	Center,
+	Image,
 } from "@chakra-ui/react";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
@@ -27,6 +28,8 @@ import { format } from "date-fns";
 import { useAuth } from "../contexts/Auth";
 import { db, fb } from "../firebase/Config";
 import Lessonscard from "./Lessonscard";
+
+import Calendar from "../assets/images/calendar.svg";
 
 function Lessons() {
 	const { selectDate } = useAuth();
@@ -93,8 +96,9 @@ function Lessons() {
 							);
 						})
 					) : (
-						<Center>
-							<Text>No 'Class' found for this date.</Text>
+						<Center flexDir='column'>
+							<Image src={Calendar} width="640" height="320" />s
+							<Text textAlign="center">No 'Class' found for this date.</Text>
 						</Center>
 					)}
 				</>

@@ -16,6 +16,17 @@ import {
 	TagLabel,
 	Divider,
 	Button,
+	VStack,
+	Image,
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+	PopoverHeader,
+	PopoverBody,
+	PopoverFooter,
+	PopoverArrow,
+	PopoverCloseButton,
+	Spinner,
 } from "@chakra-ui/react";
 import {
 	IoTimeOutline,
@@ -27,7 +38,7 @@ import { IoIosClose, IoIosCalendar } from "react-icons/io";
 import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
 import VideoPlayer from "react-video-js-player";
-
+import Closed from "../assets/images/closed.svg";
 
 function Lessonscard({ item }) {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
@@ -170,81 +181,131 @@ const LessonDetail = ({ item }) => {
 		return time.join(""); // return adjusted time or original string
 	}
 
+	let accessDate = format(new Date(item.date), "yyyy-MM-dd");
+	accessDate = accessDate + " " + item.timeFrom;
+
+	if (new Date() >= new Date(accessDate)) {
+		console.log("You can access content");
+	} else {
+		console.log("You can't accesses ");
+	}
+	// console.log(new Date(accessDate));
 
 	return (
-		<Flex flexDir="column">
-			<Text fontSize="large" fontWeight="bold" my="2">
-				{item.title}
-			</Text>
+		<>
+			<Flex flexDir="column">
+				<Text fontSize="large" fontWeight="bold" my="2">
+					{item.title}
+				</Text>
 
-			{item.classType === "Video" && (
-				<Flex justifyContent="center">
-					<VideoPlayer
-						controls={true}
-						src={item.videoUrl}
-						// src={Video}
-						poster=""
-						width="720"
-						height="420"
-					/>
+				{item.classType === "Video" && (
+					<Flex justifyContent="center">
+						{new Date() >= new Date(accessDate) ? (
+							<VideoPlayer
+								controls={true}
+								src={item.videoUrl}
+								// src={Video}
+								poster=""
+								width="720"
+								height="420"
+							/>
+						) : (
+							<VStack width="720" height="420">
+								<Image src={Closed} width="640" height="320" />
+								<Text textAlign="center">
+									Sorry, you don't have access to this content at this Time.
+								</Text>
+								<Text>Check back at the time and date below.</Text>
+							</VStack>
+						)}
+					</Flex>
+				)}
+
+				<Flex flexDir="row" justifyContent="space-between" mt="2.5">
+					<Tag size="lg" colorScheme="teal" borderRadius="full">
+						<IoTimeOutline />
+						<TagLabel ml="1.5">
+							{from} - {to}
+						</TagLabel>
+					</Tag>
+
+					<Tag size="lg" colorScheme="teal" borderRadius="full">
+						<IoIosCalendar />
+						<TagLabel ml="1.5">
+							{format(new Date(item.date), "dd, MMMM yyyy")}
+						</TagLabel>
+					</Tag>
 				</Flex>
-			)}
-
-			<Flex flexDir="row" justifyContent="space-between" mt="2.5">
-				<Tag size="lg" colorScheme="teal" borderRadius="full">
-					<IoTimeOutline />
-					<TagLabel ml="1.5">
-						{from} - {to}
-					</TagLabel>
-				</Tag>
-
-				<Tag size="lg" colorScheme="teal" borderRadius="full">
-					<IoIosCalendar />
-					<TagLabel ml="1.5">
-						{format(new Date(item.date), "dd, MMMM yyyy")}
-					</TagLabel>
-				</Tag>
-			</Flex>
-			<Divider my="2.5" />
-			<Flex flexDir="column">
-				<Text fontSize="large" fontWeight="semibold">
-					Participants (0)
-				</Text>
-				<Flex></Flex>
-			</Flex>
-			<Divider my="2.5" />
-			<Flex flexDir="column">
-				<Text fontSize="large" fontWeight="semibold">
-					Class Description{" "}
-				</Text>
-				<Text>{item.description}</Text>
-			</Flex>
-			<Divider my="2.5" />
-			<Flex flexDir="column">
-				<Flex justifyContent="space-between" alignItems="center">
+				<Divider my="2.5" />
+				<Flex flexDir="column">
 					<Text fontSize="large" fontWeight="semibold">
-						Resources (0)
+						Participants (0)
 					</Text>
-					<IconButton
-						icon={<RiAddLine color="teal" fontSize="24px" />}
-						variant="ghost"
-						// onClick={onOpen}
-					/>
+					<Flex></Flex>
 				</Flex>
-				<Text fontSize="sm" textAlign="center">
-					(Note: All resources must be text base file and maximum of 3 items per
-					class)
-				</Text>
-				<Flex></Flex>
+				<Divider my="2.5" />
+				<Flex flexDir="column">
+					<Text fontSize="large" fontWeight="semibold">
+						Class Description{" "}
+					</Text>
+					<Text>{item.description}</Text>
+				</Flex>
+				<Divider my="2.5" />
+				<Flex flexDir="column">
+					<Flex justifyContent="space-between" alignItems="center">
+						<Text fontSize="large" fontWeight="semibold">
+							Resources (0)
+						</Text>
+						<IconButton
+							icon={<RiAddLine color="teal" fontSize="24px" />}
+							variant="ghost"
+							// onClick={onOpen}
+						/>
+					</Flex>
+					<Text fontSize="sm" textAlign="center">
+						(Note: All resources must be text base file and maximum of 3 items
+						per class)
+					</Text>
+					<Flex></Flex>
+				</Flex>
+				<Flex flexDir="row" mt="8" justifyContent="flex-end">
+					<Popover
+						// isOpen={isOpen}
+						// onOpen={onOpen}
+						// onClose={onClose}
+						placement="top"
+						closeOnBlur={false}
+					>
+						<PopoverTrigger>
+							<Button colorScheme="teal" variant="outline">
+								Join Class +
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent p={5}>
+							<PopoverArrow />
+							<PopoverCloseButton />
+							<PopoverBody>
+								<Flex align='center'>
+									<Spinner
+										thickness="4px"
+										speed="0.65s"
+										emptyColor="gray.200"
+										color="teal.500"
+										size="lg"
+									/>
+									<Text fontSize="xl" ml='2.5'>
+										Please wait...
+									</Text>
+								</Flex>
+							</PopoverBody>
+						</PopoverContent>
+					</Popover>
+
+					<Button colorScheme="teal" ml="2">
+						Reschedule
+					</Button>
+				</Flex>
 			</Flex>
-			<Flex flexDir="row" mt="8" justifyContent="flex-end">
-				<Button colorScheme="teal" variant="outline">
-					Join +
-				</Button>
-				<Button colorScheme="teal" ml="1.5">
-					Reschedule
-				</Button>
-			</Flex>
-		</Flex>
+		</>
 	);
 };

@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+	// useState, useEffect, useRefs
+} from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
@@ -14,28 +16,32 @@ import {
 	DrawerHeader,
 	DrawerBody,
 	DrawerFooter,
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
 	Input,
-	Button,
-	Box,
-	Textarea,
-	Skeleton,
-	SkeletonCircle,
-	SkeletonText,
-	Center,
-} from "@chakra-ui/react"; 
+	// Modal,
+	// ModalOverlay,
+	// ModalContent,
+	// ModalHeader,
+	// ModalFooter,
+	// ModalBody,
+	// Button,
+	// Box,
+	// Textarea,
+	// Skeleton,
+	// SkeletonCircle,
+	// SkeletonText,
+	// Center,
+} from "@chakra-ui/react";
 import { HiEmojiHappy } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
 import { IoSendSharp } from "react-icons/io5";
 
 function InboxContent() {
 	return (
-		<Flex mt={24} flexDir="column">
+		<Flex
+			mt={24}
+			flexDir="column"
+			align={{ base: "", md: "center", lg: "center" }}
+		>
 			<InboxCard />
 			<InboxCard />
 			<InboxCard />
@@ -93,24 +99,39 @@ const InboxCard = () => {
 					</DrawerHeader>
 					<DrawerBody w="100%">
 						<InboxMessageCard />
+						{/* <Flex
+							bg="yellow.300"
+							w="100%"
+							h="64px"
+							pos="fixed"
+							size="lg"
+							bottom={0}
+							right={0}
+							zIndex={999}
+						>
+							
+						</Flex> */}
 					</DrawerBody>
+
 					<DrawerFooter>
-						<Flex w="100%">
+						<Flex w="100%" h={{ base: "6rem", md: "6rem", lg: "auto" }}>
 							<IconButton
 								// onClick={onClose}
 								color={grayColor}
 								variant="ghost"
 								icon={<HiEmojiHappy fontSize="32px" />}
 							/>
-							<Input type="text" ml="1.5" />
-							<IconButton
-								colorScheme="teal"
-								// onClick={onClose}
-								ml="1.5"
-								variant="ghost"
-								icon={<IoSendSharp fontSize="32px" />}
-								disabled={true}
-							/>
+							<form>
+								<Input type="text" ml="1.5" name='message' />
+								<IconButton
+									type="submit"
+									colorScheme="teal"
+									ml="1.5"
+									variant="ghost"
+									icon={<IoSendSharp fontSize="32px" />}
+									disabled={true}
+								/>
+							</form>
 						</Flex>
 					</DrawerFooter>
 				</DrawerContent>
@@ -120,11 +141,11 @@ const InboxCard = () => {
 };
 
 const InboxMessageCard = () => {
-	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const grayColor = useColorModeValue("gray.600", "gray.700");
 	return (
 		<Flex flexDir="column">
 			<Flex
-				bg="gray"
+				bg="gray.300"
 				p="2.5"
 				w="auto"
 				maxW="75%"
@@ -135,8 +156,12 @@ const InboxMessageCard = () => {
 				mb="4"
 				justifyContent="flex-end"
 				alignSelf="flex-start"
+				color="black"
 			>
-				<Text>By using this Hook,</Text>
+				<Text>
+					For example, we might want to set up a subscription to some external
+					data source.{" "}
+				</Text>
 				<Text
 					fontSize="xs"
 					fontStyle="italic"
@@ -150,7 +175,7 @@ const InboxMessageCard = () => {
 			</Flex>
 
 			<Flex
-				bg="gray"
+				bg="teal.200"
 				p="2.5"
 				maxW="75%"
 				borderTopLeftRadius="16"
@@ -162,6 +187,172 @@ const InboxMessageCard = () => {
 				justifyContent="flex-end"
 			>
 				<Text>By using </Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="teal.200"
+				p="2.5"
+				maxW="75%"
+				borderTopLeftRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				alignSelf="flex-end"
+				justifyContent="flex-end"
+			>
+				<Text>
+					Earlier, we looked at how to express side effects that don’t require
+					any cleanup. However, some effects do.
+				</Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="gray.300"
+				p="2.5"
+				w="auto"
+				maxW="75%"
+				borderTopRightRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				justifyContent="flex-end"
+				alignSelf="flex-start"
+			>
+				<Text>For example,</Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="gray.300"
+				p="2.5"
+				w="auto"
+				maxW="75%"
+				borderTopRightRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				justifyContent="flex-end"
+				alignSelf="flex-start"
+				color="black"
+			>
+				<Text>
+					For example, we might want to set up a subscription to some external
+					data source.{" "}
+				</Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="teal.200"
+				p="2.5"
+				maxW="75%"
+				borderTopLeftRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				alignSelf="flex-end"
+				justifyContent="flex-end"
+				color="black"
+			>
+				<Text>By using </Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="teal.200"
+				p="2.5"
+				maxW="75%"
+				borderTopLeftRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				alignSelf="flex-end"
+				justifyContent="flex-end"
+				color="black"
+			>
+				<Text>
+					Earlier, we looked at how to express side effects that don’t require
+					any cleanup. However, some effects do.
+				</Text>
+				<Text
+					fontSize="xs"
+					fontStyle="italic"
+					color={grayColor}
+					ml="1.5"
+					pt="2"
+					textAlign="right"
+				>
+					6:37pm
+				</Text>
+			</Flex>
+
+			<Flex
+				bg="gray.300"
+				p="2.5"
+				w="auto"
+				maxW="75%"
+				borderTopRightRadius="16"
+				borderBottomRightRadius="16"
+				borderBottomLeftRadius="16"
+				flexWrap="wrap"
+				mb="4"
+				justifyContent="flex-end"
+				alignSelf="flex-start"
+				color="black"
+			>
+				<Text>For example,</Text>
 				<Text
 					fontSize="xs"
 					fontStyle="italic"
