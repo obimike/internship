@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
@@ -18,15 +18,8 @@ import {
 	Button,
 	VStack,
 	Image,
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-	PopoverHeader,
-	PopoverBody,
-	PopoverFooter,
-	PopoverArrow,
-	PopoverCloseButton,
-	Spinner,
+	Avatar,
+	Center,
 } from "@chakra-ui/react";
 import {
 	IoTimeOutline,
@@ -39,6 +32,9 @@ import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
 import VideoPlayer from "react-video-js-player";
 import Closed from "../assets/images/closed.svg";
+
+import { db, firestore } from "../firebase/Config";
+import { useAuth } from "../contexts/Auth";
 
 function Lessonscard({ item }) {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
@@ -162,11 +158,10 @@ function Lessonscard({ item }) {
 export default Lessonscard;
 
 const LessonDetail = ({ item }) => {
-	//formating time
-	let to = tConvert(item.timeTo);
-	let from = tConvert(item.timeFrom);
+	const { currentUser } = useAuth();
+	const [spinnerLoading, setSpinnerLoading] = useState(false);
 
-	function tConvert(time) {
+	const tConvert = (time) => {
 		// Check correct time format and split into components
 		time = time
 			.toString()
@@ -179,17 +174,55 @@ const LessonDetail = ({ item }) => {
 			time[0] = +time[0] % 12 || 12; // Adjust hours
 		}
 		return time.join(""); // return adjusted time or original string
-	}
+	};
+
+	//formating time
+	let to = tConvert(item.timeTo);
+	let from = tConvert(item.timeFrom);
 
 	let accessDate = format(new Date(item.date), "yyyy-MM-dd");
 	accessDate = accessDate + " " + item.timeFrom;
 
-	if (new Date() >= new Date(accessDate)) {
-		console.log("You can access content");
-	} else {
-		console.log("You can't accesses ");
-	}
-	// console.log(new Date(accessDate));
+	const handleJoinClass = () => {
+		db.collection("lessons")
+			.doc(item.itemID)
+			.update({
+				joined: firestore.FieldValue.arrayUnion({
+					uid: currentUser.uid,
+					displayName: currentUser.displayName,
+					photoURL: currentUser.photoURL,
+				}),
+			})
+			.then(() => {
+				db.collection("notifications").add({
+					lessonID: item.itemID,
+					classType : item.classType,
+					uid: currentUser.uid,
+					type: "message",
+					lessonTitle: item.title,
+					message: `${currentUser.displayName} has joined your class`,
+					name: currentUser.displayName,
+					answer: "",
+					photoURL: currentUser.photoURL,
+					read: false,
+					dateSent: firestore.Timestamp.fromDate(new Date()),
+				});
+				setSpinnerLoading(true);
+				console.log("Document successfully written!");
+			});
+
+		console.log("handleJoinClass");
+	};
+	console.log(item);
+
+	let uid = "";
+
+	// console.log(item.joined);
+
+	item.joined.map((join) => {
+		if (join.uid === currentUser.uid) uid = join.uid;
+		// console.log(person);
+	});
 
 	return (
 		<>
@@ -239,9 +272,19 @@ const LessonDetail = ({ item }) => {
 				<Divider my="2.5" />
 				<Flex flexDir="column">
 					<Text fontSize="large" fontWeight="semibold">
-						Participants (0)
+						Participants ({item.joined.length})
 					</Text>
-					<Flex></Flex>
+					<Flex p="1.5">
+						{item.joined.map((person) => (
+							<React.Fragment key={person.uid}>
+								<Participants
+									personID={person.uid}
+									personName={person.displayName}
+									personImage={person.photoURL}
+								/>
+							</React.Fragment>
+						))}
+					</Flex>
 				</Flex>
 				<Divider my="2.5" />
 				<Flex flexDir="column">
@@ -269,37 +312,29 @@ const LessonDetail = ({ item }) => {
 					<Flex></Flex>
 				</Flex>
 				<Flex flexDir="row" mt="8" justifyContent="flex-end">
-					<Popover
-						// isOpen={isOpen}
-						// onOpen={onOpen}
-						// onClose={onClose}
-						placement="top"
-						closeOnBlur={false}
-					>
-						<PopoverTrigger>
-							<Button colorScheme="teal" variant="outline">
-								Join Class +
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent p={5}>
-							<PopoverArrow />
-							<PopoverCloseButton />
-							<PopoverBody>
-								<Flex align='center'>
-									<Spinner
-										thickness="4px"
-										speed="0.65s"
-										emptyColor="gray.200"
-										color="teal.500"
-										size="lg"
-									/>
-									<Text fontSize="xl" ml='2.5'>
-										Please wait...
-									</Text>
-								</Flex>
-							</PopoverBody>
-						</PopoverContent>
-					</Popover>
+					{uid === currentUser.uid ? (
+						<Button colorScheme="teal" variant="outline" disabled={true}>
+							Join Class +
+						</Button>
+					) : (
+						<>
+							{item.uploaderID === currentUser.uid ? (
+								<Button colorScheme="teal" variant="outline" disabled={true}>
+									Join Class +
+								</Button>
+							) : (
+								<Button
+									colorScheme="teal"
+									variant="outline"
+									onClick={handleJoinClass}
+									isLoading={spinnerLoading ? true : false}
+									loadingText="Joining"
+								>
+									Join Class +
+								</Button>
+							)}
+						</>
+					)}
 
 					<Button colorScheme="teal" ml="2">
 						Reschedule
@@ -307,5 +342,20 @@ const LessonDetail = ({ item }) => {
 				</Flex>
 			</Flex>
 		</>
+	);
+};
+
+const Participants = (person) => {
+	// console.log(person.photoURL);
+
+	//getting the first name from user
+	let firstName = person.personName.split(" ");
+	firstName = firstName[firstName.length - 1];
+
+	return (
+		<Center flexDir="column" ml="2.5">
+			<Avatar src={person.photoURL} />
+			<Text>{firstName}</Text>
+		</Center>
 	);
 };

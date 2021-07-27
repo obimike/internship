@@ -26,7 +26,7 @@ import { RiAddLine } from "react-icons/ri";
 import { format } from "date-fns";
 
 import { useAuth } from "../contexts/Auth";
-import { db, fb } from "../firebase/Config";
+import { db, fb, firestore } from "../firebase/Config";
 import Lessonscard from "./Lessonscard";
 
 import Calendar from "../assets/images/calendar.svg";
@@ -95,9 +95,10 @@ function Lessons() {
 								</div>
 							);
 						})
+
 					) : (
 						<Center flexDir='column'>
-							<Image src={Calendar} width="640" height="320" />s
+							<Image src={Calendar} width="640" height="320" />
 							<Text textAlign="center">No 'Class' found for this date.</Text>
 						</Center>
 					)}
@@ -225,6 +226,7 @@ const LessonsHeader = () => {
 								timeTo: timeTo,
 								classType: type,
 								description: description,
+								joined: firestore.FieldValue.arrayUnion(),
 								createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
 								uploaderName: currentUser.displayName,
 								uploaderID: currentUser.uid,
@@ -255,6 +257,7 @@ const LessonsHeader = () => {
 					timeTo: timeTo,
 					classType: type,
 					description: description,
+					joined: firestore.FieldValue.arrayUnion(),
 					createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
 					uploaderName: currentUser.displayName,
 					uploaderID: currentUser.uid,
