@@ -179,5 +179,5 @@ const NotificationCard = (
 };
 
 const NotificationDetail = (notification) => {
-	return <></>;
+	return <>Notification</>;
 };
