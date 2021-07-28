@@ -11,9 +11,20 @@ import {
 	MenuList,
 	MenuItem,
 	Link,
+	useDisclosure,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalFooter,
+	ModalBody,
+	Button,
+	Text,
+	
 } from "@chakra-ui/react";
 
 import { FiBell } from "react-icons/fi";
+
+import { IoIosSchool } from "react-icons/io";
 import {
 	RiLogoutCircleLine,
 	RiInformationLine,
@@ -24,11 +35,18 @@ import {
 import { APP_NAME } from "../utils/Constants";
 import { signOut, useAuth } from "../contexts/Auth";
 
+import Notifications from "./Notifications";
+
 const Header = (props) => {
 	const { history } = props;
+	const { setVerifiedEmail, currentUser, isVerifiedEmail, newNotifications } =
+		useAuth();
 	const bg = useColorModeValue("white", "gray.800");
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	
 
-	const { setVerifiedEmail, currentUser, isVerifiedEmail } = useAuth();
+
+	console.log(newNotifications);
 
 	useEffect(() => {
 		// console.log("Header effect");
@@ -52,25 +70,34 @@ const Header = (props) => {
 				right={0}
 				bg={bg}
 			>
-				<Heading as="h3" letterSpacing="tight" fontWeight="light">
-					<Link as={RouterLink} textDecorationStyle="none" to="/dashboard">
-						{APP_NAME}
-					</Link>
-				</Heading>
+				<Link as={RouterLink} textDecorationStyle="none" to="/dashboard">
+					<Flex>
+						<IoIosSchool fontSize="2.5rem" color="teal" />
+						<Heading as="h3" letterSpacing="tight" fontWeight="light" ml="2">
+							{APP_NAME}
+						</Heading>
+					</Flex>
+				</Link>
 				<Flex as="nav" alignItems="center">
 					<Menu>
 						<MenuButton
 							fontSize="20px"
 							as={IconButton}
 							aria-label="notification"
-							icon={<FiBell />}
+							icon={
+								<Flex>
+									<FiBell />
+									{newNotifications}
+								</Flex>
+							}
 							variant="ghost"
 							ml="4"
 						/>
-						<MenuList>
-							<Flex p="2" justifyContent="center">
-								No Notification
-							</Flex>
+						<MenuList
+							w={{ base: "95vw", md: "auto", lg: "auto" }}
+							mr={{ base: "3", md: "auto", lg: "auto" }}
+						>
+							<Notifications />
 						</MenuList>
 					</Menu>
 
@@ -89,17 +116,6 @@ const Header = (props) => {
 						/>
 						<MenuList>
 							<MenuItem
-								onClick={() => history.push("/inbox")}
-								icon={ 
-									<RiMailLine
-										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
-										fontSize="24px"
-									/>
-								}
-							>
-								Inbox
-							</MenuItem>
-							<MenuItem
 								onClick={() => history.push("/profile")}
 								icon={
 									<Avatar
@@ -110,6 +126,19 @@ const Header = (props) => {
 							>
 								Profile
 							</MenuItem>
+
+							<MenuItem
+								onClick={() => history.push("/inbox")}
+								icon={
+									<RiMailLine
+										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
+										fontSize="24px"
+									/>
+								}
+							>
+								Inbox
+							</MenuItem>
+
 							<MenuItem
 								onClick={() => ""}
 								icon={
@@ -122,6 +151,7 @@ const Header = (props) => {
 								Administrator Page
 							</MenuItem>
 							<MenuItem
+								onClick={onOpen}
 								icon={
 									<RiInformationLine
 										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
@@ -157,7 +187,28 @@ const Header = (props) => {
 			>
 				{props.children}
 			</Flex>
-		</Flex>
+
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent>
+					{/* <ModalHeader align="center">About</ModalHeader> */}
+
+					<ModalBody align="center">
+						<Text fontSize="3em">Internship</Text>
+						<Text>version 1.0.0</Text>
+						<IoIosSchool fontSize="8em" color="teal" />
+						<Text>&copy; 2021 Internship</Text>
+					</ModalBody>
+
+					<ModalFooter>
+						<Button colorScheme="red" mr={3} onClick={onClose}>
+							Close
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+
+				</Flex>
 	);
 };
 

@@ -267,8 +267,8 @@ const LessonsHeader = () => {
 					console.log("Document written with ID: ", docRef.id);
 					setSuccessMessage("Class added successfully.");
 					setSubmit(false);
-					title = "";
-					upload = "";
+					e.target.title.value = "";
+					e.target.description.value = "";
 				})
 				.catch((error) => {
 					setError("Error adding class: ", error);

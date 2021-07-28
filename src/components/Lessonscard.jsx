@@ -20,6 +20,15 @@ import {
 	Image,
 	Avatar,
 	Center,
+	Textarea,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	Input,
+	Box,
 } from "@chakra-ui/react";
 import {
 	IoTimeOutline,
@@ -86,7 +95,7 @@ function Lessonscard({ item }) {
 					w="100%"
 					boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
 					// transition="all 0.2s cubic-bezier(.08,.52,.52,1)"
-					_hover={{ bg: "#ebedf0" }}
+					// _hover={{ bg: "#bbedf0" }}
 				>
 					<Flex
 						className="lessonIcon"
@@ -159,7 +168,18 @@ export default Lessonscard;
 
 const LessonDetail = ({ item }) => {
 	const { currentUser } = useAuth();
+
+	//component state
 	const [spinnerLoading, setSpinnerLoading] = useState(false);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+	const [submit, setSubmit] = useState(false);
+	const [selectModalDate, setSelectModalDate] = useState(
+		format(new Date(item.date), "yyyy-MM-dd"),
+	);
+	const [selectTimeFrom, setSelectTimeFrom] = useState(item.timeFrom);
+	const [selectTimeTo, setSelectTimeTo] = useState(item.timeTo);
 
 	const tConvert = (time) => {
 		// Check correct time format and split into components
@@ -196,7 +216,7 @@ const LessonDetail = ({ item }) => {
 			.then(() => {
 				db.collection("notifications").add({
 					lessonID: item.itemID,
-					classType : item.classType,
+					classType: item.classType,
 					uid: currentUser.uid,
 					type: "message",
 					lessonTitle: item.title,
@@ -216,13 +236,61 @@ const LessonDetail = ({ item }) => {
 	console.log(item);
 
 	let uid = "";
-
-	// console.log(item.joined);
-
 	item.joined.map((join) => {
 		if (join.uid === currentUser.uid) uid = join.uid;
 		// console.log(person);
 	});
+
+	const handleReschedule = (e) => {
+		console.log("handleReschedule");
+
+		e.preventDefault();
+		setSubmit(true);
+		setError("");
+		setSuccessMessage("");
+		let date = e.target.date.value;
+		let timeFrom = e.target.timeFrom.value;
+		let timeTo = e.target.timeTo.value;
+		let reason = e.target.description.value;
+
+		db.collection("lessons")
+			.doc(item.itemID)
+			.update({
+				date: date,
+				timeFrom: timeFrom,
+				timeTo: timeTo,
+			})
+			.then(() => {
+				db.collection("notifications").add({
+					lessonID: item.itemID,
+					classType: item.classType,
+					uid: currentUser.uid,
+					type: "message",
+					lessonTitle: item.title,
+					message: ` ${item.title} has reschedule  your class by ${currentUser.displayName}
+					<p>See reasons below:</p>
+					<p>${reason}</p>`,
+					name: currentUser.displayName,
+					answer: "",
+					photoURL: currentUser.photoURL,
+					read: false,
+					dateSent: firestore.Timestamp.fromDate(new Date()),
+				});
+				setSuccessMessage("Class rescheduling was successfully.");
+				setSubmit(false);
+				console.log("Class rescheduling was successfully!");
+			})
+			.catch((error) => {
+				setError("Error rescheduling class: ", error);
+				setSubmit(false);
+			});
+	};
+
+	const closeModal = () => {
+		setError("");
+		setSuccessMessage("");
+		onClose();
+	};
 
 	return (
 		<>
@@ -314,15 +382,11 @@ const LessonDetail = ({ item }) => {
 				<Flex flexDir="row" mt="8" justifyContent="flex-end">
 					{uid === currentUser.uid ? (
 						<Button colorScheme="teal" variant="outline" disabled={true}>
-							Join Class +
+							Joined
 						</Button>
 					) : (
 						<>
-							{item.uploaderID === currentUser.uid ? (
-								<Button colorScheme="teal" variant="outline" disabled={true}>
-									Join Class +
-								</Button>
-							) : (
+							{item.uploaderID !== currentUser.uid && (
 								<Button
 									colorScheme="teal"
 									variant="outline"
@@ -336,11 +400,112 @@ const LessonDetail = ({ item }) => {
 						</>
 					)}
 
-					<Button colorScheme="teal" ml="2">
-						Reschedule
-					</Button>
+					{item.uploaderID === currentUser.uid && (
+						<Button colorScheme="teal" ml="2" onClick={onOpen}>
+							Reschedule
+						</Button>
+					)}
 				</Flex>
 			</Flex>
+
+			<Modal isOpen={isOpen} size="sm">
+				<ModalOverlay />
+				<ModalContent>
+					<form onSubmit={handleReschedule}>
+						<ModalHeader align="center">Reschedule Class</ModalHeader>
+						<ModalBody>
+							{error && (
+								<Text
+									p="2"
+									bg="red.100"
+									textAlign="center"
+									color="red"
+									fontSize="md"
+									my="1.5"
+								>
+									{error}
+								</Text>
+							)}
+
+							{successMessage && (
+								<Text
+									p="2"
+									bg="green.100"
+									textAlign="center"
+									color="green"
+									fontSize="md"
+									my="1.5"
+								>
+									{successMessage}
+								</Text>
+							)}
+
+							<Box mb="4">
+								<Text fontSize="lg">Date</Text>
+								<Input
+									type="date"
+									name="date"
+									value={selectModalDate}
+									onChange={(e) => setSelectModalDate(e.target.value)}
+									required
+								/>
+							</Box>
+
+							<Flex justifyContent="space-between" mb="4">
+								<Box>
+									<Text fontSize="lg">From</Text>
+									<Input
+										type="time"
+										name="timeFrom"
+										value={selectTimeFrom}
+										onChange={(e) => setSelectTimeFrom(e.target.value)}
+										required
+									/>
+								</Box>
+								<Box>
+									<Text fontSize="lg">To</Text>
+									<Input
+										type="time"
+										name="timeTo"
+										value={selectTimeTo}
+										onChange={(e) => setSelectTimeTo(e.target.value)}
+										required
+									/>
+								</Box>
+							</Flex>
+
+							<Box mb="4">
+								<Text fontSize="lg">Reasons for rescheduling class</Text>
+								<Textarea
+									placeholder="State the reasons for rescheduling this class"
+									name="description"
+									size="sm"
+									resize="none"
+									required
+								/>
+							</Box>
+						</ModalBody>
+						<ModalFooter>
+							<Button
+								disabled={submit}
+								colorScheme="red"
+								mr={3}
+								onClick={closeModal}
+							>
+								Cancel
+							</Button>
+							<Button
+								isLoading={submit ? true : false}
+								loadingText="Uploading"
+								type="submit"
+								colorScheme="teal"
+							>
+								Submit
+							</Button>
+						</ModalFooter>
+					</form>
+				</ModalContent>
+			</Modal>
 		</>
 	);
 };

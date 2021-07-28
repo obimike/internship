@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { auth, auth_, db, firestore } from "../firebase/Config";
 import { format } from "date-fns";
 
@@ -13,6 +13,8 @@ export default function Auth({ children }) {
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
 	);
+
+	const isMounted = useRef(false); // note mutable flag
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -29,8 +31,16 @@ export default function Auth({ children }) {
 				// setIsLogged(true);
 				setVerifiedEmail(user.emailVerified);
 				// console.log(user);
-				// console.log("User Email = " + user.email);
-				// console.log("isVerifiedEmail = " + user.emailVerified);
+
+				//fetch new notifications
+				db.collection("notifications")
+					.where("uid", "==", user.uid)
+					.where("read", "==", false)
+					.onSnapshot(function (querySnapshot) {
+						if (isMounted.current) {
+							setNewNotifications(querySnapshot.size);
+						}
+					});
 			} else {
 				setCurrentUser(null);
 				setLoading(false);
