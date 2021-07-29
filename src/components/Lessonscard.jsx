@@ -511,8 +511,6 @@ const LessonDetail = ({ item }) => {
 };
 
 const Participants = (person) => {
-	// console.log(person.photoURL);
-
 	//getting the first name from user
 	let firstName = person.personName.split(" ");
 	firstName = firstName[firstName.length - 1];

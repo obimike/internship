@@ -31,6 +31,8 @@ import {
 } from "@chakra-ui/react";
 
 import { IoIosClose } from "react-icons/io";
+
+import { IoTrashOutline } from "react-icons/io5";
 import { formatDistance } from "date-fns";
 
 import { useAuth } from "../contexts/Auth";
@@ -41,7 +43,7 @@ function Notifications() {
 	const [notifications, setNotifications] = useState([]);
 	const { currentUser } = useAuth();
 
-	const { isOpen, onOpen, onClose } = useDisclosure();
+	// const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const isMounted = useRef(false); // note mutable flag
 
@@ -92,13 +94,10 @@ function Notifications() {
 				<Box>
 					{notifications.map((notification) => (
 						<Box key={notification.notificationID}>
-							{NotificationCard(
-								notification,
-								currentUser,
-								isOpen,
-								onOpen,
-								onClose,
-							)}
+							<NotificationCard
+								notification={notification}
+								currentUser={currentUser}
+							/>
 						</Box>
 					))}
 				</Box>
@@ -108,22 +107,16 @@ function Notifications() {
 }
 export default Notifications;
 
-const NotificationCard = (
-	notification,
-	currentUser,
-	isOpen,
-	onOpen,
-	onClose,
-) => {
-    console.log(notification);
-    let time = formatDistance(
-			new Date(notification.dateSent.toDate()),
-			new Date(),
-			{
-				includeSeconds: true,
-				addSuffix: true,
-			},
-		);
+const NotificationCard = ({ notification, currentUser }) => {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	let time = formatDistance(
+		new Date(notification.dateSent.toDate()),
+		new Date(),
+		{
+			includeSeconds: true,
+			addSuffix: true,
+		},
+	);
 	return (
 		<>
 			<LinkBox to="#" as={RouterLink} onClick={onOpen}>
@@ -142,7 +135,7 @@ const NotificationCard = (
 							</Text>
 							<Text
 								fontSize="sm"
-								fontWeight={notification.read === false ? "bold" : "normal"}
+								color={notification.read === false ? "teal" : ""}
 							>
 								{time}
 							</Text>
@@ -170,7 +163,7 @@ const NotificationCard = (
 						</Flex>
 					</DrawerHeader>
 					<DrawerBody w="100%">
-						<NotificationDetail notification={notification} />
+						<NotificationDetail notification={notification} time={time} />
 					</DrawerBody>
 				</DrawerContent>
 			</Drawer>
@@ -178,6 +171,52 @@ const NotificationCard = (
 	);
 };
 
-const NotificationDetail = (notification) => {
-	return <>Notification</>;
+const NotificationDetail = ({ notification, time }) => {
+	console.log(notification);
+	const isMounted = useRef(false); // note mutable flag
+
+	//changing read from false to true
+	useEffect(() => {
+		isMounted.current = true;
+		if (isMounted.current) {
+			if (notification.read === false) {
+				db.collection("notifications").doc(notification.notificationID).update({
+					read: true,
+				});
+			}
+		}
+		return () => {
+			isMounted.current = false;
+		};
+	}, [notification.notificationID, notification.read]);
+
+	const handleDelete = (e) => {
+		e.preventDefault();
+		db.collection("notifications").doc(notification.notificationID).delete();
+	};
+
+	return (
+		<>
+			<Flex flexDir="column">
+				<Flex flexDir="row">
+					<Avatar src={notification.photoURL} />
+					<Flex justifyContent="space-between" w="100%" alignItems="center">
+						<Flex flexDir="column" ml="2">
+							<Text>{notification.name}</Text>
+							<Text>{time}</Text>
+						</Flex>
+						<IconButton variant="outline" onClick={handleDelete}>
+							<IoTrashOutline color="red" />
+						</IconButton>
+					</Flex>
+				</Flex>
+				<Divider my="3.5" />
+				<Text fontWeight="bold">{notification.lessonTitle}</Text>
+				<Text fontWeight="light" mt="4">
+					<html>{notification.message}</html>
+				</Text>
+				{notification.message}
+			</Flex>
+		</>
+	);
 };
