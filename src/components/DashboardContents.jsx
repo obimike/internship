@@ -543,6 +543,8 @@ const FeedCard = ({ item }) => {
 const FeedDetail = ({ item, comment, isLoading, like }) => {
 	const [isLIked, setIsLiked] = useState(false);
 
+	// console.log(item);
+
 	const { currentUser } = useAuth();
 	const [submit, setSubmit] = useState(false);
 	const toast = useToast();
@@ -567,6 +569,28 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 				commenterImage: currentUser.photoURL,
 			})
 			.then((docRef) => {
+				if (currentUser.uid !== item.posterID) {
+					db.collection("notifications")
+						.add({
+							itemID: item.itemID,
+							notificationType: "comment",
+							participantID: firestore.FieldValue.arrayUnion(item.posterID), //array
+							type: "message",
+							title: item.title,
+							message: `Comment was made on your feed '${item.title} '
+					<Text fontWeight='bold' mt='2>${currentUser.displayName} made the following comment:  </Text>
+					<Text>${comment} <Text>`,
+							answer: "",
+							uid: currentUser.uid,
+							name: currentUser.displayName,
+							photoURL: currentUser.photoURL,
+							read: false,
+							dateSent: firestore.Timestamp.fromDate(new Date()),
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				}
 				console.log("Document written with ID: ", docRef.id);
 				toast({
 					title: "Comment added.",
@@ -578,6 +602,8 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 				e.target.coment.value = "";
 			})
 			.catch((error) => {
+				console.log(error);
+
 				toast({
 					title: "Error adding error.",
 					status: "error",
@@ -732,12 +758,12 @@ const FeedComments = ({ item }) => {
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
 			<Avatar size="sm" />
-			<Flex flexDir="column" ml="1.5">
-				<Text mb="1" pt="1" fontWeight="bold">
+			<Flex flexDir="column" ml="1.5" w="100%">
+				<Text mb="1" pt="1" fontWeight="bold" color="black">
 					{item.commenterName}
 				</Text>
-				<Text>{item.comment}</Text>
-				<Text fontSize="sm" fontStyle="italic" textAlign="right">
+				<Text color="black">{item.comment}</Text>
+				<Text fontSize="sm" fontStyle="italic" textAlign="right" color="black">
 					{time}
 				</Text>
 			</Flex>

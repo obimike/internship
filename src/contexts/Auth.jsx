@@ -19,28 +19,21 @@ export default function Auth({ children }) {
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			if (user) {
+				//fetch new notifications
 				db.collection("notifications")
-					.where("uid", "==", user.uid)
+					.where("participantID", "array-contains", user.uid)
 					.where("read", "==", false)
 					.onSnapshot(function (querySnapshot) {
 						setNewNotifications(querySnapshot.size);
+						if (isMounted.current) {
+						}
 					});
 
 				setCurrentUser(user);
 				setLoading(false);
 				// setIsLogged(true);
 				setVerifiedEmail(user.emailVerified);
-				// console.log(user);
-
-				//fetch new notifications
-				db.collection("notifications")
-					.where("uid", "==", user.uid)
-					.where("read", "==", false)
-					.onSnapshot(function (querySnapshot) {
-						if (isMounted.current) {
-							setNewNotifications(querySnapshot.size);
-						}
-					});
+				// console.log(user.uid);
 			} else {
 				setCurrentUser(null);
 				setLoading(false);

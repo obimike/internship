@@ -233,13 +233,18 @@ const LessonDetail = ({ item }) => {
 
 		console.log("handleJoinClass");
 	};
-	console.log(item);
+	// console.log(item);
 
 	let uid = "";
+	let participantUID = [];
 	item.joined.map((join) => {
-		if (join.uid === currentUser.uid) uid = join.uid;
+		participantUID.push(join.uid);
+		if (join.uid === currentUser.uid) {
+			uid = join.uid;
+		}
 		// console.log(person);
 	});
+	console.log(participantUID);
 
 	const handleReschedule = (e) => {
 		console.log("handleReschedule");
@@ -261,17 +266,20 @@ const LessonDetail = ({ item }) => {
 				timeTo: timeTo,
 			})
 			.then(() => {
+
+
 				db.collection("notifications").add({
-					lessonID: item.itemID,
-					classType: item.classType,
-					uid: currentUser.uid,
+					itemID: item.itemID,
+					notificationType: item.classType,
+					participantID: participantUID, //array
 					type: "message",
-					lessonTitle: item.title,
-					message: ` ${item.title} has reschedule  your class by ${currentUser.displayName}
-					<p>See reasons below:</p>
-					<p>${reason}</p>`,
-					name: currentUser.displayName,
+					title: item.title,
+					message: `This class has been reschedule by the author
+					<Text fontWeight='bold' mt='2>See reasons below: </Text>
+					<Text>${reason}</Text>`,
 					answer: "",
+					uid: currentUser.uid,
+					name: currentUser.displayName,
 					photoURL: currentUser.photoURL,
 					read: false,
 					dateSent: firestore.Timestamp.fromDate(new Date()),

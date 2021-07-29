@@ -19,7 +19,7 @@ import {
 	ModalBody,
 	Button,
 	Text,
-	
+	Tag,
 } from "@chakra-ui/react";
 
 import { FiBell } from "react-icons/fi";
@@ -43,10 +43,8 @@ const Header = (props) => {
 		useAuth();
 	const bg = useColorModeValue("white", "gray.800");
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	
 
-
-	console.log(newNotifications);
+	// console.log(newNotifications);
 
 	useEffect(() => {
 		// console.log("Header effect");
@@ -86,15 +84,29 @@ const Header = (props) => {
 							aria-label="notification"
 							icon={
 								<Flex>
-									<FiBell />
-									{newNotifications}
+									<FiBell fontSize="24px" />
+									{newNotifications !== 0 && (
+										<Tag
+											size="sm"
+											bg="teal"
+											variant="solid"
+											borderRadius="100%"
+											pos="relative"
+											bottom="2"
+											right="3"
+											borderColor="transparent"
+											borderWidth="2px"
+										>
+											{newNotifications}
+										</Tag>
+									)}
 								</Flex>
 							}
 							variant="ghost"
 							ml="4"
 						/>
 						<MenuList
-							w={{ base: "95vw", md: "auto", lg: "auto" }}
+							w={{ base: "90vw", md: "50vw", lg: "30vw" }}
 							mr={{ base: "3", md: "auto", lg: "auto" }}
 						>
 							<Notifications />
@@ -207,8 +219,7 @@ const Header = (props) => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-
-				</Flex>
+		</Flex>
 	);
 };
 

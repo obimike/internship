@@ -51,8 +51,9 @@ function Notifications() {
 		setLoading(true);
 		isMounted.current = true;
 
+
 		db.collection("notifications")
-			.where("uid", "==", currentUser.uid)
+			.where("participantID", "array-contains", currentUser.uid)
 			.orderBy("dateSent", "desc")
 			.onSnapshot(function (querySnapshot) {
 				const fetchNotifications = [];
@@ -77,7 +78,7 @@ function Notifications() {
 	return (
 		<>
 			{loading && (
-				<Box>
+				<Box style={{ textAlign: "center", margin: 5 }}>
 					<Text>Loading...</Text>
 				</Box>
 			)}
@@ -211,11 +212,10 @@ const NotificationDetail = ({ notification, time }) => {
 					</Flex>
 				</Flex>
 				<Divider my="3.5" />
-				<Text fontWeight="bold">{notification.lessonTitle}</Text>
-				<Text fontWeight="light" mt="4">
-					<html>{notification.message}</html>
+				<Text fontWeight="bold">{notification.title}</Text>
+				<Text mt="4">
+					{notification.message}
 				</Text>
-				{notification.message}
 			</Flex>
 		</>
 	);
