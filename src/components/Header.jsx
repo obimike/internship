@@ -68,7 +68,12 @@ const Header = (props) => {
 				right={0}
 				bg={bg}
 			>
-				<Link as={RouterLink} textDecorationStyle="none" to="/dashboard">
+				<Link
+					as={RouterLink}
+					textDecorationStyle="none"
+					to="/dashboard"
+					_hover={{ color: "teal" }}
+				>
 					<Flex>
 						<IoIosSchool fontSize="2.5rem" color="teal" />
 						<Heading as="h3" letterSpacing="tight" fontWeight="light" ml="2">
@@ -193,8 +198,8 @@ const Header = (props) => {
 				</Flex>
 			</Flex>
 			<Flex
-				px={{ base: 4, md: 8, lg: 16 }}
-				py={{ base: 4, md: 5, lg: 6 }}
+				mx={{ base: 4, md: 12, lg: 48 }}
+				my={{ base: 4, md: 5, lg: 6 }}
 				flexDir="column"
 			>
 				{props.children}

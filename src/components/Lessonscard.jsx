@@ -266,8 +266,6 @@ const LessonDetail = ({ item }) => {
 				timeTo: timeTo,
 			})
 			.then(() => {
-
-
 				db.collection("notifications").add({
 					itemID: item.itemID,
 					notificationType: item.classType,
@@ -275,8 +273,8 @@ const LessonDetail = ({ item }) => {
 					type: "message",
 					title: item.title,
 					message: `This class has been reschedule by the author
-					<Text fontWeight='bold' mt='2>See reasons below: </Text>
-					<Text>${reason}</Text>`,
+					<p style={fontWeight:"bold"; margin-top:"4px";} >See reasons below: </p>
+					<p>${reason}</p>`,
 					answer: "",
 					uid: currentUser.uid,
 					name: currentUser.displayName,

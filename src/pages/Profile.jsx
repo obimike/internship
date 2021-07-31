@@ -29,13 +29,16 @@ import {
 	FaUserCircle,
 } from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
+import { format } from "date-fns";
 
 import { useAuth } from "../contexts/Auth";
 
 function Profile() {
 	const { colorMode, toggleColorMode } = useColorMode();
-	const { currentUser } = useAuth();
+	const { currentUser, userData } = useAuth();
 	const textColor = useColorModeValue("gray.600", "gray.400");
+
+	// console.log(userData);
 
 	return (
 		<Header>
@@ -46,18 +49,15 @@ function Profile() {
 				width="100%"
 				mt={24}
 			>
-				{/* <GridItem colSpan={3} mb={5}>
-					<Text fontSize="xl" mr={1.5} fontWeight="bold">
-						Profile
-					</Text>
-				</GridItem> */}
 				<GridItem colSpan={{ md: 1 }}>
 					<Box px={[4, 0]}>
 						<VStack>
 							<Image
-								w="280px"
-								h="280px"
-								borderRadius="50%"
+								boxSize="280px"
+								// objectFit="cover"
+								// w="280px"
+								// h="280px"
+								borderRadius="full"
 								fallback={
 									<FaUserCircle
 										fontSize="280px"
@@ -73,14 +73,14 @@ function Profile() {
 								fontSize="sm"
 								color={useColorModeValue("gray.600", "gray.400")}
 							>
-								Industrial Attachment
+								{userData.type && userData.type}
 							</Text>
 
-							{currentUser.phoneNumber && (
+							{userData.phone && (
 								<Flex align="center">
 									<FiPhone />
 									<Text fontSize="sm" color={textColor} ml="1.5">
-										{currentUser.phoneNumber}
+										{userData.phone && userData.phone}
 									</Text>
 								</Flex>
 							)}
@@ -94,47 +94,57 @@ function Profile() {
 							<Flex align="center">
 								<FiLink />
 								<Link
-									href="https://chakra-ui.com"
+									href={userData.website && userData.website}
 									isExternal
 									color="teal.500"
 									ml="1.5"
 								>
-									angelinajolie.com
+									{userData.website && userData.website}
 								</Link>
 							</Flex>
 							<Flex align="center" justifyContent="space-between" w="280px">
 								<Text color={useColorModeValue("gray.600", "gray.400")}>
 									Socials:
 								</Text>
-								<IconButton
-									fontSize="20px"
-									variant="ghost"
-									aria-label="Twitter"
-									_hover={{ color: "#1da1f2" }}
-									icon={<FaTwitter />}
-								/>
-
-								<IconButton
-									fontSize="20px"
-									variant="ghost"
-									aria-label="Facebook"
-									_hover={{ color: "#1877f2" }}
-									icon={<FaFacebookF />}
-								/>
-								<IconButton
-									fontSize="20px"
-									variant="ghost"
-									aria-label="Facebook"
-									_hover={{ color: "#0a66c2" }}
-									icon={<FaLinkedinIn />}
-								/>
-								<IconButton
-									fontSize="20px"
-									variant="ghost"
-									aria-label="Facebook"
-									_hover={{ color: "#c32aa3" }}
-									icon={<FaInstagram />}
-								/>
+								<Link href={userData.twitter && userData.twitter} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Twitter"
+										_hover={{ color: "#1da1f2" }}
+										icon={<FaTwitter />}
+									/>
+								</Link>
+								<Link href={userData.facebook && userData.facebook} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Facebook"
+										_hover={{ color: "#1877f2" }}
+										icon={<FaFacebookF />}
+									/>
+								</Link>
+								<Link href={userData.linkedin && userData.linkedin} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Facebook"
+										_hover={{ color: "#0a66c2" }}
+										icon={<FaLinkedinIn />}
+									/>
+								</Link>
+								<Link
+									href={userData.instagram && userData.instagram}
+									isExternal
+								>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Facebook"
+										_hover={{ color: "#c32aa3" }}
+										icon={<FaInstagram />}
+									/>
+								</Link>
 							</Flex>
 
 							<Link as={RouterLink} to="/edit_profile" textDecoration="none">
@@ -174,7 +184,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									04, June
+									{userData.dob && format(new Date(userData.dob), "do, MMMM")}
 								</Text>
 							</Flex>
 							<Flex
@@ -191,7 +201,7 @@ function Profile() {
 										ml="1.5"
 										fontWeight="bold"
 									>
-										Internship Duration
+										Duration
 									</Text>
 								</Flex>
 
@@ -200,7 +210,8 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									07/07/2021 - 1/12/2021
+									{userData.startDate && userData.startDate} to{" "}
+									{userData.endDate && userData.endDate}
 								</Text>
 							</Flex>
 							<Flex
@@ -226,7 +237,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									New York University (NYU)
+									{userData.school && userData.school}
 								</Text>
 							</Flex>
 							<Flex
@@ -252,7 +263,7 @@ function Profile() {
 									color={useColorModeValue("gray.600", "gray.400")}
 									ml="1.5"
 								>
-									Seun Abolarin
+									{userData.supervisor && userData.supervisor}
 								</Text>
 							</Flex>
 							<Flex flexDir="column" mt="4">
@@ -268,10 +279,7 @@ function Profile() {
 									fontSize="sm"
 									color={useColorModeValue("gray.600", "gray.400")}
 								>
-									Angelina Jolie DCMG is an American actress, filmmaker, and
-									humanitarian. The recipient of numerous accolades, including
-									an Academy Award and three Golden Globe Awards, she has been
-									named Hollywood's highest-paid actress multiple times.
+									{userData.aboutMe && userData.aboutMe}
 								</Text>
 							</Flex>
 						</Flex>

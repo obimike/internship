@@ -6,6 +6,7 @@ const AuthContext = React.createContext();
 
 export default function Auth({ children }) {
 	const [currentUser, setCurrentUser] = useState();
+	const [userData, setUserData] = useState();
 	const [loading, setLoading] = useState(true);
 	const [isVerifiedEmail, setVerifiedEmail] = useState(false);
 	const [newNotifications, setNewNotifications] = useState(0);
@@ -15,6 +16,10 @@ export default function Auth({ children }) {
 	);
 
 	const isMounted = useRef(false); // note mutable flag
+
+	const setuser = (user) => {
+		setUserData(user);
+	};
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -31,9 +36,20 @@ export default function Auth({ children }) {
 
 				setCurrentUser(user);
 				setLoading(false);
-				// setIsLogged(true);
 				setVerifiedEmail(user.emailVerified);
-				// console.log(user.uid);
+				console.log(user);
+
+				//Fetch User data
+				db.collection("users")
+					.doc(user.uid)
+					.get()
+					.then((doc) => {
+						if (doc.exists) {
+							setuser(doc.data());
+						} else {
+							console.log("No such user in firestore!");
+						}
+					});
 			} else {
 				setCurrentUser(null);
 				setLoading(false);
@@ -47,6 +63,7 @@ export default function Auth({ children }) {
 	const values = {
 		currentUser,
 		setCurrentUser,
+		userData,
 		isVerifiedEmail,
 		setVerifiedEmail,
 		loadingCards,

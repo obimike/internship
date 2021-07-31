@@ -577,9 +577,8 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 							participantID: firestore.FieldValue.arrayUnion(item.posterID), //array
 							type: "message",
 							title: item.title,
-							message: `Comment was made on your feed '${item.title} '
-					<Text fontWeight='bold' mt='2>${currentUser.displayName} made the following comment:  </Text>
-					<Text>${comment} <Text>`,
+							message: `<p >${currentUser.displayName} made the following comment:  </p>
+					<p>${comment} <p>`,
 							answer: "",
 							uid: currentUser.uid,
 							name: currentUser.displayName,
@@ -762,7 +761,9 @@ const FeedComments = ({ item }) => {
 				<Text mb="1" pt="1" fontWeight="bold" color="black">
 					{item.commenterName}
 				</Text>
+
 				<Text color="black">{item.comment}</Text>
+
 				<Text fontSize="sm" fontStyle="italic" textAlign="right" color="black">
 					{time}
 				</Text>

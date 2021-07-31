@@ -93,7 +93,7 @@ function SignUp() {
 					</Flex>
 				</VStack>
 				{signUpError && (
-					<Text color="red" my="2.5" textAlign='center' fontSize='1.1rem'>
+					<Text color="red" my="2.5" textAlign="center" fontSize="1.1rem">
 						{signUpError}
 					</Text>
 				)}
@@ -245,6 +245,7 @@ async function emailSignUp(values, setSignUpError) {
 					lastName: _lastName,
 					email: response.user.email,
 					photoURL: response.user.photoURL,
+					level: "user",
 					created: firestore.Timestamp.fromDate(new Date()),
 				})
 				.then(function () {
@@ -255,7 +256,7 @@ async function emailSignUp(values, setSignUpError) {
 				});
 
 			response.user.updateProfile({
-				displayName: _lastName + ' ' + _firstName,
+				displayName: _lastName + " " + _firstName,
 			});
 
 			//SendEmailVerification

@@ -77,9 +77,7 @@ function Lessons() {
 	const filteredOptions = lessonItems.filter(
 		(lesson) => lesson.date === `${selectDate}`,
 	);
-
-	// console.log(isLoading);
-
+	
 	return (
 		<>
 			<LessonsHeader />

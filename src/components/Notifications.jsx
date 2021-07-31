@@ -4,22 +4,9 @@ import { Link as RouterLink } from "react-router-dom";
 import {
 	Divider,
 	Flex,
-	Heading,
 	IconButton,
 	Avatar,
-	useColorModeValue,
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
-	Link,
 	useDisclosure,
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalFooter,
-	ModalBody,
-	Button,
 	Text,
 	Box,
 	Drawer,
@@ -50,7 +37,6 @@ function Notifications() {
 	useEffect(() => {
 		setLoading(true);
 		isMounted.current = true;
-
 
 		db.collection("notifications")
 			.where("participantID", "array-contains", currentUser.uid)
@@ -141,8 +127,10 @@ const NotificationCard = ({ notification, currentUser }) => {
 								{time}
 							</Text>
 						</Flex>
-						<Text fontSize="md" noOfLines={1}>
-							{notification.message}
+						<Text fontSize="md" noOfLines={1} fontWeight="light">
+							<span
+								dangerouslySetInnerHTML={{ __html: notification.message }}
+							/>
 						</Text>
 					</Flex>
 				</Flex>
@@ -173,7 +161,7 @@ const NotificationCard = ({ notification, currentUser }) => {
 };
 
 const NotificationDetail = ({ notification, time }) => {
-	console.log(notification);
+	// console.log(notification);
 	const isMounted = useRef(false); // note mutable flag
 
 	//changing read from false to true
@@ -212,10 +200,14 @@ const NotificationDetail = ({ notification, time }) => {
 					</Flex>
 				</Flex>
 				<Divider my="3.5" />
-				<Text fontWeight="bold">{notification.title}</Text>
-				<Text mt="4">
-					{notification.message}
+				<Text fontWeight="bold" fontSize="lg" mb="4">
+					{notification.title}
 				</Text>
+
+				<div
+					style={{ fontSize: "16px" }}
+					dangerouslySetInnerHTML={{ __html: notification.message }}
+				/>
 			</Flex>
 		</>
 	);
