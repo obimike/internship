@@ -49,6 +49,7 @@ let history;
 
 function SignUp() {
 	const [showPassword, setShowPassword] = useState(false);
+	const [submit, setSubmit] = useState(false);
 	const [signUpError, setSignUpError] = useState([""]);
 	history = useHistory();
 
@@ -66,7 +67,7 @@ function SignUp() {
 		validationSchema: validationSchema,
 		onSubmit: async (values) => {
 			// login(values);
-			await emailSignUp(values, setSignUpError);
+			await emailSignUp(values, setSignUpError, setSubmit);
 		},
 	});
 
@@ -208,7 +209,14 @@ function SignUp() {
 							)}
 						</Checkbox>
 					</Flex>
-					<Button type="submit" colorScheme="teal" w="100%" mt="2.5">
+					<Button
+						type="submit"
+						isLoading={submit ? true : false}
+						loadingText="Subitting"
+						colorScheme="teal"
+						w="100%"
+						mt="2.5"
+					>
 						Sign up
 					</Button>
 				</form>
@@ -226,9 +234,11 @@ function SignUp() {
 	);
 }
 
-async function emailSignUp(values, setSignUpError) {
+async function emailSignUp(values, setSignUpError, setSubmit) {
 	const _firstName = values.firstName;
 	const _lastName = values.lastName;
+
+	setSubmit(true)
 
 	await auth
 		.createUserWithEmailAndPassword(values.email, values.password)
@@ -245,18 +255,22 @@ async function emailSignUp(values, setSignUpError) {
 					lastName: _lastName,
 					email: response.user.email,
 					photoURL: response.user.photoURL,
-					level: "user",
+					level: "Admin",
 					created: firestore.Timestamp.fromDate(new Date()),
 				})
 				.then(function () {
 					console.log("User Created in firestore ");
+					setSubmit(false);
 				})
 				.catch(function (error) {
 					console.log("Error adding user: " + error);
+					setSubmit(false);
 				});
 
 			response.user.updateProfile({
 				displayName: _lastName + " " + _firstName,
+			}).then(() => {
+				console.log("Updated Displayname in google");
 			});
 
 			//SendEmailVerification
@@ -277,6 +291,7 @@ async function emailSignUp(values, setSignUpError) {
 				.catch(function (error) {});
 		})
 		.catch((err) => {
+			setSubmit(false);
 			console.log(err.message);
 			console.log(err.code);
 			switch (err.code) {

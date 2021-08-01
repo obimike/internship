@@ -91,17 +91,19 @@ function Profile() {
 									{currentUser.email}
 								</Text>
 							</Flex>
-							<Flex align="center">
-								<FiLink />
-								<Link
-									href={userData.website && userData.website}
-									isExternal
-									color="teal.500"
-									ml="1.5"
-								>
-									{userData.website && userData.website}
-								</Link>
-							</Flex>
+							{userData.website && (
+								<Flex align="center">
+									<FiLink />
+									<Link
+										href={userData.website && userData.website}
+										isExternal
+										color="teal.500"
+										ml="1.5"
+									>
+										{userData.website && userData.website}
+									</Link>
+								</Flex>
+							)}
 							<Flex align="center" justifyContent="space-between" w="280px">
 								<Text color={useColorModeValue("gray.600", "gray.400")}>
 									Socials:
@@ -204,15 +206,12 @@ function Profile() {
 										Duration
 									</Text>
 								</Flex>
-
-								<Text
-									fontSize="md"
-									color={useColorModeValue("gray.600", "gray.400")}
-									ml="1.5"
-								>
-									{userData.startDate && userData.startDate} to{" "}
-									{userData.endDate && userData.endDate}
-								</Text>
+								{userData.startDate && (
+									<Text fontSize="md" color={textColor} ml="1.5">
+										{userData.startDate && userData.startDate} to{" "}
+										{userData.endDate && userData.endDate}
+									</Text>
+								)}
 							</Flex>
 							<Flex
 								mt="4"

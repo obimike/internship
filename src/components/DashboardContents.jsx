@@ -756,11 +756,15 @@ const FeedComments = ({ item }) => {
 
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
-			<Avatar size="sm" />
+			<LinkBox to="user/profile" as={RouterLink}>
+				<Avatar size="sm" />
+			</LinkBox>
 			<Flex flexDir="column" ml="1.5" w="100%">
-				<Text mb="1" pt="1" fontWeight="bold" color="black">
-					{item.commenterName}
-				</Text>
+				<LinkBox to="user/profile" as={RouterLink}>
+					<Text mb="1" pt="1" fontWeight="bold" color="black">
+						{item.commenterName}
+					</Text>
+				</LinkBox>
 
 				<Text color="black">{item.comment}</Text>
 

@@ -9,6 +9,7 @@ import EditProfile from "./pages/EditProfile";
 import DashBoard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import EmailConfirmation from "./pages/EmailConfirmation";
+import UserProfile from "./pages/UserProfile";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
 						component={EmailConfirmation}
 					/>
 					<Route path="/profile" exact component={Profile} />
+					<Route path="/user/profile" exact component={UserProfile} />
 					<Route path="/edit_profile" exact component={EditProfile} />
 					<Route path="/dashboard" exact component={DashBoard} />
 					<Route path="/inbox" exact component={Inbox} />

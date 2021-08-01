@@ -31,9 +31,8 @@ import { db, fb } from "../firebase/Config";
 
 import { FaUserCircle } from "react-icons/fa";
 
-
 function EditProfile() {
-	const { currentUser,  userData } = useAuth();
+	const { currentUser, userData } = useAuth();
 	// Initialization
 
 	const [error, setError] = useState("");
@@ -44,19 +43,24 @@ function EditProfile() {
 	const [imageAsFile, setImageAsFile] = useState("");
 	const [openImageDialog, setOpenImageDialog] = useState(false);
 
+	//Check if userData exist
+	const _dob = userData.dob ? new Date(userData.dob) : new Date();
+	const _startDate = userData.startDate
+		? new Date(userData.startDate)
+		: new Date();
+	const _endDate = userData.endDate ? new Date(userData.endDate) : new Date();
+
+	console.log(_dob);
+
 	// Setting form state
 	const [firstName, setFirstName] = useState(userData.firstName);
 	const [lastName, setLastName] = useState(userData.lastName);
 	const [phone, setPhone] = useState(userData.phone);
-	const [dob, setDOB] = useState(format(new Date(userData.dob), "yyyy-MM-dd"));
+	const [dob, setDOB] = useState(format(_dob, "yyyy-MM-dd"));
 	const [school, setSchool] = useState(userData.school);
 	const [type, setType] = useState(userData.type);
-	const [startDate, setStartDate] = useState(
-		format(new Date(userData.startDate), "yyyy-MM-dd"),
-	);
-	const [endDate, setEndDate] = useState(
-		format(new Date(userData.endDate), "yyyy-MM-dd"),
-	);
+	const [startDate, setStartDate] = useState(format(_startDate, "yyyy-MM-dd"));
+	const [endDate, setEndDate] = useState(format(_endDate, "yyyy-MM-dd"));
 	const [supervisor, setSupervisor] = useState(userData.supervisor);
 	const [aboutMe, setAboutMe] = useState(userData.aboutMe);
 	const [website, setWebsite] = useState(userData.website);
@@ -69,6 +73,7 @@ function EditProfile() {
 
 	const handleUpdateProfile = (e) => {
 		e.preventDefault();
+		let email = e.target.email.value;
 		// let firstName = e.target.firstName.value;
 		// let lastName = e.target.lastName.value;
 		// let phone = e.target.phone.value;
@@ -90,6 +95,7 @@ function EditProfile() {
 			.update({
 				firstName: firstName,
 				lastName: lastName,
+				email: email,
 				phone: phone,
 				dob: dob,
 				aboutMe: aboutMe,
@@ -225,7 +231,7 @@ function EditProfile() {
 
 							currentUser.updateProfile({
 								photoURL: downloadURL,
-							})
+							});
 							setSuccessMessage("Profile image updated.");
 							setSubmit(false);
 							setOpenImageDialog(false);

@@ -1,6 +1,5 @@
-import React, {
-	// useState, useEffect, useRefs
-} from "react";
+import React from // useState, useEffect, useRefs
+"react";
 import { Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
@@ -42,6 +41,9 @@ function InboxContent() {
 			flexDir="column"
 			align={{ base: "", md: "center", lg: "center" }}
 		>
+			<Text fontSize="xl" my={1.5} fontWeight="bold">
+				Inbox
+			</Text>
 			<InboxCard />
 			<InboxCard />
 			<InboxCard />
@@ -113,8 +115,12 @@ const InboxCard = () => {
 						</Flex> */}
 					</DrawerBody>
 
-					<DrawerFooter>
-						<Flex w="100%" h={{ base: "6rem", md: "6rem", lg: "auto" }}>
+					<DrawerFooter w="100%">
+						<Flex
+							w="100%"
+							justifyContent="center"
+							h={{ base: "6rem", md: "6rem", lg: "auto" }}
+						>
 							<IconButton
 								// onClick={onClose}
 								color={grayColor}
@@ -122,15 +128,23 @@ const InboxCard = () => {
 								icon={<HiEmojiHappy fontSize="32px" />}
 							/>
 							<form>
-								<Input type="text" ml="1.5" name='message' />
-								<IconButton
-									type="submit"
-									colorScheme="teal"
-									ml="1.5"
-									variant="ghost"
-									icon={<IoSendSharp fontSize="32px" />}
-									disabled={true}
-								/>
+								<Flex w="100%">
+									<Input
+										type="text"
+										ml="1.5"
+										placeholder="Type a message"
+										name="message"
+										width="100%"
+									/>
+									<IconButton
+										type="submit"
+										colorScheme="teal"
+										ml="1.5"
+										variant="ghost"
+										icon={<IoSendSharp fontSize="32px" />}
+										disabled={true}
+									/>
+								</Flex>
 							</form>
 						</Flex>
 					</DrawerFooter>

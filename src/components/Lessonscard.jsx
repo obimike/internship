@@ -181,6 +181,8 @@ const LessonDetail = ({ item }) => {
 	const [selectTimeFrom, setSelectTimeFrom] = useState(item.timeFrom);
 	const [selectTimeTo, setSelectTimeTo] = useState(item.timeTo);
 
+	// const history = useHistory();
+
 	const tConvert = (time) => {
 		// Check correct time format and split into components
 		time = time
@@ -244,7 +246,8 @@ const LessonDetail = ({ item }) => {
 		}
 		// console.log(person);
 	});
-	console.log(participantUID);
+
+	// console.log(participantUID);
 
 	const handleReschedule = (e) => {
 		console.log("handleReschedule");
@@ -355,6 +358,7 @@ const LessonDetail = ({ item }) => {
 									personID={person.uid}
 									personName={person.displayName}
 									personImage={person.photoURL}
+									// history={history}
 								/>
 							</React.Fragment>
 						))}
@@ -516,15 +520,23 @@ const LessonDetail = ({ item }) => {
 	);
 };
 
-const Participants = (person) => {
+const Participants = ({ personID, personName, personImage }) => {
 	//getting the first name from user
-	let firstName = person.personName.split(" ");
+	let firstName = personName.split(" ");
 	firstName = firstName[firstName.length - 1];
 
+	// const personID = person.personID;
+	console.log(personName);
+
 	return (
-		<Center flexDir="column" ml="2.5">
-			<Avatar src={person.photoURL} />
-			<Text>{firstName}</Text>
-		</Center>
+		<LinkBox
+			to={{ pathname: "/user/profile", state: { profile: personID } }}
+			as={RouterLink}
+		>
+			<Center flexDir="column" ml="2.5">
+				<Avatar src={personImage} />
+				<Text>{firstName}</Text>
+			</Center>
+		</LinkBox>
 	);
 };

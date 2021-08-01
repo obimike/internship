@@ -9,7 +9,9 @@ import {
 	Heading,
 	VStack,
 	Divider,
+	Flex,
 } from "@chakra-ui/react";
+import { IoIosSchool } from "react-icons/io";
 //Import assets
 import Envelop from "../assets/images/mail.png";
 
@@ -35,9 +37,12 @@ const EmailConfirmation = (props) => {
 	return (
 		<Container p="8" maxW="lg" mt="4">
 			<VStack mb="2">
-				<Heading as="h3" size="xl" mb="4">
-					{APP_NAME}
-				</Heading>
+				<Flex>
+					<IoIosSchool fontSize="2.5rem" color="teal" />
+					<Heading as="h3" letterSpacing="tight" fontWeight="light" ml="2">
+						{APP_NAME}
+					</Heading>
+				</Flex>
 
 				<Image height="12rem" width="12rem" src={Envelop} />
 

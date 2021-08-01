@@ -6,7 +6,7 @@ const AuthContext = React.createContext();
 
 export default function Auth({ children }) {
 	const [currentUser, setCurrentUser] = useState();
-	const [userData, setUserData] = useState();
+	const [userData, setUserData] = useState({});
 	const [loading, setLoading] = useState(true);
 	const [isVerifiedEmail, setVerifiedEmail] = useState(false);
 	const [newNotifications, setNewNotifications] = useState(0);
