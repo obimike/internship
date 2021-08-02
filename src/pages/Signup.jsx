@@ -22,8 +22,7 @@ import { useFormik } from "formik";
 import GoogleIcon from "../assets/images/search.png";
 import { APP_NAME } from "../utils/Constants";
 
-import { auth, db, firestore } from "../firebase/Config";
-import { googleSign } from "../contexts/Auth";
+import { googleSign, emailSignUp } from "../contexts/Auth";
 
 const validationSchema = Yup.object({
 	firstName: Yup.string("Enter your First Name!").required(
@@ -66,8 +65,7 @@ function SignUp() {
 		},
 		validationSchema: validationSchema,
 		onSubmit: async (values) => {
-			// login(values);
-			await emailSignUp(values, setSignUpError, setSubmit);
+			await emailSignUp(values, setSignUpError, setSubmit, history);
 		},
 	});
 
@@ -212,7 +210,7 @@ function SignUp() {
 					<Button
 						type="submit"
 						isLoading={submit ? true : false}
-						loadingText="Subitting"
+						loadingText="Creating user..."
 						colorScheme="teal"
 						w="100%"
 						mt="2.5"
@@ -232,82 +230,6 @@ function SignUp() {
 			</Container>
 		</Flex>
 	);
-}
-
-async function emailSignUp(values, setSignUpError, setSubmit) {
-	const _firstName = values.firstName;
-	const _lastName = values.lastName;
-
-	setSubmit(true)
-
-	await auth
-		.createUserWithEmailAndPassword(values.email, values.password)
-		.then((response) => {
-			console.log("User Created successfully=================");
-			console.log("User ID :", response.user.uid);
-
-			//Add user to database
-			db.collection("users")
-				.doc(response.user.uid)
-				.set({
-					uid: response.user.uid,
-					firstName: _firstName,
-					lastName: _lastName,
-					email: response.user.email,
-					photoURL: response.user.photoURL,
-					level: "Admin",
-					created: firestore.Timestamp.fromDate(new Date()),
-				})
-				.then(function () {
-					console.log("User Created in firestore ");
-					setSubmit(false);
-				})
-				.catch(function (error) {
-					console.log("Error adding user: " + error);
-					setSubmit(false);
-				});
-
-			response.user.updateProfile({
-				displayName: _lastName + " " + _firstName,
-			}).then(() => {
-				console.log("Updated Displayname in google");
-			});
-
-			//SendEmailVerification
-			response.user
-				.sendEmailVerification()
-				.then(function () {
-					window.localStorage.setItem("sendEmailVerification", values.email);
-					auth.signOut();
-
-					// console.log("Email Sent!");
-					// console.log(values.email);
-
-					history.push({
-						pathname: "/email_confirmation",
-						state: { email: values.email },
-					});
-				})
-				.catch(function (error) {});
-		})
-		.catch((err) => {
-			setSubmit(false);
-			console.log(err.message);
-			console.log(err.code);
-			switch (err.code) {
-				case "auth/email-already-in-use":
-					setSignUpError("Email address is already in use.");
-					break;
-
-				case "auth/network-request-failed":
-					setSignUpError("Network error. Check connection and try again.");
-					break;
-
-				default:
-					setSignUpError("An error has occurred during sign up.");
-					break;
-			}
-		});
 }
 
 //Authenticate Using Google Sign-In

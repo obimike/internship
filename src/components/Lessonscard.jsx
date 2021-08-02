@@ -303,7 +303,25 @@ const LessonDetail = ({ item }) => {
 
 	return (
 		<>
-			<Flex flexDir="column">
+			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
+				<Flex align="center" my="2.5">
+					<LinkBox
+						to={{
+							pathname: "/user/profile",
+							state: { profile: item.uploaderID },
+						}}
+					>
+						<Avatar src={item.uploaderImage} size="md" />
+					</LinkBox>
+					<Flex flexDir="column" ml="2.5">
+						<Text fontSize="md" fontWeight="bold">
+							{item.uploaderName}
+						</Text>
+						<Text fontSize="sm" fontWeight="bold">
+							Author
+						</Text>
+					</Flex>
+				</Flex>
 				<Text fontSize="large" fontWeight="bold" my="2">
 					{item.title}
 				</Text>
@@ -408,6 +426,12 @@ const LessonDetail = ({ item }) => {
 								</Button>
 							)}
 						</>
+					)}
+
+					{item.uploaderID === currentUser.uid && (
+						<Button colorScheme="red" ml="2">
+							Delete Class
+						</Button>
 					)}
 
 					{item.uploaderID === currentUser.uid && (

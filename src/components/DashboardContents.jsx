@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
 	Flex,
 	Text,
@@ -31,8 +31,8 @@ import {
 	DrawerBody,
 	SimpleGrid,
 	GridItem,
-	Link,
 	useToast,
+	Center,
 } from "@chakra-ui/react";
 import { IoShareOutline } from "react-icons/io5";
 import { FaRegComment } from "react-icons/fa";
@@ -43,6 +43,7 @@ import { IoIosClose } from "react-icons/io";
 import { db, fb, firestore } from "../firebase/Config";
 import { useAuth } from "../contexts/Auth";
 import { formatDistance } from "date-fns";
+import NoFeed from "../assets/images/no_feed.svg";
 
 function DashboardContents() {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -226,25 +227,37 @@ function DashboardContents() {
 				});
 		}
 	};
+
+	// console.log(postItems.length);
+
 	return (
 		<>
 			{isLoading && <FeedSkeleton />}
 
 			{!isLoading && (
 				<>
-					<SimpleGrid
-						display={{ base: "initial", md: "grid" }}
-						columns={{ md: 2 }}
-						spacing={{ md: 6 }}
-						width="100%"
-						mt={24}
-					>
-						{postItems.map((item) => (
-							<GridItem colSpan={{ md: 1 }} key={item.itemID}>
-								<FeedCard item={item} />
-							</GridItem>
-						))}
-					</SimpleGrid>
+					{postItems.length > 0 ? (
+						<SimpleGrid
+							display={{ base: "initial", md: "grid" }}
+							columns={{ md: 2 }}
+							spacing={{ md: 6 }}
+							width="100%"
+							mt={24}
+						>
+							{postItems.map((item) => (
+								<GridItem colSpan={{ md: 1 }} key={item.itemID}>
+									<FeedCard item={item} />
+								</GridItem>
+							))}
+						</SimpleGrid>
+					) : (
+						<Center flexDir="column">
+							<Image src={NoFeed} width="640" height="320" />
+							<Text textAlign="center">
+								Wow! Such emptiness! Add feed to avoid this.
+							</Text>
+						</Center>
+					)}
 				</>
 			)}
 
@@ -452,7 +465,7 @@ const FeedCard = ({ item }) => {
 				p="4"
 				mb="4"
 			>
-				<LinkBox to="#" as={RouterLink} onClick={onOpen}>
+				<LinkBox to="#" onClick={onOpen}>
 					<Flex mb="1.5">
 						<Avatar size="md" src={item.posterImage} />
 						<Flex flexDir="column" ml="2.5">
@@ -641,7 +654,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 
 	return (
 		<>
-			<Flex flexDir="column">
+			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
 				<Flex mb="1.5" alignItems="center" justifyContent="space-between">
 					<Flex alignItems="center">
 						<Avatar size="lg" src={item.posterImage} />
@@ -756,15 +769,25 @@ const FeedComments = ({ item }) => {
 
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
-			<LinkBox to="user/profile" as={RouterLink}>
+			<Link
+				to={{
+					pathname: "/user/profile",
+					state: { profile: item.commenterID },
+				}}
+			>
 				<Avatar size="sm" />
-			</LinkBox>
+			</Link>
 			<Flex flexDir="column" ml="1.5" w="100%">
-				<LinkBox to="user/profile" as={RouterLink}>
+				<Link
+					to={{
+						pathname: "/user/profile",
+						state: { profile: item.commenterID },
+					}}
+				>
 					<Text mb="1" pt="1" fontWeight="bold" color="black">
 						{item.commenterName}
 					</Text>
-				</LinkBox>
+				</Link>
 
 				<Text color="black">{item.comment}</Text>
 

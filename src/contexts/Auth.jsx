@@ -91,13 +91,14 @@ export const googleSign = () => {
 		var user = result.user;
 
 		// Add user to database
-		db.collection("Users")
+		db.collection("users")
 			.doc(user.uid)
 			.set({
 				uid: user.uid,
 				displayName: user.displayName,
 				email: user.email,
 				photoURL: user.photoURL,
+				level: "user",
 				created: firestore.Timestamp.fromDate(new Date()),
 			})
 			.then(function () {
@@ -109,11 +110,86 @@ export const googleSign = () => {
 	});
 };
 
+export const emailSignUp = (values, setSignUpError, setSubmit, history) => {
+	setSubmit(true);
+	const _firstName = values.firstName;
+	const _lastName = values.lastName;
+
+	return auth
+		.createUserWithEmailAndPassword(values.email, values.password)
+		.then((response) => {
+			const user = response.user;
+
+			AddUser(user, setSubmit, _firstName, _lastName, values.email, history);
+
+			user
+				.updateProfile({
+					displayName: _lastName + " " + _firstName,
+				})
+				.then(() => {
+					console.log("Updated Displayname in google");
+				});
+		})
+		.catch((err) => {
+			setSubmit(false);
+			console.log("err.message");
+			console.log(err.message);
+			console.log(err.code);
+			switch (err.code) {
+				case "auth/email-already-in-use":
+					setSignUpError("Email address is already in use.");
+					break;
+
+				case "auth/network-request-failed":
+					setSignUpError("Network error. Check connection and try again.");
+					break;
+
+				default:
+					setSignUpError("An error has occurred during sign up.");
+					break;
+			}
+		});
+};
+
+const AddUser = (user, setSubmit, _firstName, _lastName, email, history) => {
+	console.log("User  ===== " + user.uid);
+	db.collection("users")
+		.doc(user.uid)
+		.set({
+			uid: user.uid,
+			firstName: _firstName,
+			lastName: _lastName,
+			email: user.email,
+			photoURL: user.photoURL,
+			level: "user",
+			created: firestore.Timestamp.fromDate(new Date()),
+		})
+		.then(() => {
+			console.log("User Created with ID : " + user.uid);
+			//SendEmailVerification
+			user
+				.sendEmailVerification()
+				.then(function () {
+					window.localStorage.setItem("sendEmailVerification", email);
+					auth.signOut();
+					console.log("Email Sent!");
+					history.push({
+						pathname: "/email_confirmation",
+						state: { email: email },
+					});
+				})
+				.catch(function () {});
+		})
+		.catch((error) => {
+			console.log("Error adding user: " + error);
+			setSubmit(false);
+		});
+};
+
 export function useAuth() {
 	return useContext(AuthContext);
 }
 
 export const signOut = () => {
 	auth.signOut();
-	// console.log("Log Out");
 };

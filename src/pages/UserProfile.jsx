@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {} from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink2 } from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -45,9 +45,8 @@ function UserProfile(props) {
 	const [user, setUser] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	// console.log(props.history.location.state.profile);
+	console.log(props.history.location);
 
-	// const history = useHistory();
 	const isMounted = useRef(false);
 
 	useEffect(() => {
@@ -110,7 +109,7 @@ const DisplayProfile = ({ user }) => {
 			<GridItem colSpan={{ md: 1 }}>
 				<Box px={[4, 0]}>
 					<VStack>
-						<LinkBox to="#" as={RouterLink} onClick={onOpen}>
+						<LinkBox to="#" as={RouterLink2} onClick={onOpen}>
 							<Image
 								boxSize="280px"
 								borderRadius="full"
@@ -187,7 +186,7 @@ const DisplayProfile = ({ user }) => {
 									icon={<FaTwitter />}
 								/>
 							</Link>
-							<Link href={user.facebook && user.facebook} isExternal>
+							<Link href={user.facebook ? user.facebook : ""} isExternal>
 								<IconButton
 									fontSize="20px"
 									variant="ghost"
@@ -216,7 +215,7 @@ const DisplayProfile = ({ user }) => {
 							</Link>
 						</Flex>
 
-						<Link as={RouterLink} to="#" textDecoration="none">
+						<Link as={RouterLink2} to="#" textDecoration="none">
 							<Button width="280px" colorScheme="teal" variant="outline">
 								Send Message
 							</Button>

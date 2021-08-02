@@ -228,6 +228,7 @@ const LessonsHeader = () => {
 								createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
 								uploaderName: currentUser.displayName,
 								uploaderID: currentUser.uid,
+								uploaderimage: currentUser.photoURL,
 								approved: false,
 							})
 							.then((docRef) => {
@@ -259,6 +260,7 @@ const LessonsHeader = () => {
 					createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
 					uploaderName: currentUser.displayName,
 					uploaderID: currentUser.uid,
+					uploaderimage: currentUser.photoURL,
 					approved: false,
 				})
 				.then((docRef) => {

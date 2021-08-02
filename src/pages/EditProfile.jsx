@@ -50,30 +50,45 @@ function EditProfile() {
 		: new Date();
 	const _endDate = userData.endDate ? new Date(userData.endDate) : new Date();
 
-	console.log(_dob);
-
 	// Setting form state
-	const [firstName, setFirstName] = useState(userData.firstName);
-	const [lastName, setLastName] = useState(userData.lastName);
-	const [phone, setPhone] = useState(userData.phone);
+	const [firstName, setFirstName] = useState(
+		userData.firstName ? userData.firstName : "",
+	);
+	const [lastName, setLastName] = useState(
+		userData.lastName ? userData.lastName : "",
+	);
+	const [phone, setPhone] = useState(userData.phone ? userData.phone : "");
 	const [dob, setDOB] = useState(format(_dob, "yyyy-MM-dd"));
-	const [school, setSchool] = useState(userData.school);
-	const [type, setType] = useState(userData.type);
+	const [school, setSchool] = useState(userData.school ? userData.school : "");
+	const [type, setType] = useState(userData.type ? userData.type : "");
 	const [startDate, setStartDate] = useState(format(_startDate, "yyyy-MM-dd"));
 	const [endDate, setEndDate] = useState(format(_endDate, "yyyy-MM-dd"));
-	const [supervisor, setSupervisor] = useState(userData.supervisor);
-	const [aboutMe, setAboutMe] = useState(userData.aboutMe);
-	const [website, setWebsite] = useState(userData.website);
-	const [twitter, setTwitter] = useState(userData.twitter);
-	const [facebook, setFacebook] = useState(userData.facebook);
-	const [instagram, setInstagram] = useState(userData.instagram);
-	const [linkedin, setLinkedin] = useState(userData.linkedin);
+	const [supervisor, setSupervisor] = useState(
+		userData.supervisor ? userData.supervisor : "",
+	);
+	const [aboutMe, setAboutMe] = useState(
+		userData.aboutMe ? userData.aboutMe : "",
+	);
+	const [website, setWebsite] = useState(
+		userData.website ? userData.website : "",
+	);
+	const [twitter, setTwitter] = useState(
+		userData.twitter ? userData.twitter : "",
+	);
+	const [facebook, setFacebook] = useState(
+		userData.facebook ? userData.facebook : "",
+	);
+	const [instagram, setInstagram] = useState(
+		userData.instagram ? userData.instagram : "",
+	);
+	const [linkedin, setLinkedin] = useState(
+		userData.linkedin ? userData.linkedin : "",
+	);
 
 	// console.log(currentUser);
 
 	const handleUpdateProfile = (e) => {
 		e.preventDefault();
-		let email = e.target.email.value;
 		// let firstName = e.target.firstName.value;
 		// let lastName = e.target.lastName.value;
 		// let phone = e.target.phone.value;
@@ -95,7 +110,6 @@ function EditProfile() {
 			.update({
 				firstName: firstName,
 				lastName: lastName,
-				email: email,
 				phone: phone,
 				dob: dob,
 				aboutMe: aboutMe,
@@ -131,8 +145,6 @@ function EditProfile() {
 				setError("Error Updating profile: ", error);
 				setSubmit(false);
 			});
-
-		// console.log(linkedin);
 	};
 
 	const handleUpload = (e) => {
@@ -184,12 +196,6 @@ function EditProfile() {
 			const extension = imageAsFile.name.substring(
 				imageAsFile.name.lastIndexOf(".") + 1,
 			);
-			// console.log(extension);
-
-			//Compressing Image and resizing
-			// const compressedImage = await resizeImageFn(imageAsFile);
-
-			// console.log(compressedImage);
 
 			// Upload file and metadata to the object 'images/mountains.jpg'
 			const uploadTask = storageRef
@@ -245,24 +251,6 @@ function EditProfile() {
 			);
 		}
 	};
-
-	// async function resizeImageFn(file) {
-	// 	const resizedImage = await compress.compress([file], {
-	// 		size: 4, // the max size in MB, defaults to 2MB
-	// 		quality: 1, // the quality of the image, max is 1,
-	// 		maxWidth: 300, // the max width of the output image, defaults to 1920px
-	// 		maxHeight: 300, // the max height of the output image, defaults to 1920px
-	// 		resize: true, // defaults to true, set false if you do not want to resize the image width and height
-	// 	});
-
-	// 	console.log(resizedImage);
-	// 	const img = resizedImage[0];
-	// 	const base64str = img.data;
-	// 	const imgExt = img.ext;
-	// 	const resizedFiile = Compress.convertBase64ToFile(base64str, imgExt);
-	// 	console.log(resizedFiile.size);
-	// 	return resizedFiile;
-	// }
 
 	return (
 		<Header>
@@ -394,6 +382,7 @@ function EditProfile() {
 												Youth Service Corp
 											</option>
 											<option value="Intern">Intern</option>
+											<option value="Staff">Staff</option>
 										</Select>
 									</Box>
 									<Box mb="4">
