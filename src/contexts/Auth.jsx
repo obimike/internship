@@ -90,6 +90,14 @@ export const googleSign = () => {
 		// The signed-in user info.
 		var user = result.user;
 
+		// //getting thelastName from user
+		// let lastName = user.displayName.split(" ");
+		// lastName = lastName[lastName.length - 1];
+
+		// //getting the firstName from user
+		// let firstName = user.displayName.split(" ");
+		// firstName = firstName[firstName.length - 1];
+
 		// Add user to database
 		db.collection("users")
 			.doc(user.uid)
@@ -160,6 +168,7 @@ const AddUser = (user, setSubmit, _firstName, _lastName, email, history) => {
 			firstName: _firstName,
 			lastName: _lastName,
 			email: user.email,
+			displayName: _lastName + " " + _firstName,
 			photoURL: user.photoURL,
 			level: "user",
 			created: firestore.Timestamp.fromDate(new Date()),

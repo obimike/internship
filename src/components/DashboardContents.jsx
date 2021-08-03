@@ -772,10 +772,11 @@ const FeedComments = ({ item }) => {
 			<Link
 				to={{
 					pathname: "/user/profile",
+					hash: "#the-hash",
 					state: { profile: item.commenterID },
 				}}
 			>
-				<Avatar size="sm" />
+				<Avatar size="sm"  />
 			</Link>
 			<Flex flexDir="column" ml="1.5" w="100%">
 				<Link

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {} from "react-router-dom";
-import { Link as RouterLink2 } from "react-router-dom";
+import { Link as RouterLink, Redirect } from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -26,6 +25,14 @@ import {
 	Skeleton,
 	SkeletonCircle,
 	SkeletonText,
+	Drawer,
+	DrawerContent,
+	DrawerOverlay,
+	DrawerHeader,
+	DrawerBody,
+	DrawerFooter,
+	Input,
+	Avatar,
 } from "@chakra-ui/react";
 import { FiMail, FiPhone, FiUser, FiLink } from "react-icons/fi";
 import {
@@ -38,23 +45,26 @@ import {
 } from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
 import { format } from "date-fns";
+import { HiEmojiHappy } from "react-icons/hi";
+import { IoIosClose } from "react-icons/io";
+import { IoSendSharp } from "react-icons/io5";
 
 import { db } from "../firebase/Config";
+import InboxMessageCard from "../components/InboxMessageCard";
 
 function UserProfile(props) {
 	const [user, setUser] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	console.log(props.history.location);
-
 	const isMounted = useRef(false);
 
-	useEffect(() => {
-		isMounted.current = true;
-		setLoading(true);
 
-		if (props.history.location.state.profile) {
+	useEffect(() => {
+		if (props.history.location.state.profile === undefined) {
+			isMounted.current = true;
+			setLoading(true);
 			const id = props.history.location.state.profile;
+
 			db.collection("users")
 				.doc(id)
 				.get()
@@ -70,12 +80,23 @@ function UserProfile(props) {
 						setLoading(false);
 					}
 				});
-		}
-		return () => {
-			isMounted.current = false;
-			setLoading(false);
-		};
-	}, [props.history.location.state.profile]);
+
+			return () => {
+				isMounted.current = false;
+				setLoading(false);
+			};
+		} 
+	}, []);
+
+	if (props.history.location.state.profile === undefined) {
+		return (
+			<Redirect
+				to={{
+					pathname: "/dashboard",
+				}}
+			/>
+		);
+	}
 
 	return (
 		<Header>
@@ -97,6 +118,8 @@ export default UserProfile;
 const DisplayProfile = ({ user }) => {
 	const textColor = useColorModeValue("gray.600", "gray.400");
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [openInboxDialog, setOpenInboxDialog] = useState(false);
+	const grayColor = useColorModeValue("gray.600", "gray.400");
 
 	return (
 		<SimpleGrid
@@ -109,19 +132,18 @@ const DisplayProfile = ({ user }) => {
 			<GridItem colSpan={{ md: 1 }}>
 				<Box px={[4, 0]}>
 					<VStack>
-						<LinkBox to="#" as={RouterLink2} onClick={onOpen}>
-							<Image
-								boxSize="280px"
-								borderRadius="full"
-								fallback={
-									<FaUserCircle
-										fontSize="280px"
-										color={useColorModeValue("#a5a5a5", "#d5d5d5")}
-									/>
-								}
-								src={user.photoURL}
-							/>
-						</LinkBox>
+						<Image
+							onClick={onOpen}
+							boxSize="280px"
+							borderRadius="full"
+							fallback={
+								<FaUserCircle
+									fontSize="280px"
+									color={useColorModeValue("#a5a5a5", "#d5d5d5")}
+								/>
+							}
+							src={user.photoURL}
+						/>
 						<Modal isOpen={isOpen} size="md">
 							<ModalOverlay />
 							<ModalContent>
@@ -215,12 +237,78 @@ const DisplayProfile = ({ user }) => {
 							</Link>
 						</Flex>
 
-						<Link as={RouterLink2} to="#" textDecoration="none">
-							<Button width="280px" colorScheme="teal" variant="outline">
-								Send Message
-							</Button>
-						</Link>
+						<Button
+							width="280px"
+							onClick={() => {
+								setOpenInboxDialog(true);
+							}}
+							colorScheme="teal"
+							variant="outline"
+						>
+							Send Message
+						</Button>
 					</VStack>
+
+					{/* Left Drawer for chat */}
+					<Drawer placement="left" isOpen={openInboxDialog} size="full">
+						<DrawerOverlay />
+						<DrawerContent>
+							<DrawerHeader borderBottomWidth="1px">
+								<Flex
+									flexDir="row"
+									justifyContent="space-between"
+									align="center"
+								>
+									<Flex align="center">
+										<Avatar size="md" src={user.photoURL} />
+										<Text ml="1.5">{user.displayName}</Text>
+									</Flex>
+									<IconButton
+										onClick={() => {
+											setOpenInboxDialog(false);
+										}}
+										variant="ghost"
+										icon={<IoIosClose fontSize="32px" />}
+									/>
+								</Flex>
+							</DrawerHeader>
+
+							<DrawerBody w="100%">
+								<InboxMessageCard />
+							</DrawerBody>
+
+							<DrawerFooter w="100%">
+								<Flex
+									w="100vw"
+									justifyContent="center"
+									h={{ base: "6rem", md: "6rem", lg: "auto" }}
+									alignItems="center"
+								>
+									<IconButton
+										// onClick={onClose}
+										color={grayColor}
+										variant="ghost"
+										icon={<HiEmojiHappy fontSize="32px" />}
+									/>
+									<Input
+										type="text"
+										placeholder="Type a message"
+										name="message"
+										size="lg"
+										ml="1.5"
+									/>
+									<IconButton
+										type="submit"
+										colorScheme="teal"
+										ml="1.5"
+										variant="ghost"
+										icon={<IoSendSharp fontSize="32px" />}
+										disabled={true}
+									/>
+								</Flex>
+							</DrawerFooter>
+						</DrawerContent>
+					</Drawer>
 				</Box>
 			</GridItem>
 
