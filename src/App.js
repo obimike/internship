@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import  Auth  from "./contexts/Auth";
+import Auth from "./contexts/Auth";
 
 //Import Pages
 import SignIn from "./pages/Signin";
@@ -10,7 +10,6 @@ import DashBoard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import UserProfile from "./pages/UserProfile";
-
 
 function App() {
 	return (
@@ -26,7 +25,7 @@ function App() {
 						component={EmailConfirmation}
 					/>
 					<Route path="/profile" exact component={Profile} />
-					<Route path="/user/profile" exact component={UserProfile} />
+					<Route path="/user/profile/:pid" exact component={UserProfile} />
 					<Route path="/edit_profile" exact component={EditProfile} />
 					<Route path="/dashboard" exact component={DashBoard} />
 					<Route path="/inbox" exact component={Inbox} />

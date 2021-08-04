@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link as RouterLink, Redirect } from "react-router-dom";
+import {} from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -20,7 +20,6 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalFooter,
-	LinkBox,
 	useDisclosure,
 	Skeleton,
 	SkeletonCircle,
@@ -58,15 +57,17 @@ function UserProfile(props) {
 
 	const isMounted = useRef(false);
 
+	const { pid } = props.match.params;
+
+	// console.log(props.match);
 
 	useEffect(() => {
-		if (props.history.location.state.profile === undefined) {
+		if (pid !== undefined) {
 			isMounted.current = true;
 			setLoading(true);
-			const id = props.history.location.state.profile;
 
 			db.collection("users")
-				.doc(id)
+				.doc(pid)
 				.get()
 				.then((doc) => {
 					if (doc.exists) {
@@ -85,18 +86,8 @@ function UserProfile(props) {
 				isMounted.current = false;
 				setLoading(false);
 			};
-		} 
-	}, []);
-
-	if (props.history.location.state.profile === undefined) {
-		return (
-			<Redirect
-				to={{
-					pathname: "/dashboard",
-				}}
-			/>
-		);
-	}
+		}
+	}, [pid]);
 
 	return (
 		<Header>
@@ -106,7 +97,7 @@ function UserProfile(props) {
 					{user === "" ? (
 						<Flex mt={24}>No such user in firestore </Flex>
 					) : (
-						<DisplayProfile user={user} />
+						<DisplayProfile user={user} pid={pid} />
 					)}
 				</>
 			)}
@@ -115,7 +106,7 @@ function UserProfile(props) {
 }
 export default UserProfile;
 
-const DisplayProfile = ({ user }) => {
+const DisplayProfile = ({ user, pid }) => {
 	const textColor = useColorModeValue("gray.600", "gray.400");
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [openInboxDialog, setOpenInboxDialog] = useState(false);
@@ -184,57 +175,109 @@ const DisplayProfile = ({ user }) => {
 								{user.email}
 							</Text>
 						</Flex>
-						<Flex align="center">
-							<FiLink />
-							<Link
-								href={user.website && user.website}
-								isExternal
-								color="teal.500"
-								ml="1.5"
-							>
-								{user.website && user.website}
-							</Link>
-						</Flex>
+
+						{user.website && (
+							<Flex align="center">
+								<FiLink />
+								<Link
+									href={user.website && user.website}
+									isExternal
+									color="teal.500"
+									ml="1.5"
+								>
+									{user.website && user.website}
+								</Link>
+							</Flex>
+						)}
+
 						<Flex align="center" justifyContent="space-between" w="280px">
 							<Text color={useColorModeValue("gray.600", "gray.400")}>
 								Socials:
 							</Text>
-							<Link href={user.twitter && user.twitter} isExternal>
+
+							{user.twitter ? (
+								<Link href={user.twitter} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Twitter"
+										_hover={{ color: "#1da1f2" }}
+										icon={<FaTwitter />}
+									/>
+								</Link>
+							) : (
 								<IconButton
 									fontSize="20px"
 									variant="ghost"
 									aria-label="Twitter"
 									_hover={{ color: "#1da1f2" }}
 									icon={<FaTwitter />}
+									disabled={true}
 								/>
-							</Link>
-							<Link href={user.facebook ? user.facebook : ""} isExternal>
+							)}
+
+							{user.facebook ? (
+								<Link href={user.facebook} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Facebook"
+										_hover={{ color: "#1877f2" }}
+										icon={<FaFacebookF />}
+									/>
+								</Link>
+							) : (
 								<IconButton
 									fontSize="20px"
 									variant="ghost"
 									aria-label="Facebook"
 									_hover={{ color: "#1877f2" }}
 									icon={<FaFacebookF />}
+									disabled={true}
 								/>
-							</Link>
-							<Link href={user.linkedin && user.linkedin} isExternal>
+							)}
+
+							{user.linkedin ? (
+								<Link href={user.linkedin} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Linkedin"
+										_hover={{ color: "#0a66c2" }}
+										icon={<FaLinkedinIn />}
+									/>
+								</Link>
+							) : (
 								<IconButton
 									fontSize="20px"
 									variant="ghost"
-									aria-label="Facebook"
+									aria-label="Linkedin"
 									_hover={{ color: "#0a66c2" }}
 									icon={<FaLinkedinIn />}
+									disabled={true}
 								/>
-							</Link>
-							<Link href={user.instagram && user.instagram} isExternal>
+							)}
+
+							{user.instagram ? (
+								<Link href={user.instagram} isExternal>
+									<IconButton
+										fontSize="20px"
+										variant="ghost"
+										aria-label="Instagram"
+										_hover={{ color: "#c32aa3" }}
+										icon={<FaInstagram />}
+									/>
+								</Link>
+							) : (
 								<IconButton
 									fontSize="20px"
 									variant="ghost"
-									aria-label="Facebook"
+									aria-label="Instagram"
 									_hover={{ color: "#c32aa3" }}
 									icon={<FaInstagram />}
+									disabled={true}
 								/>
-							</Link>
+							)}
 						</Flex>
 
 						<Button
@@ -274,7 +317,7 @@ const DisplayProfile = ({ user }) => {
 							</DrawerHeader>
 
 							<DrawerBody w="100%">
-								<InboxMessageCard />
+								<InboxMessageCard pid={pid} />
 							</DrawerBody>
 
 							<DrawerFooter w="100%">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import {
 	Flex,
 	Text,
@@ -652,19 +652,29 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 		}
 	};
 
+	let profileLink = "";
+
+	if (currentUser.uid === item.posterID) {
+			profileLink = "/profile";
+	} else {
+		profileLink = `/user/profile/${item.posterID}`;	
+	}
+
 	return (
 		<>
 			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
 				<Flex mb="1.5" alignItems="center" justifyContent="space-between">
-					<Flex alignItems="center">
-						<Avatar size="lg" src={item.posterImage} />
-						<Flex flexDir="column" ml="2.5">
-							<Text>{item.posterName}</Text>
-							<Text fontSize="sm" color={grayColor}>
-								{time}
-							</Text>
+					<LinkBox to={profileLink} as={RouterLink}>
+						<Flex alignItems="center">
+							<Avatar size="lg" src={item.posterImage} />
+							<Flex flexDir="column" ml="2.5">
+								<Text>{item.posterName}</Text>
+								<Text fontSize="sm" color={grayColor}>
+									{time}
+								</Text>
+							</Flex>
 						</Flex>
-					</Flex>
+					</LinkBox>
 					<IconButton
 						variant="ghost"
 						icon={<IoShareOutline fontSize="24px" />}
@@ -683,11 +693,11 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 							<Text fontWeight="bold" w="25%">
 								Read more:{" "}
 							</Text>{" "}
-							<Link href={item.link} w="74%" isExternal>
+							<LinkBox href={item.link} w="74%" isExternal>
 								<Text color="blue.600" noOfLines={1}>
 									{item.link}
 								</Text>
-							</Link>
+							</LinkBox>
 						</Flex>
 					)}
 				</Flex>
@@ -769,26 +779,15 @@ const FeedComments = ({ item }) => {
 
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
-			<Link
-				to={{
-					pathname: "/user/profile",
-					hash: "#the-hash",
-					state: { profile: item.commenterID },
-				}}
-			>
-				<Avatar size="sm"  />
-			</Link>
+			<LinkBox to={`/user/profile/${item.commenterID}`} as={RouterLink}>
+				<Avatar size="sm" src={item.commenterImage} />
+			</LinkBox>
 			<Flex flexDir="column" ml="1.5" w="100%">
-				<Link
-					to={{
-						pathname: "/user/profile",
-						state: { profile: item.commenterID },
-					}}
-				>
+				<LinkBox to={`/user/profile/${item.commenterID}`} as={RouterLink}>
 					<Text mb="1" pt="1" fontWeight="bold" color="black">
 						{item.commenterName}
 					</Text>
-				</Link>
+				</LinkBox>
 
 				<Text color="black">{item.comment}</Text>
 

@@ -152,7 +152,11 @@ const NotificationCard = ({ notification, currentUser }) => {
 						</Flex>
 					</DrawerHeader>
 					<DrawerBody w="100%">
-						<NotificationDetail notification={notification} time={time} />
+						<NotificationDetail
+							notification={notification}
+							time={time}
+							currentUser={currentUser}
+						/>
 					</DrawerBody>
 				</DrawerContent>
 			</Drawer>
@@ -160,7 +164,7 @@ const NotificationCard = ({ notification, currentUser }) => {
 	);
 };
 
-const NotificationDetail = ({ notification, time }) => {
+const NotificationDetail = ({ notification, time, currentUser }) => {
 	// console.log(notification);
 	const isMounted = useRef(false); // note mutable flag
 
@@ -184,14 +188,26 @@ const NotificationDetail = ({ notification, time }) => {
 		db.collection("notifications").doc(notification.notificationID).delete();
 	};
 
+	let profileLink = "";
+
+	if (currentUser.uid === notification.uid) {
+		profileLink = "/profile";
+	} else {
+		profileLink = `/user/profile/${notification.uid}`;
+	}
+
 	return (
 		<>
-			<Flex flexDir="column">
+			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
 				<Flex flexDir="row">
-					<Avatar src={notification.photoURL} />
+					<LinkBox to={profileLink} as={RouterLink}>
+						<Avatar src={notification.photoURL} />
+					</LinkBox>
 					<Flex justifyContent="space-between" w="100%" alignItems="center">
 						<Flex flexDir="column" ml="2">
-							<Text>{notification.name}</Text>
+							<LinkBox to={profileLink} as={RouterLink}>
+								<Text>{notification.name}</Text>
+							</LinkBox>
 							<Text>{time}</Text>
 						</Flex>
 						<IconButton variant="outline" onClick={handleDelete}>
