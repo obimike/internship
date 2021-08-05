@@ -60,7 +60,7 @@ function Lessonscard({ item }) {
 	let firstName = item.uploaderName.split(" ");
 	firstName = firstName[firstName.length - 1];
 
-	//formating time
+	//formatting time
 	let to = tConvert(item.timeTo);
 	let from = tConvert(item.timeFrom);
 
@@ -198,7 +198,7 @@ const LessonDetail = ({ item }) => {
 		return time.join(""); // return adjusted time or original string
 	};
 
-	//formating time
+	//formatting time
 	let to = tConvert(item.timeTo);
 	let from = tConvert(item.timeFrom);
 

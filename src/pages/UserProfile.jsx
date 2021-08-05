@@ -48,7 +48,8 @@ import { HiEmojiHappy } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
 import { IoSendSharp } from "react-icons/io5";
 
-import { db } from "../firebase/Config";
+import { db, firestore } from "../firebase/Config";
+import { useAuth } from "../contexts/Auth";
 import InboxMessageCard from "../components/InboxMessageCard";
 
 function UserProfile(props) {
@@ -108,9 +109,39 @@ export default UserProfile;
 
 const DisplayProfile = ({ user, pid }) => {
 	const textColor = useColorModeValue("gray.600", "gray.400");
-	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [openInboxDialog, setOpenInboxDialog] = useState(false);
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const { currentUser } = useAuth();
+
+	// console.log(user);
+
+	const [openInboxDialog, setOpenInboxDialog] = useState(false);
+	const [messageText, setMessageText] = useState("");
+
+	const handleSubmitMessage = (e) => {
+		e.preventDefault();
+
+		db.collection("messages")
+			.add({
+				receiverID: pid,
+				receiverName: user.lastName + " " + user.firstName,
+				receiverImage: user.photoURL,
+				senderID: currentUser.uid,
+				senderName: currentUser.displayName,
+				senderImage: currentUser.photoURL,
+				participants: [currentUser.uid, pid],
+				message: messageText,
+				read: false,
+				sentAt: firestore.Timestamp.fromDate(new Date()),
+			})
+			.then((docRef) => {
+				console.log("Message sent with ID: ", docRef.id);
+				setMessageText("");
+			});
+
+		console.log(messageText);
+	};
 
 	return (
 		<SimpleGrid
@@ -339,14 +370,20 @@ const DisplayProfile = ({ user, pid }) => {
 										name="message"
 										size="lg"
 										ml="1.5"
+										value={messageText}
+										onChange={(e) => {
+											setMessageText(e.target.value);
+										}}
 									/>
 									<IconButton
+										// isRound={true}
 										type="submit"
 										colorScheme="teal"
 										ml="1.5"
 										variant="ghost"
-										icon={<IoSendSharp fontSize="32px" />}
-										disabled={true}
+										icon={<IoSendSharp fontSize="30px" />}
+										disabled={messageText ? false : true}
+										onClick={handleSubmitMessage}
 									/>
 								</Flex>
 							</DrawerFooter>

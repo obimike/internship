@@ -107,7 +107,7 @@ function DashboardContents() {
 		let writeUp = e.target.writeUp.value;
 		let image = "";
 
-		//Checkin the length of the title to more 3 character long
+		//Checking the length of the title to more 3 character long
 		if (title.length <= 3) {
 			setError("Title should be more the 3 character long!");
 			setSubmit(false);
@@ -169,7 +169,7 @@ function DashboardContents() {
 					setSubmit(false);
 				},
 				() => {
-					// gets the functions from storage refences the image storage in firebase
+					// gets the functions from storage references the image storage in firebase
 					uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
 						db.collection("posts")
 							.add({
@@ -366,7 +366,7 @@ function DashboardContents() {
 							</Button>
 							<Button
 								isLoading={submit ? true : false}
-								loadingText="Subitting"
+								loadingText="Submitting"
 								type="submit"
 								colorScheme="teal"
 							>
@@ -388,7 +388,7 @@ const FeedCard = ({ item }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const [commentItems, setCommentItems] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isLIked, setIsLiked] = useState(false);
+	const [isLiked, setIsLiked] = useState(false);
 
 	const isMounted = useRef(false);
 
@@ -440,7 +440,7 @@ const FeedCard = ({ item }) => {
 	}
 
 	const handleLike = () => {
-		setIsLiked(!isLIked);
+		setIsLiked(!isLiked);
 		if (uid === currentUser.uid) {
 			db.collection("posts")
 				.doc(item.itemID)
@@ -554,7 +554,7 @@ const FeedCard = ({ item }) => {
 };
 
 const FeedDetail = ({ item, comment, isLoading, like }) => {
-	const [isLIked, setIsLiked] = useState(false);
+	const [isLiked, setIsLiked] = useState(false);
 
 	// console.log(item);
 
@@ -570,7 +570,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const comment = e.target.coment.value;
+		const comment = e.target.comment.value;
 
 		db.collection("comments")
 			.add({
@@ -611,7 +611,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 					isClosable: true,
 				});
 				setSubmit(false);
-				e.target.coment.value = "";
+				e.target.comment.value = "";
 			})
 			.catch((error) => {
 				console.log(error);
@@ -636,7 +636,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 	}
 
 	const handleLike = () => {
-		setIsLiked(!isLIked);
+		setIsLiked(!isLiked);
 		if (uid === currentUser.uid) {
 			db.collection("posts")
 				.doc(item.itemID)
@@ -738,7 +738,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 						<form onSubmit={handleSubmit}>
 							<Textarea
 								placeholder="Share your thoughts"
-								name="coment"
+								name="comment"
 								size="sm"
 								resize="none"
 								required
@@ -749,7 +749,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 								my="1.5"
 								type="submit"
 								isLoading={submit ? true : false}
-								loadingText="Subitting"
+								loadingText="Submitting"
 							>
 								Add comment
 							</Button>

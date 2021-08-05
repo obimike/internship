@@ -36,11 +36,11 @@ function Lessons() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [lessonItems, setLessonItems] = useState([]);
 
+		console.log(typeof lessonItems);
+
 	const isMounted = useRef(false); // note mutable flag
 
 	useEffect(() => {
-		// console.log("Entering UseEffect");
-
 		isMounted.current = true;
 
 		db.collection("lessons")
@@ -58,11 +58,9 @@ function Lessons() {
 					fetchLessonItems.push(fetchItem);
 				});
 				if (isMounted.current) {
-					// add conditional check
 					// setTotalItems(fetchTaskItems.length);
 					setLessonItems(fetchLessonItems);
 					// console.log(fetchLessonItems);
-
 					//set loading to false
 					setIsLoading(false);
 				}
@@ -77,6 +75,8 @@ function Lessons() {
 	const filteredOptions = lessonItems.filter(
 		(lesson) => lesson.date === `${selectDate}`,
 	);
+
+	console.log(lessonItems);
 	
 	return (
 		<>
@@ -143,7 +143,7 @@ const LessonsHeader = () => {
 		let upload = "";
 		let description = e.target.description.value;
 
-		//Checkin the length of the title to more 3 character long
+		//Checking the length of the title to more 3 character long
 		if (title.length <= 3) {
 			setError("Title should be more the 3 character long!");
 			setSubmit(false);
@@ -213,7 +213,7 @@ const LessonsHeader = () => {
 					setSubmit(false);
 				},
 				() => {
-					// gets the functions from storage refences the image storage in firebase
+					// gets the functions from storage references the image storage in firebase
 					uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
 						db.collection("lessons")
 							.add({
@@ -387,7 +387,7 @@ const LessonsHeader = () => {
 								<Text>Choose Class Type</Text>
 								<Flex direction="row" justifyContent="space-between">
 									<Radio value="Live">Live Class</Radio>
-									<Radio value="Video">Video Calss</Radio>
+									<Radio value="Video">Video Class</Radio>
 								</Flex>
 							</RadioGroup>
 							{type === "Video" && (
