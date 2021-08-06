@@ -39,8 +39,13 @@ import Notifications from "./Notifications";
 
 const Header = (props) => {
 	const { history } = props;
-	const { setVerifiedEmail, currentUser, isVerifiedEmail, newNotifications } =
-		useAuth();
+	const {
+		setVerifiedEmail,
+		currentUser,
+		isVerifiedEmail,
+		newNotifications,
+		newMessages,
+	} = useAuth();
 	const bg = useColorModeValue("white", "gray.800");
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -153,7 +158,10 @@ const Header = (props) => {
 									/>
 								}
 							>
-								Inbox
+								<Flex justifyContent="space-between">
+									<Text>Inbox </Text>
+									<Text color='teal' fontWeight='bold'>{newMessages}</Text>
+								</Flex>
 							</MenuItem>
 
 							<MenuItem

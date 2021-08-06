@@ -10,6 +10,7 @@ export default function Auth({ children }) {
 	const [loading, setLoading] = useState(true);
 	const [isVerifiedEmail, setVerifiedEmail] = useState(false);
 	const [newNotifications, setNewNotifications] = useState(0);
+	const [newMessages, setNewMessages] = useState(0);
 	const [loadingCards, setLoadingCards] = useState(true);
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
@@ -35,9 +36,8 @@ export default function Auth({ children }) {
 					});
 
 				setCurrentUser(user);
-				setLoading(false);
 				setVerifiedEmail(user.emailVerified);
-				console.log(user);
+				// console.log(user);
 
 				//Fetch User data
 				db.collection("users")
@@ -46,9 +46,21 @@ export default function Auth({ children }) {
 					.then((doc) => {
 						if (doc.exists) {
 							setuser(doc.data());
+							setLoading(false);
 						} else {
+							setLoading(false);
 							console.log("No such user in firestore!");
 						}
+					});
+
+				//Fetch Number Messages
+				db.collection("messages")
+					.where("receiverID", "==", user.uid)
+					.where("read", "==", false)
+					.onSnapshot(function (querySnapshot) {
+						setNewMessages(querySnapshot.size);
+
+						console.log(querySnapshot.size);
 					});
 			} else {
 				setCurrentUser(null);
@@ -59,7 +71,7 @@ export default function Auth({ children }) {
 		return unsubscribe;
 	}, []);
 
-	// Will be passed down to Signup, Login and Dashboard components
+	// Will be passed down to Sign up, Login and Dashboard components
 	const values = {
 		currentUser,
 		setCurrentUser,
@@ -69,6 +81,7 @@ export default function Auth({ children }) {
 		loadingCards,
 		setLoadingCards,
 		newNotifications,
+		newMessages,
 		selectDate,
 		setSelectdate,
 	};
