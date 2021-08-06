@@ -140,7 +140,7 @@ function Materials() {
 				setPhpItems(fetchPhpItems);
 				setHtmlItems(fetchHtmlItems);
 
-				//set loading to flase
+				//set loading to false
 				setIsLoading(false);
 			});
 
@@ -156,7 +156,7 @@ function Materials() {
 		let category = e.target.category.value;
 		let upload = e.target[1].files[0];
 
-		//Checkin the length of the title to more 3 character long
+		//Checking the length of the title to more 3 character long
 		if (title.length <= 3) {
 			setError("Title should be more the 3 character long!");
 			setSubmit(false);
@@ -222,7 +222,7 @@ function Materials() {
 				setSubmit(false);
 			},
 			() => {
-				// gets the functions from storage refences the image storage in firebase
+				// gets the functions from storage references the image storage in firebase
 				uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
 					db.collection("materials")
 						.add({
@@ -302,7 +302,7 @@ function Materials() {
 				<ModalOverlay />
 				<ModalContent>
 					<form onSubmit={handleSubmit}>
-						<ModalHeader align="center">Uplaod Material</ModalHeader>
+						<ModalHeader align="center">Upload Material</ModalHeader>
 						<ModalBody>
 							{error && (
 								<Text

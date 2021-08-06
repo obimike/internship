@@ -150,7 +150,7 @@ const Header = (props) => {
 							</MenuItem>
 
 							<MenuItem
-								onClick={() => history.push("/inbox")}
+								onClick={() => history.push("#")}
 								icon={
 									<RiMailLine
 										color={useColorModeValue("#a5a5a5", "#f5f5f5")}

@@ -79,7 +79,14 @@ function Lessons() {
 	console.log(lessonItems);
 	
 	return (
-		<>
+		<Flex
+			mt={24}
+			flexDir="column"
+			align={{ base: "", md: "center", lg: "center" }}
+		>
+			<Text fontSize="xl" my={1.5} fontWeight="bold">
+				Inbox
+			</Text>
 			<LessonsHeader />
 			{/* <LessonSkeleton /> */}
 			{isLoading && <LessonSkeleton />}
@@ -93,16 +100,15 @@ function Lessons() {
 								</div>
 							);
 						})
-
 					) : (
-						<Center flexDir='column'>
+						<Center flexDir="column">
 							<Image src={Calendar} width="640" height="320" />
 							<Text textAlign="center">No 'Class' found for this date.</Text>
 						</Center>
 					)}
 				</>
 			)}
-		</>
+		</Flex>
 	);
 }
 

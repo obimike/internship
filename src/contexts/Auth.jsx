@@ -59,8 +59,6 @@ export default function Auth({ children }) {
 					.where("read", "==", false)
 					.onSnapshot(function (querySnapshot) {
 						setNewMessages(querySnapshot.size);
-
-						console.log(querySnapshot.size);
 					});
 			} else {
 				setCurrentUser(null);
@@ -103,13 +101,13 @@ export const googleSign = () => {
 		// The signed-in user info.
 		var user = result.user;
 
-		// //getting thelastName from user
-		// let lastName = user.displayName.split(" ");
-		// lastName = lastName[lastName.length - 1];
+		// //getting the lastName from user
+		let lastName = user.displayName.split(" ");
+		lastName = lastName[lastName.length - 1];
 
 		// //getting the firstName from user
-		// let firstName = user.displayName.split(" ");
-		// firstName = firstName[firstName.length - 1];
+		let firstName = user.displayName.split(" ");
+		firstName = firstName[0];
 
 		// Add user to database
 		db.collection("users")
@@ -117,6 +115,8 @@ export const googleSign = () => {
 			.set({
 				uid: user.uid,
 				displayName: user.displayName,
+				firstName,
+				lastName,
 				email: user.email,
 				photoURL: user.photoURL,
 				level: "user",
