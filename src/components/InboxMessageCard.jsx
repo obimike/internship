@@ -17,7 +17,7 @@ const InboxMessageCard = ({ pid }) => {
 		isMounted.current = true;
 
 		db.collection("messages")
-			.where("participants", "array-contains", currentUser.uid)
+			.where("combinedID", "in", [currentUser.uid + pid, pid + currentUser.uid])
 			.orderBy("sentAt", "desc")
 			.onSnapshot(function (items) {
 				const fetchMessageItems = [];

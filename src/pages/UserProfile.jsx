@@ -130,7 +130,7 @@ const DisplayProfile = ({ user, pid }) => {
 				senderID: currentUser.uid,
 				senderName: currentUser.displayName,
 				senderImage: currentUser.photoURL,
-				participants: [currentUser.uid, pid],
+				combinedID: currentUser.uid + pid,
 				message: messageText,
 				read: false,
 				sentAt: firestore.Timestamp.fromDate(new Date()),

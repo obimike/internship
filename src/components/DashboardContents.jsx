@@ -777,13 +777,30 @@ const FeedComments = ({ item }) => {
 		addSuffix: true,
 	});
 
+	const { currentUser } = useAuth();
+
+	console.log(item)
+	console.log("commenter ID = "+item.commenterID);
+	console.log("UserID = " + currentUser.uid);
+	
+
+	let profileLink = "";
+
+
+
+	if (currentUser.uid === item.commenterID) {
+		profileLink = "/profile";
+	} else {
+		profileLink = `/user/profile/${item.commenterID}`;
+	}
+
 	return (
 		<Flex p="2.5" bg="gray.100" borderRadius="8" mb="4">
-			<LinkBox to={`/user/profile/${item.commenterID}`} as={RouterLink}>
+			<LinkBox to={profileLink} as={RouterLink}>
 				<Avatar size="sm" src={item.commenterImage} />
 			</LinkBox>
 			<Flex flexDir="column" ml="1.5" w="100%">
-				<LinkBox to={`/user/profile/${item.commenterID}`} as={RouterLink}>
+				<LinkBox to={profileLink} as={RouterLink}>
 					<Text mb="1" pt="1" fontWeight="bold" color="black">
 						{item.commenterName}
 					</Text>
