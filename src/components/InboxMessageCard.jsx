@@ -45,7 +45,7 @@ const InboxMessageCard = ({ pid }) => {
 	// console.log("Messages = " + messages);
 
 	return (
-		<Flex flexDir="column-reverse">
+		<Flex flexDir="column-reverse" mx={{ base: 2, md: 12, lg: 48 }}>
 			{!loading && (
 				<>
 					{messageItems.length > 0 ? (
@@ -83,7 +83,7 @@ const MessageBox = ({ message, currentUser }) => {
 					p="2.5"
 					maxW="75%"
 					borderTopLeftRadius="16"
-					borderBottomRightRadius="16"
+					borderTopRightRadius="16"
 					borderBottomLeftRadius="16"
 					flexWrap="wrap"
 					mb="2.5"

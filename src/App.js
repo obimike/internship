@@ -10,6 +10,7 @@ import DashBoard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import UserProfile from "./pages/UserProfile";
+import Administrator from "./pages/Administrator";;
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 					<Route path="/user/profile/:pid" exact component={UserProfile} />
 					<Route path="/edit_profile" exact component={EditProfile} />
 					<Route path="/dashboard" exact component={DashBoard} />
+					<Route path="/admin" exact component={Administrator} />
 					<Route path="/inbox" exact component={Inbox} />
 
 					<Route path="*" component={SignIn} />

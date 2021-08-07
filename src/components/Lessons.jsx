@@ -36,7 +36,7 @@ function Lessons() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [lessonItems, setLessonItems] = useState([]);
 
-		console.log(typeof lessonItems);
+	console.log(typeof lessonItems);
 
 	const isMounted = useRef(false); // note mutable flag
 
@@ -77,16 +77,9 @@ function Lessons() {
 	);
 
 	console.log(lessonItems);
-	
+
 	return (
-		<Flex
-			mt={24}
-			flexDir="column"
-			align={{ base: "", md: "center", lg: "center" }}
-		>
-			<Text fontSize="xl" my={1.5} fontWeight="bold">
-				Inbox
-			</Text>
+		<>
 			<LessonsHeader />
 			{/* <LessonSkeleton /> */}
 			{isLoading && <LessonSkeleton />}
@@ -108,7 +101,7 @@ function Lessons() {
 					)}
 				</>
 			)}
-		</Flex>
+		</>
 	);
 }
 

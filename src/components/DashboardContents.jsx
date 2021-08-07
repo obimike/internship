@@ -779,9 +779,9 @@ const FeedComments = ({ item }) => {
 
 	const { currentUser } = useAuth();
 
-	console.log(item)
-	console.log("commenter ID = "+item.commenterID);
-	console.log("UserID = " + currentUser.uid);
+	// console.log(item)
+	// console.log("commenter ID = "+item.commenterID);
+	// console.log("UserID = " + currentUser.uid);
 	
 
 	let profileLink = "";

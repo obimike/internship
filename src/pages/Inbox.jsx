@@ -57,7 +57,7 @@ export default function Inbox() {
 
 	return (
 		<Header>
-			<Flex mt={24}>
+			<Flex mt={24} flexDir='column'>
 				{!loading && (
 					<>
 						{messageItems.length > 0 ? (

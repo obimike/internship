@@ -332,6 +332,7 @@ const DisplayProfile = ({ user, pid }) => {
 									flexDir="row"
 									justifyContent="space-between"
 									align="center"
+									mx={{ base: 0, md: 12, lg: 48 }}
 								>
 									<Flex align="center">
 										<Avatar size="md" src={user.photoURL} />
@@ -351,7 +352,7 @@ const DisplayProfile = ({ user, pid }) => {
 								<InboxMessageCard pid={pid} />
 							</DrawerBody>
 
-							<DrawerFooter w="100%">
+							<DrawerFooter mx={{ base: 0, md: 12, lg: 48 }}>
 								<Flex
 									w="100vw"
 									justifyContent="center"

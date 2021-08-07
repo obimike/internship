@@ -150,7 +150,7 @@ const Header = (props) => {
 							</MenuItem>
 
 							<MenuItem
-								onClick={() => history.push("#")}
+								onClick={() => history.push("/inbox")}
 								icon={
 									<RiMailLine
 										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
@@ -160,12 +160,14 @@ const Header = (props) => {
 							>
 								<Flex justifyContent="space-between">
 									<Text>Inbox </Text>
-									<Text color='teal' fontWeight='bold'>{newMessages}</Text>
+									<Text color="teal" fontWeight="bold">
+										{newMessages}
+									</Text>
 								</Flex>
 							</MenuItem>
 
 							<MenuItem
-								onClick={() => ""}
+								onClick={() => history.push("/admin")}
 								icon={
 									<RiAdminLine
 										color={useColorModeValue("#a5a5a5", "#f5f5f5")}
