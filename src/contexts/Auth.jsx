@@ -120,6 +120,7 @@ export const googleSign = () => {
 				email: user.email,
 				photoURL: user.photoURL,
 				level: "user",
+				approved: false,
 				created: firestore.Timestamp.fromDate(new Date()),
 			})
 			.then(function () {
@@ -184,6 +185,7 @@ const AddUser = (user, setSubmit, _firstName, _lastName, email, history) => {
 			displayName: _lastName + " " + _firstName,
 			photoURL: user.photoURL,
 			level: "user",
+			approved: false,
 			created: firestore.Timestamp.fromDate(new Date()),
 		})
 		.then(() => {

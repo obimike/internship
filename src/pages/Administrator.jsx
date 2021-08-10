@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -20,6 +20,7 @@ import {
 	SkeletonCircle,
 	SkeletonText,
 	Divider,
+	Select,
 } from "@chakra-ui/react";
 import AccessDenial from "../assets/images/noAccess.svg";
 
@@ -31,6 +32,8 @@ import {
 } from "react-icons/io5";
 
 import { useAuth } from "../contexts/Auth";
+
+import { db } from "../firebase/Config";
 
 function Administrator() {
 	const { userData } = useAuth();
@@ -87,6 +90,46 @@ const AdminHeader = () => {
 };
 
 const Users = () => {
+	const [loading, setLoading] = useState(false);
+	const [userItems, setUserItems] = useState([]);
+	const [unApprovedUser, setUnApprovedUser] = useState([]);
+
+	const isMounted = useRef(false);
+
+	useEffect(() => {
+		isMounted.current = true;
+
+		db.collection("users")
+			.orderBy("created", "desc")
+			.onSnapshot(function (items) {
+				const fetchUserItems = [];
+				const fetchUnapprovedItems = [];
+				items.forEach((item) => {
+					const fetchItem = {
+						msgID: item.id,
+						...item.data(),
+					};
+					if (fetchItem.approved === false) {
+						fetchUnapprovedItems.push(fetchItem);
+						console.log(fetchItem);
+					}
+					fetchUserItems.push(fetchItem);
+				});
+				if (isMounted.current) {
+					setUnApprovedUser(fetchUnapprovedItems);
+					setUserItems(fetchUserItems);
+					console.log( fetchUserItems);
+					//set loading to false
+					setLoading(false);
+				}
+			});
+
+		return () => {
+			isMounted.current = false;
+			setLoading(false);
+		};
+	}, []);
+
 	return (
 		<Flex
 			flexDir="column"
@@ -99,13 +142,45 @@ const Users = () => {
 				<Avatar size="xl" />
 				<Flex ml={2.5} flexDir="column" justifyContent="space-between" py="1.5">
 					<Text fontWeight="bold">Angelina Jolie</Text>
-					<Text>Position: Staff</Text>
+					<Select w="100px" my="1.5">
+						<option value="user">user</option>
+						<option value="Admin">Admin</option>
+					</Select>
 					<Text>RegDate: 22nd, August 2021</Text>
 				</Flex>
 			</Flex>
 			<Flex justifyContent="space-between" mt={4}>
 				<Button colorScheme="red">Delete</Button>
-				<Button colorScheme="blue">Block</Button>
+				<Button colorScheme="blue">Locked</Button>
+				<Button colorScheme="green">Approve</Button>
+			</Flex>
+		</Flex>
+	);
+};
+
+const UserCard = () => {
+	return (
+		<Flex
+			flexDir="column"
+			borderWidth="1px"
+			borderRadius="8px"
+			p="2.5"
+			mb="1.5"
+		>
+			<Flex>
+				<Avatar size="xl" />
+				<Flex ml={2.5} flexDir="column" justifyContent="space-between" py="1.5">
+					<Text fontWeight="bold">Angelina Jolie</Text>
+					<Select w="100px" my="1.5">
+						<option value="user">user</option>
+						<option value="Admin">Admin</option>
+					</Select>
+					<Text>RegDate: 22nd, August 2021</Text>
+				</Flex>
+			</Flex>
+			<Flex justifyContent="space-between" mt={4}>
+				<Button colorScheme="red">Delete</Button>
+				<Button colorScheme="blue">Locked</Button>
 				<Button colorScheme="green">Approve</Button>
 			</Flex>
 		</Flex>
@@ -206,7 +281,6 @@ const FeedSkeleton = () => {
 		</Flex>
 	);
 };
-
 
 const Class = () => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
@@ -352,11 +426,10 @@ const ClassSkeleton = () => {
 	);
 };
 
-
 const Materials = () => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	return (
-		<Flex flexDir="column" border="1px" p="2">
+		<Flex flexDir="column" borderY="1px" p="2">
 			<LinkBox to="#" as={RouterLink}>
 				<Flex
 					flexDir="row"
@@ -389,7 +462,7 @@ const Materials = () => {
 
 const MaterialSkeleton = () => {
 	return (
-		<Flex flexDir="column" border="1px" p="2">
+		<Flex flexDir="column" borderY="1px" p="2">
 			<LinkBox to="#" as={RouterLink}>
 				<Flex
 					flexDir="row"
