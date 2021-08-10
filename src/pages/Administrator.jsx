@@ -92,6 +92,7 @@ const Users = () => {
 	const [loading, setLoading] = useState(false);
 	const [userItems, setUserItems] = useState([]);
 	const [unApprovedUser, setUnApprovedUser] = useState([]);
+	const [lockedUser, setLockedUser] = useState([]);
 
 	const isMounted = useRef(false);
 
@@ -103,6 +104,7 @@ const Users = () => {
 			.onSnapshot(function (items) {
 				const fetchUserItems = [];
 				const fetchUnapprovedItems = [];
+				const fetchLockedItems = [];
 				items.forEach((item) => {
 					const fetchItem = {
 						UID: item.id,
@@ -110,16 +112,16 @@ const Users = () => {
 					};
 					if (fetchItem.approved === false) {
 						fetchUnapprovedItems.push(fetchItem);
-						// console.log("fetchItem");
-						// console.log(fetchItem);
+					} else if (fetchItem.locked === true) {
+						fetchLockedItems.push(fetchItem);
 					} else {
 						fetchUserItems.push(fetchItem);
 					}
 				});
 				if (isMounted.current) {
 					setUnApprovedUser(fetchUnapprovedItems);
+					setLockedUser(fetchLockedItems);
 					setUserItems(fetchUserItems);
-					// console.log(fetchUserItems);
 					//set loading to false
 					setLoading(false);
 				}
@@ -136,32 +138,62 @@ const Users = () => {
 			{loading && <UserSkeleton />}
 			{!loading && (
 				<>
+					{/* Waiting List */}
+					<Text 
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						mb="2.5"
+					>
+						Waiting List
+					</Text>
 					{unApprovedUser.map((users) => (
 						<React.Fragment key={users.UID}>
 							{users.approved === false && (
 								<Flex flexDir="column">
-									<Text
-										fontSize="lg"
-										fontWeight="bold"
-										textAlign="center"
-										mb="2.5"
-									>
-										Waiting List
-									</Text>
-
 									<UserCard users={users} />
-
-									<Divider my="2.5" />
 								</Flex>
 							)}
 						</React.Fragment>
 					))}
 
+					<Divider my="3.5" />
+
+					{/* Locked out User */}
+					<Text
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						mb="2.5"
+					>
+						Locked Users
+					</Text>
+					{lockedUser.map((users) => (
+						<React.Fragment key={users.UID}>
+							{users.locked === true && (
+								<Flex flexDir="column">
+									<UserCard users={users} />
+								</Flex>
+							)}
+						</React.Fragment>
+					))}
+
+					<Divider my="3.5" />
+
+					{/* Approved Users */}
+					<Text
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						mb="2.5"
+					>
+						Approved Users
+					</Text>
 					{userItems.map((users) => (
 						<React.Fragment key={users.UID}>
-							<Text fontSize="lg" fontWeight="bold" textAlign="center" mb="2.5">
-								Approved Users
-							</Text>
 							<UserCard users={users} />
 						</React.Fragment>
 					))}
@@ -180,6 +212,28 @@ const UserCard = ({ users }) => {
 
 	const handleApprove = (e) => {
 		e.preventDefault();
+
+		db.collection("users")
+			.doc(users.UID)
+			.update({
+				level: e.target.value,
+			})
+			.then(() => {
+				toast({
+					title: `User Level Changed to ${e.target.value} .`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to change User Level to ${e.target.value} .`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
 	};
 
 	const handleLocked = (e) => {
