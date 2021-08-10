@@ -139,7 +139,7 @@ const Users = () => {
 			{!loading && (
 				<>
 					{/* Waiting List */}
-					<Text 
+					<Text
 						fontSize="lg"
 						color="teal"
 						fontWeight="bold"
@@ -216,11 +216,11 @@ const UserCard = ({ users }) => {
 		db.collection("users")
 			.doc(users.UID)
 			.update({
-				level: e.target.value,
+				approved: true,
 			})
 			.then(() => {
 				toast({
-					title: `User Level Changed to ${e.target.value} .`,
+					title: `${users.displayName} has been approved.`,
 					status: "success",
 					duration: 2000,
 					isClosable: true,
@@ -228,7 +228,7 @@ const UserCard = ({ users }) => {
 			})
 			.catch((error) => {
 				toast({
-					title: `Error: Unable to change User Level to ${e.target.value} .`,
+					title: `Error: Unable to approve ${users.displayName}.`,
 					status: "error",
 					duration: 2000,
 					isClosable: true,
@@ -346,7 +346,13 @@ const UserCard = ({ users }) => {
 				<Button colorScheme="blue" onClick={handleLocked}>
 					{users.locked === true ? "Unlock" : "Lock"}
 				</Button>
-				<Button colorScheme="green">Approve</Button>
+				<Button
+					colorScheme="green"
+					onClick={handleApprove}
+					disabled={users.approved === true ? true : false}
+				>
+					Approve
+				</Button>
 			</Flex>
 		</Flex>
 	);
