@@ -603,7 +603,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 							console.log(error);
 						});
 				}
-				console.log("Document written with ID: ", docRef.id);
+				// console.log("Document written with ID: ", docRef.id);
 				toast({
 					title: "Comment added.",
 					status: "success",
@@ -655,9 +655,9 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 	let profileLink = "";
 
 	if (currentUser.uid === item.posterID) {
-			profileLink = "/profile";
+		profileLink = "/profile";
 	} else {
-		profileLink = `/user/profile/${item.posterID}`;	
+		profileLink = `/user/profile/${item.posterID}`;
 	}
 
 	return (
@@ -779,14 +779,7 @@ const FeedComments = ({ item }) => {
 
 	const { currentUser } = useAuth();
 
-	// console.log(item)
-	// console.log("commenter ID = "+item.commenterID);
-	// console.log("UserID = " + currentUser.uid);
-	
-
 	let profileLink = "";
-
-
 
 	if (currentUser.uid === item.commenterID) {
 		profileLink = "/profile";

@@ -21,6 +21,7 @@ import {
 	SkeletonText,
 	Divider,
 	Select,
+	useToast,
 } from "@chakra-ui/react";
 import AccessDenial from "../assets/images/noAccess.svg";
 
@@ -34,6 +35,8 @@ import {
 import { useAuth } from "../contexts/Auth";
 
 import { db } from "../firebase/Config";
+
+import { format } from "date-fns";
 
 function Administrator() {
 	const { userData } = useAuth();
@@ -69,19 +72,15 @@ const AdminHeader = () => {
 				<TabPanels>
 					<TabPanel>
 						<Users />
-						<UserSkeleton />
 					</TabPanel>
 					<TabPanel>
 						<Feeds />
-						<FeedSkeleton />
 					</TabPanel>
 					<TabPanel>
 						<Class />
-						<ClassSkeleton />
 					</TabPanel>
 					<TabPanel>
 						<Materials />
-						<MaterialSkeleton />
 					</TabPanel>
 				</TabPanels>
 			</Tabs>
@@ -106,19 +105,21 @@ const Users = () => {
 				const fetchUnapprovedItems = [];
 				items.forEach((item) => {
 					const fetchItem = {
-						msgID: item.id,
+						UID: item.id,
 						...item.data(),
 					};
 					if (fetchItem.approved === false) {
 						fetchUnapprovedItems.push(fetchItem);
-						console.log(fetchItem);
+						// console.log("fetchItem");
+						// console.log(fetchItem);
+					} else {
+						fetchUserItems.push(fetchItem);
 					}
-					fetchUserItems.push(fetchItem);
 				});
 				if (isMounted.current) {
 					setUnApprovedUser(fetchUnapprovedItems);
 					setUserItems(fetchUserItems);
-					console.log( fetchUserItems);
+					// console.log(fetchUserItems);
 					//set loading to false
 					setLoading(false);
 				}
@@ -131,34 +132,89 @@ const Users = () => {
 	}, []);
 
 	return (
-		<Flex
-			flexDir="column"
-			borderWidth="1px"
-			borderRadius="8px"
-			p="2.5"
-			mb="1.5"
-		>
-			<Flex>
-				<Avatar size="xl" />
-				<Flex ml={2.5} flexDir="column" justifyContent="space-between" py="1.5">
-					<Text fontWeight="bold">Angelina Jolie</Text>
-					<Select w="100px" my="1.5">
-						<option value="user">user</option>
-						<option value="Admin">Admin</option>
-					</Select>
-					<Text>RegDate: 22nd, August 2021</Text>
-				</Flex>
-			</Flex>
-			<Flex justifyContent="space-between" mt={4}>
-				<Button colorScheme="red">Delete</Button>
-				<Button colorScheme="blue">Locked</Button>
-				<Button colorScheme="green">Approve</Button>
-			</Flex>
-		</Flex>
+		<>
+			{loading && <UserSkeleton />}
+			{!loading && (
+				<>
+					{unApprovedUser.map((users) => (
+						<React.Fragment key={users.UID}>
+							{users.approved === false && (
+								<Flex flexDir="column">
+									<Text
+										fontSize="lg"
+										fontWeight="bold"
+										textAlign="center"
+										mb="2.5"
+									>
+										Waiting List
+									</Text>
+
+									<UserCard users={users} />
+
+									<Divider my="2.5" />
+								</Flex>
+							)}
+						</React.Fragment>
+					))}
+
+					{userItems.map((users) => (
+						<React.Fragment key={users.UID}>
+							<Text fontSize="lg" fontWeight="bold" textAlign="center" mb="2.5">
+								Approved Users
+							</Text>
+							<UserCard users={users} />
+						</React.Fragment>
+					))}
+				</>
+			)}
+		</>
 	);
 };
 
-const UserCard = () => {
+const UserCard = ({ users }) => {
+
+	const toast = useToast();
+
+	const handleDelete = (e) => {
+		e.preventDefault();
+	};
+
+	const handleApprove = (e) => {
+		e.preventDefault();
+	};
+
+	const handleLocked = (e) => {
+		e.preventDefault();
+	};
+
+	const handleLevelChange = (e) => {
+		e.preventDefault();
+		console.log(e.target.value);
+
+		db.collection("users")
+			.doc(users.UID)
+			.update({
+				level: e.target.value,
+			})
+			.then(() => {
+				toast({
+					title: `User Level Changed to ${e.target.value} .`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+				
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to change User Level to ${e.target.value} .`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
+	};
+
 	return (
 		<Flex
 			flexDir="column"
@@ -168,18 +224,27 @@ const UserCard = () => {
 			mb="1.5"
 		>
 			<Flex>
-				<Avatar size="xl" />
+				<Avatar size="xl" src={users.photoURL} />
 				<Flex ml={2.5} flexDir="column" justifyContent="space-between" py="1.5">
-					<Text fontWeight="bold">Angelina Jolie</Text>
-					<Select w="100px" my="1.5">
+					<Text fontWeight="bold">{users.displayName}</Text>
+					<Select
+						w="100px"
+						my="1.5"
+						value={users.level}
+						onChange={handleLevelChange}
+					>
 						<option value="user">user</option>
 						<option value="Admin">Admin</option>
 					</Select>
-					<Text>RegDate: 22nd, August 2021</Text>
+					<Text>
+						RegDate: {format(new Date(users.created.toDate()), "do, MMMM yyyy")}
+					</Text>
 				</Flex>
 			</Flex>
 			<Flex justifyContent="space-between" mt={4}>
-				<Button colorScheme="red">Delete</Button>
+				<Button colorScheme="red" onClick={handleDelete}>
+					Delete
+				</Button>
 				<Button colorScheme="blue">Locked</Button>
 				<Button colorScheme="green">Approve</Button>
 			</Flex>
