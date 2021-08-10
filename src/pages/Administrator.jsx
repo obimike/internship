@@ -172,7 +172,6 @@ const Users = () => {
 };
 
 const UserCard = ({ users }) => {
-
 	const toast = useToast();
 
 	const handleDelete = (e) => {
@@ -185,11 +184,57 @@ const UserCard = ({ users }) => {
 
 	const handleLocked = (e) => {
 		e.preventDefault();
+		console.log(e.target.value);
+
+		if (users.locked === true) {
+			db.collection("users")
+				.doc(users.UID)
+				.update({
+					locked: false,
+				})
+				.then(() => {
+					toast({
+						title: `${users.displayName} has been unlocked successfully.`,
+						status: "success",
+						duration: 2000,
+						isClosable: true,
+					});
+				})
+				.catch((error) => {
+					toast({
+						title: `Error: Unable to unlock ${users.displayName}.`,
+						status: "error",
+						duration: 2000,
+						isClosable: true,
+					});
+				});
+		} else {
+			db.collection("users")
+				.doc(users.UID)
+				.update({
+					locked: true,
+				})
+				.then(() => {
+					toast({
+						title: `${users.displayName} has been locked successfully.`,
+						status: "success",
+						duration: 2000,
+						isClosable: true,
+					});
+				})
+				.catch((error) => {
+					toast({
+						title: `Error: Unable to lock ${users.displayName}.`,
+						status: "error",
+						duration: 2000,
+						isClosable: true,
+					});
+				});
+		}
 	};
 
 	const handleLevelChange = (e) => {
 		e.preventDefault();
-		console.log(e.target.value);
 
 		db.collection("users")
 			.doc(users.UID)
@@ -203,7 +248,6 @@ const UserCard = ({ users }) => {
 					duration: 2000,
 					isClosable: true,
 				});
-				
 			})
 			.catch((error) => {
 				toast({
@@ -245,7 +289,9 @@ const UserCard = ({ users }) => {
 				<Button colorScheme="red" onClick={handleDelete}>
 					Delete
 				</Button>
-				<Button colorScheme="blue">Locked</Button>
+				<Button colorScheme="blue" onClick={handleLocked}>
+					{users.locked === true ? "Unlock" : "Lock"}
+				</Button>
 				<Button colorScheme="green">Approve</Button>
 			</Flex>
 		</Flex>
