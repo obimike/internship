@@ -208,6 +208,26 @@ const UserCard = ({ users }) => {
 
 	const handleDelete = (e) => {
 		e.preventDefault();
+
+		db.collection("users")
+			.doc(users.UID)
+			.delete()
+			.then(() => {
+				toast({
+					title: `${users.displayName} has been deleted.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to delete ${users.displayName}.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
 	};
 
 	const handleApprove = (e) => {
