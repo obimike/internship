@@ -36,7 +36,7 @@ import { useAuth } from "../contexts/Auth";
 
 import { db } from "../firebase/Config";
 
-import { format } from "date-fns";
+import { format, formatDistance } from "date-fns";
 
 function Administrator() {
 	const { userData } = useAuth();
@@ -139,15 +139,18 @@ const Users = () => {
 			{!loading && (
 				<>
 					{/* Waiting List */}
-					<Text
-						fontSize="lg"
-						color="teal"
-						fontWeight="bold"
-						textAlign="center"
-						mb="2.5"
-					>
-						Waiting List
-					</Text>
+					{unApprovedUser.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Waiting List
+						</Text>
+					)}
+
 					{unApprovedUser.map((users) => (
 						<React.Fragment key={users.UID}>
 							{users.approved === false && (
@@ -161,15 +164,18 @@ const Users = () => {
 					<Divider my="3.5" />
 
 					{/* Locked out User */}
-					<Text
-						fontSize="lg"
-						color="teal"
-						fontWeight="bold"
-						textAlign="center"
-						mb="2.5"
-					>
-						Locked Users
-					</Text>
+					{lockedUser.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Locked Users
+						</Text>
+					)}
+
 					{lockedUser.map((users) => (
 						<React.Fragment key={users.UID}>
 							{users.locked === true && (
@@ -405,6 +411,158 @@ const UserSkeleton = () => {
 };
 
 const Feeds = () => {
+	const [loading, setLoading] = useState(false);
+	const [feedItems, setFeedItems] = useState([]);
+	const [unApprovedFeed, setUnApprovedFeed] = useState([]);
+
+	const isMounted = useRef(false);
+
+	useEffect(() => {
+		isMounted.current = true;
+
+		db.collection("posts")
+			.orderBy("createdAt", "desc")
+			.onSnapshot(function (items) {
+				const fetchFeedItems = [];
+				const fetchUnapprovedItems = [];
+				items.forEach((item) => {
+					const fetchItem = {
+						feedID: item.id,
+						...item.data(),
+					};
+					if (fetchItem.approved === false) {
+						fetchUnapprovedItems.push(fetchItem);
+						// console.log(fetchItem);
+					} else {
+						fetchFeedItems.push(fetchItem);
+					}
+				});
+				if (isMounted.current) {
+					setUnApprovedFeed(fetchUnapprovedItems);
+					setFeedItems(fetchFeedItems);
+					//set loading to false
+					setLoading(false);
+				}
+			});
+
+		return () => {
+			isMounted.current = false;
+			setLoading(false);
+		};
+	}, []);
+
+	return (
+		<>
+			{loading && <FeedSkeleton />}
+			{!loading && (
+				<>
+					{/* Waiting List */}
+					{unApprovedFeed.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Waiting List
+						</Text>
+					)}
+
+					{unApprovedFeed.map((feed) => (
+						<React.Fragment key={feed.feedID}>
+							{feed.approved === false && (
+								<Flex flexDir="column">
+									<FeedCard feed={feed} />
+								</Flex>
+							)}
+						</React.Fragment>
+					))}
+
+					<Divider my="3.5" />
+
+					{/* Approved Users */}
+					<Text
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						mb="2.5"
+					>
+						Approved Feeds
+					</Text>
+					{feedItems.map((feed) => (
+						<React.Fragment key={feed.feedID}>
+							<FeedCard feed={feed} />
+						</React.Fragment>
+					))}
+				</>
+			)}
+		</>
+	);
+};
+
+const FeedCard = ({ feed }) => {
+	// console.log(feed);
+	const toast = useToast();
+
+	const handleDelete = (e) => {
+		e.preventDefault();
+
+		db.collection("posts")
+			.doc(feed.feedID)
+			.delete()
+			.then(() => {
+				toast({
+					title: `feed has been deleted.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to delete feed.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
+	};
+
+	const handleApprove = (e) => {
+		e.preventDefault();
+
+		console.log(feed.feedID);
+
+		db.collection("posts")
+			.doc(feed.feedID)
+			.update({
+				approved: true,
+			})
+			.then(() => {
+				toast({
+					title: `Feed has been approved.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to approve feed.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
+	};
+
+	const time = formatDistance(new Date(feed.createdAt.toDate()), new Date(), {
+		includeSeconds: true,
+		addSuffix: true,
+	});
+
 	return (
 		<Flex
 			borderRadius="8"
@@ -413,32 +571,34 @@ const Feeds = () => {
 			p="4"
 			mb="4"
 		>
-			{/* <LinkBox to="#" onClick={onOpen}> */}
 			<Flex mb="1.5">
 				<Avatar size="md" src="item.posterImage" />
 				<Flex flexDir="column" ml="2.5">
-					<Text>"item.posterName"</Text>
+					<Text>{feed.posterName}</Text>
 					<Text fontSize="sm" color="{grayColor}">
-						time
+						{time}
 					</Text>
 				</Flex>
 			</Flex>
-			<Text noOfLines={2}>item.title</Text>
+			<Text noOfLines={2}>{feed.title}</Text>
 			<Divider my="1.5" />
-			{/* {item.imageUrl && ( */}
-			<Image
-				src="{item.imageUrl}"
-				height="180"
-				w="100%"
-				mb="2.5"
-				objectFit="cover"
-				borderRadius="8"
-			/>
-			{/* )} */}
-			{/* </LinkBox> */}
+			{feed.imageUrl && (
+				<Image
+					src={feed.imageUrl}
+					height="180"
+					w="100%"
+					mb="2.5"
+					objectFit="cover"
+					borderRadius="8"
+				/>
+			)}
 			<Flex justifyContent="space-between" mt={4}>
-				<Button colorScheme="red">Delete</Button>
-				<Button colorScheme="green">Approve</Button>
+				<Button colorScheme="red" onClick={handleDelete}>
+					Delete
+				</Button>
+				<Button colorScheme="green" onClick={handleApprove}>
+					Approve
+				</Button>
 			</Flex>
 		</Flex>
 	);

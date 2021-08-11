@@ -62,7 +62,7 @@ function DashboardContents() {
 		isMounted.current = true;
 
 		db.collection("posts")
-			.where("approved", "==", false)
+			.where("approved", "==", true)
 			.orderBy("createdAt", "desc")
 			.onSnapshot(function (items) {
 				// get lessons content in a n array
