@@ -634,16 +634,181 @@ const FeedSkeleton = () => {
 };
 
 const Class = () => {
+	const [loading, setLoading] = useState(false);
+	const [lessonItems, setLessonItems] = useState([]);
+	const [unApprovedLesson, setUnApprovedLesson] = useState([]);
+
+	const isMounted = useRef(false);
+
+	useEffect(() => {
+		isMounted.current = true;
+
+		db.collection("lessons")
+			.orderBy("createdAt", "desc")
+			.onSnapshot(function (items) {
+				const fetchLessonItems = [];
+				const fetchUnapprovedItems = [];
+				items.forEach((item) => {
+					const fetchItem = {
+						lessonID: item.id,
+						...item.data(),
+					};
+					if (fetchItem.approved === false) {
+						fetchUnapprovedItems.push(fetchItem);
+						// console.log(fetchItem);
+					} else {
+						fetchLessonItems.push(fetchItem);
+					}
+				});
+				if (isMounted.current) {
+					setUnApprovedLesson(fetchUnapprovedItems);
+					setLessonItems(fetchLessonItems);
+					//set loading to false
+					setLoading(false);
+				}
+			});
+
+		return () => {
+			isMounted.current = false;
+			setLoading(false);
+		};
+	}, []);
+
+	return (
+		<>
+			{loading && <ClassSkeleton />}
+			{!loading && (
+				<>
+					{/* Waiting List */}
+					{unApprovedLesson.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Waiting List
+						</Text>
+					)}
+
+					{unApprovedLesson.map((lesson) => (
+						<React.Fragment key={lesson.lessonID}>
+							{lesson.approved === false && (
+								<Flex flexDir="column">
+									<ClassCard lesson={lesson} />
+								</Flex>
+							)}
+						</React.Fragment>
+					))}
+
+					<Divider my="3.5" />
+
+					{/* Approved Users */}
+					<Text
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						mb="2.5"
+					>
+						Approved Feeds
+					</Text>
+					{lessonItems.map((lesson) => (
+						<React.Fragment key={lesson.lessonID}>
+							<ClassCard lesson={lesson} />
+						</React.Fragment>
+					))}
+				</>
+			)}
+		</>
+	);
+};
+
+const ClassCard = ({ lesson }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const toast = useToast();
+
+	let type = "";
+	if (lesson.classType === "Video") {
+		type = <IoVideocamOutline fontSize="1.2em" color="black" />;
+	} else {
+		type = <BiChalkboard fontSize="1.2em" color="black" />;
+	}
+
+	//getting the first name from user
+	let firstName = lesson.uploaderName.split(" ");
+	firstName = firstName[firstName.length - 1];
+
+	//formatting time
+	let to = tConvert(lesson.timeTo);
+	let from = tConvert(lesson.timeFrom);
+
+	function tConvert(time) {
+		// Check correct time format and split into components
+		time = time
+			.toString()
+			.match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+		if (time.length > 1) {
+			// If time format correct
+			time = time.slice(1); // Remove full string match value
+			time[5] = +time[0] < 12 ? "am" : "pm"; // Set AM/PM
+			time[0] = +time[0] % 12 || 12; // Adjust hours
+		}
+		return time.join(""); // return adjusted time or original string
+	}
 
 	const handleDelete = (e) => {
 		e.preventDefault();
-		console.log("Clicked!!!");
+
+		db.collection("lessons")
+			.doc(lesson.lessonID)
+			.delete()
+			.then(() => {
+				toast({
+					title: `Lesson has been deleted.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to Lesson feed.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
 	};
 
-	const onOpen = (e) => {
+	const handleApprove = (e) => {
 		e.preventDefault();
-		console.log("Open!!!");
+
+		console.log(lesson.feedID);
+
+		db.collection("lessons")
+			.doc(lesson.lessonID)
+			.update({
+				approved: true,
+			})
+			.then(() => {
+				toast({
+					title: `Feed has been approved.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to approve feed.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
 	};
 
 	return (
@@ -656,64 +821,59 @@ const Class = () => {
 			w="100%"
 			boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
 		>
-			<LinkBox to="#" as={RouterLink} onClick={onOpen}>
-				<Flex flexDir="column" p="2">
+			<Flex flexDir="column" p="2">
+				<Flex as="button">
 					<Flex
-						as="button"
-						// _hover={{ bg: "#bbedf0" }}
+						className="lessonIcon"
+						flexDir="column"
+						bg="teal.100"
+						borderRadius="4"
+						alignItems="center"
+						justifyContent="center"
+						p="1.5"
+						w="30%"
+						h="3.0rem"
 					>
-						<Flex
-							className="lessonIcon"
-							flexDir="column"
-							bg="teal.100"
-							borderRadius="4"
-							alignItems="center"
-							justifyContent="center"
-							p="1.5"
-							w="20%"
-							h="3.0rem"
-						>
-							{/* {type} */}
-							<Text fontSize="0.5em" fontWeight="black" color="black">
-								Video Class
-							</Text>
-						</Flex>
-						<Flex
-							ml="1.5"
-							flexDir="column"
-							justifyContent="space-between"
-							w="78%"
-							h="3.0rem"
-						>
-							<Text textAlign="start" isTruncated>
-								{/* {item.title} */}
-								item.title
-							</Text>
-							<Flex flexDir="row" justifyContent="space-between">
-								<Flex alignItems="center">
-									<IoPersonCircleSharp color={grayColor} />
-									<Text color={grayColor} fontSize="xs" ml="0.5">
-										{/* {firstName} */}
-										firstName
-									</Text>
-								</Flex>
-								<Flex alignItems="center">
-									<IoTimeOutline color={grayColor} />
-									<Text color={grayColor} fontSize="xs" ml="0.5">
-										{/* {from} - {to} */}
-										from - to
-									</Text>
-								</Flex>
+						{type}
+						<Text fontSize="0.5em" fontWeight="black" color="black">
+							{lesson.classType} Class
+						</Text>
+					</Flex>
+					<Flex
+						ml="1.5"
+						flexDir="column"
+						justifyContent="space-between"
+						w="78%"
+						h="3.0rem"
+					>
+						<Text textAlign="start" isTruncated>
+							{lesson.title}
+						</Text>
+						<Flex flexDir="row" justifyContent="space-between">
+							<Flex alignItems="center">
+								<IoPersonCircleSharp color={grayColor} />
+								<Text color={grayColor} fontSize="xs" ml="0.5">
+									{firstName}
+								</Text>
+							</Flex>
+							<Flex alignItems="center">
+								<IoTimeOutline color={grayColor} />
+								<Text color={grayColor} fontSize="xs" ml="0.5">
+									{from} - {to}
+								</Text>
 							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
-			</LinkBox>
+			</Flex>
+
 			<Flex mt={4} justifyContent="flex-end">
 				<Button mr="2.5" colorScheme="red" onClick={handleDelete}>
 					Delete
 				</Button>
-				<Button colorScheme="green">Approve</Button>
+				<Button colorScheme="green" onClick={handleApprove}>
+					Approve
+				</Button>
 			</Flex>
 		</Flex>
 	);

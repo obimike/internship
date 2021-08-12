@@ -36,7 +36,7 @@ function Lessons() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [lessonItems, setLessonItems] = useState([]);
 
-	console.log(typeof lessonItems);
+	// console.log(typeof lessonItems);
 
 	const isMounted = useRef(false); // note mutable flag
 
@@ -44,7 +44,7 @@ function Lessons() {
 		isMounted.current = true;
 
 		db.collection("lessons")
-			.where("approved", "==", false)
+			.where("approved", "==", true)
 			.orderBy("createdAt", "desc")
 			.onSnapshot(function (items) {
 				// get lessons content in a n array
@@ -76,7 +76,7 @@ function Lessons() {
 		(lesson) => lesson.date === `${selectDate}`,
 	);
 
-	console.log(lessonItems);
+	// console.log(lessonItems);
 
 	return (
 		<>
