@@ -55,7 +55,7 @@ function Materials() {
 	useEffect(() => {
 		const unsubscribe = db
 			.collection("materials")
-			.where("approved", "==", false)
+			.where("approved", "==", true)
 			.onSnapshot(function (items) {
 				// get material content in a n array
 				const fetchJavaItems = [];

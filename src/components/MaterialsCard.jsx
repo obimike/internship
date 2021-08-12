@@ -85,7 +85,7 @@ function MaterialsCard({ name, totalContent, content, loading }) {
 		}
 	};
 
-	console.log(content);
+	// console.log(content);
 
 	return (
 		<>

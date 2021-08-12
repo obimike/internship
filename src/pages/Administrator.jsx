@@ -34,7 +34,7 @@ import {
 
 import { useAuth } from "../contexts/Auth";
 
-import { db } from "../firebase/Config";
+import { db, fb } from "../firebase/Config";
 
 import { format, formatDistance } from "date-fns";
 
@@ -938,34 +938,200 @@ const ClassSkeleton = () => {
 };
 
 const Materials = () => {
+	const [loading, setLoading] = useState(false);
+	const [materialItems, setMaterialItems] = useState([]);
+	const [unApprovedMaterial, setUnApprovedMaterial] = useState([]);
+
+	const isMounted = useRef(false);
+
+	useEffect(() => {
+		isMounted.current = true;
+
+		db.collection("materials")
+			.orderBy("time", "desc")
+			.onSnapshot(function (items) {
+				const fetchMaterialItems = [];
+				const fetchUnapprovedItems = [];
+				items.forEach((item) => {
+					const fetchItem = {
+						materialID: item.id,
+						...item.data(),
+					};
+					if (fetchItem.approved === false) {
+						fetchUnapprovedItems.push(fetchItem);
+						// console.log(fetchItem);
+					} else {
+						fetchMaterialItems.push(fetchItem);
+						// console.log(fetchItem);
+					}
+				});
+				if (isMounted.current) {
+					setUnApprovedMaterial(fetchUnapprovedItems);
+					setMaterialItems(fetchMaterialItems);
+					//set loading to false
+					setLoading(false);
+				}
+			});
+
+		return () => {
+			isMounted.current = false;
+			setLoading(false);
+		};
+	}, []);
+
+	return (
+		<>
+			{loading && <MaterialSkeleton />}
+			{!loading && (
+				<>
+					{/* Waiting List */}
+					{unApprovedMaterial.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Waiting List
+						</Text>
+					)}
+
+					{unApprovedMaterial.map((material) => (
+						<React.Fragment key={material.materialID}>
+							{material.approved === false && (
+								<Flex flexDir="column">
+									<MaterialCard material={material} />
+								</Flex>
+							)}
+						</React.Fragment>
+					))}
+
+					{/* Approved Users */}
+					<Text
+						fontSize="lg"
+						color="teal"
+						fontWeight="bold"
+						textAlign="center"
+						my="2.5"
+					>
+						Approved Feeds
+					</Text>
+					{materialItems.map((material) => (
+						<React.Fragment key={material.materialID}>
+							<MaterialCard material={material} />
+						</React.Fragment>
+					))}
+				</>
+			)}
+		</>
+	);
+};
+
+const MaterialCard = ({ material }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
+	const toast = useToast();
+
+	const handleDelete = (e) => {
+		e.preventDefault();
+		const fileName = material.title.split(" ").join("_");
+		const file = `${fileName}.${material.fileType}`;
+		// console.log(file);
+
+		db.collection("materials")
+			.doc(material.materialID)
+			.delete()
+			.then(() => {
+				// Create a reference to the file to delete
+				let storageRef = fb.storage().ref().child(`materials/${file}`);
+
+				// Delete the file
+				storageRef
+					.delete()
+					.then(() => {
+						// File deleted successfully
+						toast({
+							title: `Material has been deleted.`,
+							status: "success",
+							duration: 2000,
+							isClosable: true,
+						});
+					})
+					.catch((error) => {
+						// Uh-oh, an error occurred!
+						console.log(error);
+					})
+					.catch((error) => {
+						toast({
+							title: `Error: Unable to Lesson material.`,
+							status: "error",
+							duration: 2000,
+							isClosable: true,
+						});
+					});
+			});
+	};
+
+	const handleApprove = (e) => {
+		e.preventDefault();
+
+		console.log(material.materialID);
+
+		db.collection("materials")
+			.doc(material.materialID)
+			.update({
+				approved: true,
+			})
+			.then(() => {
+				toast({
+					title: `Material has been approved.`,
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			})
+			.catch((error) => {
+				toast({
+					title: `Error: Unable to approve material.`,
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			});
+	};
+
 	return (
 		<Flex flexDir="column" borderY="1px" p="2">
-			<LinkBox to="#" as={RouterLink}>
-				<Flex
-					flexDir="row"
-					p="1"
-					justifyContent="space-between"
-					alignItems="center"
-					mb="1.5"
-				>
-					<Flex flexDir="row" alignItems="center">
-						<Flex bg="" p="2" m="2" borderRadius="4">
-							<Text fontSize="xl" color={grayColor}>
-								JS
-							</Text>
-						</Flex>
-						<Flex flexDir="column" justifyContent="space-between">
-							<Text fontSize="lg">Fundamentals in Javascript</Text>
-						</Flex>
-					</Flex>
+			<Flex
+				flexDir="row"
+				p="1"
+				justifyContent="space-between"
+				alignItems="center"
+				mb="1.5"
+			>
+				<Flex flexDir="column" w="100%">
+					<Text fontSize="xl" fontWeight="bold" pb="2.5">
+						{material.title}
+					</Text>
+					<Text fontSize="lg" color={grayColor}>
+						Category: {material.category}
+					</Text>
+					<Text fontSize="lg" color={grayColor}>
+						Format: {material.fileType}
+					</Text>
 				</Flex>
-			</LinkBox>
+			</Flex>
 			<Flex mt={4} justifyContent="flex-end">
-				<Button mr="2.5" colorScheme="red">
+				<Button mr="2.5" colorScheme="red" onClick={handleDelete}>
 					Delete
 				</Button>
-				<Button colorScheme="green">Approve</Button>
+				<Button
+					colorScheme="green"
+					onClick={handleApprove}
+					disabled={material.approved === true ? true : false}
+				>
+					Approve
+				</Button>
 			</Flex>
 		</Flex>
 	);
