@@ -24,6 +24,7 @@ import {
 	useToast,
 } from "@chakra-ui/react";
 import AccessDenial from "../assets/images/noAccess.svg";
+import Empty from "../assets/images/empty.svg";
 
 import { BiChalkboard } from "react-icons/bi";
 import {
@@ -702,23 +703,33 @@ const Class = () => {
 						</React.Fragment>
 					))}
 
-					<Divider my="3.5" />
 
 					{/* Approved Users */}
-					<Text
-						fontSize="lg"
-						color="teal"
-						fontWeight="bold"
-						textAlign="center"
-						mb="2.5"
-					>
-						Approved Feeds
-					</Text>
+					{lessonItems.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							mb="2.5"
+						>
+							Approved Feeds
+						</Text>
+					)}
 					{lessonItems.map((lesson) => (
 						<React.Fragment key={lesson.lessonID}>
 							<ClassCard lesson={lesson} />
 						</React.Fragment>
 					))}
+
+					{(unApprovedLesson.length === 0) & (lessonItems.length === 0) && (
+						<Center flexDir="column" mt={16}>
+							<Image src={Empty} width="640" height="320" />
+							<Text textAlign="center" color="#a5a5a5">
+								Such emptiness!
+							</Text>
+						</Center>
+					)}
 				</>
 			)}
 		</>
@@ -1008,20 +1019,30 @@ const Materials = () => {
 					))}
 
 					{/* Approved Users */}
-					<Text
-						fontSize="lg"
-						color="teal"
-						fontWeight="bold"
-						textAlign="center"
-						my="2.5"
-					>
-						Approved Feeds
-					</Text>
+					{materialItems.length !== 0 && (
+						<Text
+							fontSize="lg"
+							color="teal"
+							fontWeight="bold"
+							textAlign="center"
+							my="2.5"
+						>
+							Approved Feeds
+						</Text>
+					)}
 					{materialItems.map((material) => (
 						<React.Fragment key={material.materialID}>
 							<MaterialCard material={material} />
 						</React.Fragment>
 					))}
+					{(unApprovedMaterial.length === 0) & (materialItems.length === 0) && (
+						<Center flexDir="column" mt={16}>
+							<Image src={Empty} width="640" height="320" />
+							<Text textAlign="center" color="#a5a5a5">
+								Such emptiness!
+							</Text>
+						</Center>
+					)}
 				</>
 			)}
 		</>

@@ -207,7 +207,7 @@ function SignUp() {
 							)}
 						</Checkbox>
 					</Flex>
-					<Button
+					<Button 
 						type="submit"
 						isLoading={submit ? true : false}
 						loadingText="Creating user..."

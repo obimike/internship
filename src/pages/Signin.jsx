@@ -37,6 +37,7 @@ const validationSchema = Yup.object({
 let history;
 
 function Signin() {
+	const [submit, setSubmit] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [loginError, setLoginError] = useState([""]);
 	history = useHistory();
@@ -53,7 +54,7 @@ function Signin() {
 		validationSchema: validationSchema,
 		onSubmit: (values) => {
 			// alert(JSON.stringify(values, null, 2));
-			LoginComponent(values, setLoginError);
+			LoginComponent(values, setLoginError, setSubmit);
 		},
 	});
 
@@ -150,7 +151,14 @@ function Signin() {
 								Forget password?
 							</Text>
 						</Flex>
-						<Button type="submit" colorScheme="teal" w="100%" mt="2.5">
+						<Button
+							type="submit"
+							isLoading={submit ? true : false}
+							loadingText="signing in..."
+							colorScheme="teal"
+							w="100%"
+							mt="2.5"
+						>
 							Sign in
 						</Button>
 					</form>
@@ -181,13 +189,16 @@ async function handlGoogleSign() {
 }
 
 //Sigin validation and verified email check
-function LoginComponent(values, setLoginError) {
+function LoginComponent(values, setLoginError, setSubmit) {
+	setSubmit(true);
+
 	auth
 		.signInWithEmailAndPassword(values.email, values.password)
 		.then((result) => {
 			//Check if user has successfully verify their email
 			if (!result.user.emailVerified) {
 				setLoginError("Please verify your email to continue");
+				setSubmit(false);
 				auth.signOut();
 			} else {
 				return (
@@ -201,6 +212,7 @@ function LoginComponent(values, setLoginError) {
 		})
 		.catch(function (error) {
 			// Handle Errors here.
+			setSubmit(false);
 			var errorCode = error.code;
 			loginErrorFunction(errorCode, setLoginError);
 			// ...
