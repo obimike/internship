@@ -92,7 +92,7 @@ function Signin() {
 							leftIcon={<Image src={GoogleIcon} w="4" alt="" />}
 							colorScheme="teal"
 							variant="outline"
-							onClick={handlGoogleSign}
+							onClick={handleGoogleSign}
 						>
 							Sign in with Google
 						</Button>
@@ -191,14 +191,14 @@ function Signin() {
 export default Signin;
 
 //Authenticate Using Google Sign-In
-async function handlGoogleSign() {
+async function handleGoogleSign() {
 	try {
 		await googleSign();
 		history.push("/dashboard");
 	} catch {}
 }
 
-//Sigin validation and verified email check
+//Signin validation and verified email check
 function LoginComponent(values, setLoginError, setSubmit) {
 	setSubmit(true);
 

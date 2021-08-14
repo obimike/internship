@@ -19,8 +19,7 @@ function App() {
 		<Router>
 			<Auth>
 				<Switch>
-					<Route path="/splash" exact component={Splash} />
-					<Route path="/" exact component={SignIn} />
+					<Route path="/" exact component={Splash} />
 					<Route path="/signin" exact component={SignIn} />
 					<Route path="/signup" exact component={SignUp} />
 					<Route path="/forget_password" exact component={ForgetPassword} />
