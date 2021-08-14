@@ -10,16 +10,20 @@ import DashBoard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import UserProfile from "./pages/UserProfile";
-import Administrator from "./pages/Administrator";;
+import Administrator from "./pages/Administrator";
+import Splash from "./pages/Splash";
+import ForgetPassword from "./pages/ForgetPassword";
 
 function App() {
 	return (
 		<Router>
 			<Auth>
 				<Switch>
+					<Route path="/splash" exact component={Splash} />
 					<Route path="/" exact component={SignIn} />
 					<Route path="/signin" exact component={SignIn} />
 					<Route path="/signup" exact component={SignUp} />
+					<Route path="/forget_password" exact component={ForgetPassword} />
 					<Route
 						path="/email_confirmation"
 						exact

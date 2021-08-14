@@ -24,6 +24,7 @@ import { APP_NAME } from "../utils/Constants";
 
 import { useAuth, googleSign } from "../contexts/Auth";
 import { auth } from "../firebase/Config";
+import { IoIosSchool } from "react-icons/io";
 
 const validationSchema = Yup.object({
 	email: Yup.string("Enter your email")
@@ -74,9 +75,18 @@ function Signin() {
 			<Flex height="100vh">
 				<Container p="8" maxW="lg" mt="2">
 					<VStack mb="2">
-						<Heading as="h3" size="xl" mb="4">
-							{APP_NAME}
-						</Heading>
+						<Flex mb="4">
+							<IoIosSchool fontSize="2.5rem" color="teal" />
+							<Heading
+								as="h3"
+								size="xl"
+								letterSpacing="tight"
+								fontWeight="light"
+								ml="2"
+							>
+								{APP_NAME}
+							</Heading>
+						</Flex>
 
 						<Button
 							leftIcon={<Image src={GoogleIcon} w="4" alt="" />}
