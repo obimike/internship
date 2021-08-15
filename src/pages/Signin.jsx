@@ -157,9 +157,9 @@ function Signin() {
 							>
 								remember me
 							</Checkbox>
-							<Text fontSize="sm" color="teal">
+							<Link as={RouterLink} to="/forget_password" fontSize="sm" color="teal">
 								Forget password?
-							</Text>
+							</Link> 
 						</Flex>
 						<Button
 							type="submit"
