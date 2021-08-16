@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import GoogleIcon from "../assets/images/search.png";
 import { APP_NAME } from "../utils/Constants";
+import { IoIosSchool } from "react-icons/io";
 
 import { googleSign, emailSignUp } from "../contexts/Auth";
 
@@ -73,15 +74,24 @@ function SignUp() {
 		<Flex>
 			<Container p="8" maxW="lg" mt="2">
 				<VStack mb="2">
-					<Heading as="h3" size="xl" mb="4">
-						{APP_NAME}
-					</Heading>
+					<Flex mb="4">
+						<IoIosSchool fontSize="2.5rem" color="teal" />
+						<Heading
+							as="h3"
+							size="xl"
+							letterSpacing="tight"
+							fontWeight="light"
+							ml="2"
+						>
+							{APP_NAME}
+						</Heading>
+					</Flex>
 
 					<Button
 						leftIcon={<Image src={GoogleIcon} w="4" alt="" />}
 						colorScheme="teal"
 						variant="outline"
-						onClick={handlGoogleSign}
+						onClick={handleGoogleSign}
 					>
 						Sign in with Google
 					</Button>
@@ -207,7 +217,7 @@ function SignUp() {
 							)}
 						</Checkbox>
 					</Flex>
-					<Button 
+					<Button
 						type="submit"
 						isLoading={submit ? true : false}
 						loadingText="Creating user..."
@@ -233,7 +243,7 @@ function SignUp() {
 }
 
 //Authenticate Using Google Sign-In
-async function handlGoogleSign() {
+async function handleGoogleSign() {
 	try {
 		await googleSign();
 		history.push("/dashboard");
