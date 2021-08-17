@@ -38,6 +38,8 @@ function Profile() {
 	const { currentUser, userData } = useAuth();
 	const textColor = useColorModeValue("gray.600", "gray.400");
 
+	// console.log(currentUser)
+
 	return (
 		<Header>
 			<SimpleGrid

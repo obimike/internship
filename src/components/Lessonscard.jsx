@@ -552,11 +552,14 @@ const Participants = ({ personID, personName, personImage }) => {
 	// const personID = person.personID;
 	console.log(personName);
 
+
+
 	return (
 		<LinkBox
-			to={{ pathname: "/user/profile", state: { profile: personID } }}
+			to={`/user/profile/${personID}`}
 			as={RouterLink}
 		>
+
 			<Center flexDir="column" ml="2.5">
 				<Avatar src={personImage} />
 				<Text>{firstName}</Text>

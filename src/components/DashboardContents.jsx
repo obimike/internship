@@ -530,7 +530,7 @@ const FeedCard = ({ item }) => {
 				<DrawerContent>
 					<DrawerHeader borderBottomWidth="1px">
 						<Flex flexDir="row" justifyContent="space-between" align="center">
-							{item.title}
+							Feed
 							<IconButton
 								onClick={onClose}
 								variant="ghost"
