@@ -251,7 +251,7 @@ function DashboardContents() {
 							))}
 						</SimpleGrid>
 					) : (
-						<Center flexDir="column">
+						<Center flexDir="column" mt={12}>
 							<Image src={NoFeed} width="640" height="320" />
 							<Text textAlign="center">
 								Wow! Such emptiness! Add feed to avoid this.
@@ -269,7 +269,7 @@ function DashboardContents() {
 				pos="fixed"
 				size="lg"
 				bottom={16}
-				right={8}
+				right={{ base: 8, md: 24, lg: 72 }}
 				icon={<RiQuillPenFill color="white" fontSize="24px" />}
 				isRound
 			/>

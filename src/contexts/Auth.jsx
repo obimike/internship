@@ -15,6 +15,7 @@ export default function Auth({ children }) {
 	const [selectDate, setSelectdate] = useState(
 		format(new Date(), "yyyy-MM-dd"),
 	);
+	const [quote, setQuote] = useState("");
 
 	const isMounted = useRef(false); // note mutable flag
 
@@ -24,6 +25,12 @@ export default function Auth({ children }) {
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
+			fetch("http://quotes.rest/qod")
+				.then((response) => response.json())
+				.then((data) => {
+					setQuote(data.contents.quotes[0].quote);
+				});
+			
 			if (user) {
 				//fetch new notifications
 				db.collection("notifications")
@@ -71,6 +78,7 @@ export default function Auth({ children }) {
 
 	// Will be passed down to Sign up, Login and Dashboard components
 	const values = {
+		quote,
 		currentUser,
 		setCurrentUser,
 		userData,
@@ -149,7 +157,7 @@ export const emailSignUp = (values, setSignUpError, setSubmit, history) => {
 					displayName: _lastName + " " + _firstName,
 				})
 				.then(() => {
-					console.log("Updated Displayname in google");
+					console.log("Updated DisplayName in google");
 				});
 		})
 		.catch((err) => {

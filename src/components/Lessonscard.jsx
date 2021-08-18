@@ -295,22 +295,29 @@ const LessonDetail = ({ item }) => {
 			});
 	};
 
+	const handleDelete = (e) => {
+		e.preventDefault()
+	}
+
 	const closeModal = () => {
 		setError("");
 		setSuccessMessage("");
 		onClose();
 	};
 
+	let profileLink = "";
+
+	if (currentUser.uid === item.uploaderID) {
+		profileLink = "/profile";
+	} else {
+		profileLink = `/user/profile/${item.uploaderID}`;
+	}
+
 	return (
 		<>
 			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
 				<Flex align="center" my="2.5">
-					<LinkBox
-						to={{
-							pathname: "/user/profile",
-							state: { profile: item.uploaderID },
-						}}
-					>
+					<LinkBox to={profileLink} as={RouterLink}>
 						<Avatar src={item.uploaderImage} size="md" />
 					</LinkBox>
 					<Flex flexDir="column" ml="2.5">
@@ -429,7 +436,7 @@ const LessonDetail = ({ item }) => {
 					)}
 
 					{item.uploaderID === currentUser.uid && (
-						<Button colorScheme="red" ml="2">
+						<Button onClick={handleDelete} colorScheme="red" ml="2">
 							Delete Class
 						</Button>
 					)}
@@ -550,16 +557,10 @@ const Participants = ({ personID, personName, personImage }) => {
 	firstName = firstName[firstName.length - 1];
 
 	// const personID = person.personID;
-	console.log(personName);
-
-
+	// console.log(personName);
 
 	return (
-		<LinkBox
-			to={`/user/profile/${personID}`}
-			as={RouterLink}
-		>
-
+		<LinkBox to={`/user/profile/${personID}`} as={RouterLink}>
 			<Center flexDir="column" ml="2.5">
 				<Avatar src={personImage} />
 				<Text>{firstName}</Text>
