@@ -30,7 +30,7 @@ import {
 	DrawerHeader,
 	DrawerBody,
 	DrawerFooter,
-	Input,
+	Textarea,
 	Avatar,
 } from "@chakra-ui/react";
 import { FiMail, FiPhone, FiUser, FiLink } from "react-icons/fi";
@@ -138,6 +138,19 @@ const DisplayProfile = ({ user, pid }) => {
 			.then((docRef) => {
 				console.log("Message sent with ID: ", docRef.id);
 				setMessageText("");
+			});
+
+		db.collection("users")
+			.doc(currentUser.uid)
+			.update({
+				contacts: firestore.FieldValue.arrayUnion({
+					cid: pid,
+					cName: user.lastName + " " + user.firstName,
+					cImage: user.photoURL,
+				}),
+			})
+			.then(() => {
+				console.log("update");
 			});
 
 		console.log(messageText);
@@ -332,7 +345,7 @@ const DisplayProfile = ({ user, pid }) => {
 									flexDir="row"
 									justifyContent="space-between"
 									align="center"
-									mx={{ base: 0, md: 12, lg: 48 }}
+									mx={{ base: 0, md: 12, lg: 24 }}
 								>
 									<Flex align="center">
 										<Avatar size="md" src={user.photoURL} />
@@ -348,15 +361,15 @@ const DisplayProfile = ({ user, pid }) => {
 								</Flex>
 							</DrawerHeader>
 
-							<DrawerBody w="100%">
+							<DrawerBody>
 								<InboxMessageCard pid={pid} />
 							</DrawerBody>
 
-							<DrawerFooter mx={{ base: 0, md: 12, lg: 48 }}>
+							<DrawerFooter mx={{ base: 0, md: 12, lg: 24 }}>
 								<Flex
 									w="100vw"
 									justifyContent="center"
-									h={{ base: "6rem", md: "6rem", lg: "auto" }}
+									h={{ base: "3rem", md: "6rem", lg: "auto" }}
 									alignItems="center"
 								>
 									<IconButton
@@ -365,12 +378,15 @@ const DisplayProfile = ({ user, pid }) => {
 										variant="ghost"
 										icon={<HiEmojiHappy fontSize="32px" />}
 									/>
-									<Input
+									<Textarea
 										type="text"
 										placeholder="Type a message"
 										name="message"
 										size="lg"
 										ml="1.5"
+										minHeight="1em"
+										maxHeight="4em"
+										resize="none"
 										value={messageText}
 										onChange={(e) => {
 											setMessageText(e.target.value);

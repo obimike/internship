@@ -23,7 +23,7 @@ function Dashboard() {
 
 	return (
 		<Header>
-			<Flex mt={20} flexDir="column" h="100vh">
+			<Flex mt={20} flexDir="column" >
 				<Tabs variant="enclosed-colored" colorScheme="teal" isLazy isFitted>
 					<TabList>
 						<Tab fontSize={{ base: "0.9rem", md: "1rem", lg: "1.2rem" }}>

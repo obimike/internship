@@ -4,6 +4,7 @@ import { Flex, Text, useColorModeValue, Center, Image } from "@chakra-ui/react";
 import { db } from "../firebase/Config";
 import { useAuth } from "../contexts/Auth";
 import NoMessage from "../assets/images/no_message.svg";
+import { formatDistance } from "date-fns";
 
 const InboxMessageCard = ({ pid }) => {
 	// console.log(pid);
@@ -45,9 +46,9 @@ const InboxMessageCard = ({ pid }) => {
 	// console.log("Messages = " + messages);
 
 	return (
-		<Flex flexDir="column-reverse" mx={{ base: 2, md: 12, lg: 48 }}>
+		<Flex flexDir="column">
 			{!loading && (
-				<>
+				<Flex flexDir="column-reverse" mx={{ base: 0, md: 12, lg: 32 }}>
 					{messageItems.length > 0 ? (
 						<>
 							{messageItems.map((message) => (
@@ -62,7 +63,7 @@ const InboxMessageCard = ({ pid }) => {
 							<Text textAlign="center">No Messages. Start a conversation.</Text>
 						</Center>
 					)}
-				</>
+				</Flex>
 			)}
 		</Flex>
 	);
@@ -71,9 +72,12 @@ export default InboxMessageCard;
 
 const MessageBox = ({ message, currentUser }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.700");
-	console.log(message);
+	// console.log(message);
 
-	//currentUser.uid === message.senderID? "": ""
+	let time = formatDistance(new Date(message.sentAt.toDate()), new Date(), {
+		includeSeconds: true,
+		addSuffix: true,
+	});
 
 	return (
 		<>
@@ -100,7 +104,7 @@ const MessageBox = ({ message, currentUser }) => {
 						pt="2"
 						textAlign="right"
 					>
-						6:37pm
+						{time}
 					</Text>
 				</Flex>
 			) : (
@@ -127,7 +131,7 @@ const MessageBox = ({ message, currentUser }) => {
 						pt="2"
 						textAlign="right"
 					>
-						6:37pm
+						{time}
 					</Text>
 				</Flex>
 			)}

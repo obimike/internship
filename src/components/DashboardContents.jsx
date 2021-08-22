@@ -529,7 +529,12 @@ const FeedCard = ({ item }) => {
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerHeader borderBottomWidth="1px">
-						<Flex flexDir="row" justifyContent="space-between" align="center">
+						<Flex
+							flexDir="row"
+							justifyContent="space-between"
+							align="center"
+							mx={{ base: 0, md: 24, lg: 72 }}
+						>
 							Feed
 							<IconButton
 								onClick={onClose}
@@ -662,7 +667,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 
 	return (
 		<>
-			<Flex flexDir="column" mx={{ base: 2, md: 12, lg: 48 }}>
+			<Flex flexDir="column" mx={{ base: 0, md: 24, lg: 72 }}>
 				<Flex mb="1.5" alignItems="center" justifyContent="space-between">
 					<LinkBox to={profileLink} as={RouterLink}>
 						<Flex alignItems="center">
@@ -691,7 +696,7 @@ const FeedDetail = ({ item, comment, isLoading, like }) => {
 					{item.link && (
 						<Flex flexDir="row" my="3.5" w="100%">
 							<Text fontWeight="bold" w="25%">
-								Read more:{" "}
+								Read more:
 							</Text>{" "}
 							<LinkBox href={item.link} w="74%" isExternal>
 								<Text color="blue.600" noOfLines={1}>

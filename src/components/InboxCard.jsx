@@ -15,19 +15,6 @@ import {
 	DrawerBody,
 	DrawerFooter,
 	Input,
-	// Modal,
-	// ModalOverlay,
-	// ModalContent,
-	// ModalHeader,
-	// ModalFooter,
-	// ModalBody,
-	// Button,
-	// Box,
-	// Textarea,
-	// Skeleton,
-	// SkeletonCircle,
-	// SkeletonText,
-	// Center,
 } from "@chakra-ui/react";
 import { HiEmojiHappy } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
@@ -35,28 +22,44 @@ import { IoSendSharp } from "react-icons/io5";
 
 import InboxMessageCard from "../components/InboxMessageCard";
 
-const InboxCard = () => {
+import { formatDistance } from "date-fns";
+
+const InboxCard = ({ contact, unread, lastMessage }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	let time = formatDistance(new Date(lastMessage.sentAt.toDate()), new Date(), {
+		includeSeconds: true,
+		addSuffix: true,
+	});
 
 	return (
 		<>
 			<LinkBox to="#" as={RouterLink} onClick={onOpen} mb="4">
 				<Flex py="1.5">
-					<Avatar size="md" />
-					<Flex flexDir="column" ml="1.5">
+					<Avatar size="md" src={contact.cImage} />
+					<Flex flexDir="column" ml="1.5" w="100%">
 						<Flex justifyContent="space-between">
-							<Text>Angelina Jolie</Text>
-							<Text fontSize="sm" fontStyle="italic" color={grayColor}>
-								3 hrs ago
+							<Text>{contact.cName}</Text>
+							<Text
+								fontSize="sm"
+								fontStyle="italic"
+								color={lastMessage.read === false ? "teal" : grayColor}
+							>
+								{time}
 							</Text>
 						</Flex>
 						<Flex align="flex-end" justifyContent="space-between">
-							<Text noOfLines={1} fontSize="sm">
-								By using this Hook, you tell React that your component needs to
-								do something after render.
+							<Text
+								noOfLines={1}
+								fontSize="sm"
+								fontWeight={lastMessage.read === false ? "bold" : ""}
+							>
+								{lastMessage.message}
 							</Text>
-							<Text ml="1.5">2</Text>
+							<Text ml="1.5" color="teal" fontWeight="bold">
+								{unread === 0 ? "" : unread}
+							</Text>
 						</Flex>
 					</Flex>
 				</Flex>

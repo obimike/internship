@@ -25,12 +25,12 @@ export default function Auth({ children }) {
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
-			fetch("http://quotes.rest/qod")
+			fetch("https://quotes.rest/qod")
 				.then((response) => response.json())
 				.then((data) => {
 					setQuote(data.contents.quotes[0].quote);
 				});
-			
+
 			if (user) {
 				//fetch new notifications
 				db.collection("notifications")
@@ -127,6 +127,7 @@ export const googleSign = () => {
 				lastName,
 				email: user.email,
 				photoURL: user.photoURL,
+				contacts: [],
 				level: "user",
 				approved: false,
 				created: firestore.Timestamp.fromDate(new Date()),
@@ -192,6 +193,7 @@ const AddUser = (user, setSubmit, _firstName, _lastName, email, history) => {
 			email: user.email,
 			displayName: _lastName + " " + _firstName,
 			photoURL: user.photoURL,
+			contacts: [],
 			level: "user",
 			approved: false,
 			created: firestore.Timestamp.fromDate(new Date()),

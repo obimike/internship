@@ -68,17 +68,18 @@ const Header = (props) => {
 				p="4"
 			>
 				<Text display="block" size="lg" fontWeight="bold">
-					Quote for the day
+					{quote && <>Quote for the day</>}
 				</Text>
 				<Text size="xs" textAlign="center">
 					{quote}
 				</Text>
 			</VStack>
+
 			<Flex flexDir="column">
 				<Flex
 					flexDir="row"
 					justifyContent="space-between"
-					px={{ base: 4, md: 24, lg: 72 }}
+					px={{ base: 4, md: 12, lg: 24 }}
 					py={{ base: 4, md: 5, lg: 6 }}
 					boxShadow="lg"
 					zIndex="3"
