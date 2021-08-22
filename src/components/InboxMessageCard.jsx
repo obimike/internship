@@ -31,7 +31,7 @@ const InboxMessageCard = ({ pid }) => {
 				});
 				if (isMounted.current) {
 					setMessageItems(fetchMessageItems);
-					console.log("Messages = " + fetchMessageItems);
+					// console.log("Messages = " + fetchMessageItems);
 					//set loading to false
 					setLoading(false);
 				}
@@ -72,7 +72,6 @@ export default InboxMessageCard;
 
 const MessageBox = ({ message, currentUser }) => {
 	const grayColor = useColorModeValue("gray.600", "gray.700");
-	// console.log(message);
 
 	let time = formatDistance(new Date(message.sentAt.toDate()), new Date(), {
 		includeSeconds: true,

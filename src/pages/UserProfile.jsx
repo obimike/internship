@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import {} from "react-router-dom";
 import Header from "../components/Header";
 import {
 	Text,
@@ -24,14 +23,7 @@ import {
 	Skeleton,
 	SkeletonCircle,
 	SkeletonText,
-	Drawer,
-	DrawerContent,
-	DrawerOverlay,
-	DrawerHeader,
-	DrawerBody,
-	DrawerFooter,
-	Textarea,
-	Avatar,
+	Center,
 } from "@chakra-ui/react";
 import { FiMail, FiPhone, FiUser, FiLink } from "react-icons/fi";
 import {
@@ -44,13 +36,9 @@ import {
 } from "react-icons/fa";
 import { RiCake2Line, RiTimeLine } from "react-icons/ri";
 import { format } from "date-fns";
-import { HiEmojiHappy } from "react-icons/hi";
-import { IoIosClose } from "react-icons/io";
-import { IoSendSharp } from "react-icons/io5";
 
-import { db, firestore } from "../firebase/Config";
-import { useAuth } from "../contexts/Auth";
-import InboxMessageCard from "../components/InboxMessageCard";
+import { db } from "../firebase/Config";
+import ChatBox from "../components/ChatBox";
 
 function UserProfile(props) {
 	const [user, setUser] = useState("");
@@ -96,7 +84,7 @@ function UserProfile(props) {
 			{!loading && (
 				<>
 					{user === "" ? (
-						<Flex mt={24}>No such user in firestore </Flex>
+						<Center mt={24}>No such user </Center>
 					) : (
 						<DisplayProfile user={user} pid={pid} />
 					)}
@@ -109,52 +97,8 @@ export default UserProfile;
 
 const DisplayProfile = ({ user, pid }) => {
 	const textColor = useColorModeValue("gray.600", "gray.400");
-	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
-	const { currentUser } = useAuth();
-
-	// console.log(user);
-
 	const [openInboxDialog, setOpenInboxDialog] = useState(false);
-	const [messageText, setMessageText] = useState("");
-
-	const handleSubmitMessage = (e) => {
-		e.preventDefault();
-
-		db.collection("messages")
-			.add({
-				receiverID: pid,
-				receiverName: user.lastName + " " + user.firstName,
-				receiverImage: user.photoURL,
-				senderID: currentUser.uid,
-				senderName: currentUser.displayName,
-				senderImage: currentUser.photoURL,
-				combinedID: currentUser.uid + pid,
-				message: messageText,
-				read: false,
-				sentAt: firestore.Timestamp.fromDate(new Date()),
-			})
-			.then((docRef) => {
-				console.log("Message sent with ID: ", docRef.id);
-				setMessageText("");
-			});
-
-		db.collection("users")
-			.doc(currentUser.uid)
-			.update({
-				contacts: firestore.FieldValue.arrayUnion({
-					cid: pid,
-					cName: user.lastName + " " + user.firstName,
-					cImage: user.photoURL,
-				}),
-			})
-			.then(() => {
-				console.log("update");
-			});
-
-		console.log(messageText);
-	};
 
 	return (
 		<SimpleGrid
@@ -336,76 +280,12 @@ const DisplayProfile = ({ user, pid }) => {
 						</Button>
 					</VStack>
 
-					{/* Left Drawer for chat */}
-					<Drawer placement="left" isOpen={openInboxDialog} size="full">
-						<DrawerOverlay />
-						<DrawerContent>
-							<DrawerHeader borderBottomWidth="1px">
-								<Flex
-									flexDir="row"
-									justifyContent="space-between"
-									align="center"
-									mx={{ base: 0, md: 12, lg: 24 }}
-								>
-									<Flex align="center">
-										<Avatar size="md" src={user.photoURL} />
-										<Text ml="1.5">{user.displayName}</Text>
-									</Flex>
-									<IconButton
-										onClick={() => {
-											setOpenInboxDialog(false);
-										}}
-										variant="ghost"
-										icon={<IoIosClose fontSize="32px" />}
-									/>
-								</Flex>
-							</DrawerHeader>
-
-							<DrawerBody>
-								<InboxMessageCard pid={pid} />
-							</DrawerBody>
-
-							<DrawerFooter mx={{ base: 0, md: 12, lg: 24 }}>
-								<Flex
-									w="100vw"
-									justifyContent="center"
-									h={{ base: "3rem", md: "6rem", lg: "auto" }}
-									alignItems="center"
-								>
-									<IconButton
-										// onClick={onClose}
-										color={grayColor}
-										variant="ghost"
-										icon={<HiEmojiHappy fontSize="32px" />}
-									/>
-									<Textarea
-										type="text"
-										placeholder="Type a message"
-										name="message"
-										size="lg"
-										ml="1.5"
-										minHeight="1em"
-										maxHeight="4em"
-										resize="none"
-										value={messageText}
-										onChange={(e) => {
-											setMessageText(e.target.value);
-										}}
-									/>
-									<IconButton
-										// isRound={true}
-										type="submit"
-										colorScheme="teal"
-										ml="1.5"
-										variant="ghost"
-										icon={<IoSendSharp fontSize="30px" />}
-										disabled={messageText ? false : true}
-										onClick={handleSubmitMessage}
-									/>
-								</Flex>
-							</DrawerFooter>
-						</DrawerContent>
-					</Drawer>
+					<ChatBox
+						user={user}
+						pid={pid}
+						openInboxDialog={openInboxDialog}
+						setOpenInboxDialog={setOpenInboxDialog}
+					/>
 				</Box>
 			</GridItem>
 

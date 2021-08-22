@@ -5,9 +5,7 @@ import { useAuth } from "../contexts/Auth";
 
 import { Flex, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 
-function InboxContent({ contacts }) {
-	console.log(contacts);
-
+function InboxContent({ contacts, user }) {
 	// function _groupBy(key) {
 	// 	return function group(array) {
 	// 		return array.reduce((acc, obj) => {
@@ -23,7 +21,7 @@ function InboxContent({ contacts }) {
 		<>
 			{contacts.map((contact) => (
 				<React.Fragment key={contact.cid}>
-					<InboxContacts contact={contact} />
+					<InboxContacts contact={contact} user={user} />
 				</React.Fragment>
 			))}
 		</>
@@ -31,7 +29,7 @@ function InboxContent({ contacts }) {
 }
 export default InboxContent;
 
-const InboxContacts = ({ contact }) => {
+const InboxContacts = ({ contact, user }) => {
 	const { currentUser } = useAuth();
 	const [loading, setLoading] = React.useState(true);
 	const [newMessage, setNewMessage] = React.useState(0);
@@ -60,7 +58,6 @@ const InboxContacts = ({ contact }) => {
 						unread += 1;
 					}
 					fetchMessageItems.push(fetchItem);
-					// console.log(fetchItem);
 				});
 				if (isMounted.current) {
 					setInboxItems(fetchMessageItems[0]);
@@ -85,6 +82,7 @@ const InboxContacts = ({ contact }) => {
 					contact={contact}
 					unread={newMessage}
 					lastMessage={inboxItems}
+					user={user}
 				/>
 			)}
 		</>

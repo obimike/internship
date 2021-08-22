@@ -9,8 +9,6 @@ import NoMessage from "../assets/images/no_message.svg";
 export default function Inbox() {
 	const { userData } = useAuth();
 
-	console.log(userData);
-
 	return (
 		<Header>
 			<Flex mt={8} flexDir="column">
@@ -20,7 +18,7 @@ export default function Inbox() {
 							Inbox
 						</Text>
 
-						<InboxContent contacts={userData.contacts} />
+						<InboxContent contacts={userData.contacts} user={userData} />
 					</Flex>
 				) : (
 					<Center flexDir="column" mt={16}>
