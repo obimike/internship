@@ -94,7 +94,7 @@ const MessageBox = ({ message, currentUser }) => {
 					justifyContent="flex-end"
 					color="black"
 				>
-					<Text>{message.message}</Text>
+					<Text style={{ wordBreak: "break-word" }}>{message.message}</Text>
 					<Text
 						fontSize="xs"
 						fontStyle="italic"
@@ -115,13 +115,13 @@ const MessageBox = ({ message, currentUser }) => {
 					borderTopRightRadius="16"
 					borderBottomRightRadius="16"
 					borderBottomLeftRadius="16"
-					flexWrap="wrap"
 					mb="2.5"
 					justifyContent="flex-end"
 					alignSelf="flex-start"
 					color="black"
+					flexWrap="wrap"
 				>
-					<Text>{message.message}</Text>
+					<Text style={{ wordBreak: "break-word" }}>{message.message}</Text>
 					<Text
 						fontSize="xs"
 						fontStyle="italic"

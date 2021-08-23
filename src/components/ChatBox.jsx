@@ -30,7 +30,7 @@ function ChatBox({ pid, user, openInboxDialog, setOpenInboxDialog }) {
 
 	const handleSubmitMessage = (e) => {
 		e.preventDefault();
-		e.target.value = "";
+		e.target.message.value = "";
 
 		db.collection("messages")
 			.add({
@@ -58,6 +58,13 @@ function ChatBox({ pid, user, openInboxDialog, setOpenInboxDialog }) {
 				}),
 			});
 
+		db.collection("users")
+			.doc(pid)
+			.update({
+				contacts: firestore.FieldValue.arrayUnion({
+					cid: currentUser.uid,
+				}),
+			});
 	};
 
 	return (
@@ -104,30 +111,41 @@ function ChatBox({ pid, user, openInboxDialog, setOpenInboxDialog }) {
 								variant="ghost"
 								icon={<HiEmojiHappy fontSize="32px" />}
 							/> */}
-							<Textarea
-								type="text"
-								placeholder="Type a message"
-								name="message"
-								size="lg"
-								ml="1.5"
-								minHeight="1em"
-								maxHeight="4em"
-								resize="none"
-								value={messageText}
-								onChange={(e) => {
-									setMessageText(e.target.value);
+							<form
+								onSubmit={handleSubmitMessage}
+								style={{
+									width: "100%",
+									alignItems: "center",
+									justifyContent: "center",
 								}}
-							/>
-							<IconButton
-								// isRound={true}
-								type="submit"
-								colorScheme="teal"
-								ml="1.5"
-								variant="ghost"
-								icon={<IoSendSharp fontSize="30px" />}
-								disabled={messageText ? false : true}
-								onClick={handleSubmitMessage}
-							/>
+							>
+								<Flex w="100%" justifyContent="center" alignItems="center">
+									<Textarea
+										type="text"
+										placeholder="Type a message"
+										name="message"
+										size="lg"
+										ml="1.5"
+										minH="1rem"
+										resize="none"
+										value={messageText}
+										onChange={(e) => {
+											setMessageText(e.target.value);
+										}}
+										style={{ maxHight: "6rem" }}
+									/>
+									<IconButton
+										// isRound={true}
+										type="submit"
+										colorScheme="teal"
+										ml="1.5"
+										variant="ghost"
+										icon={<IoSendSharp fontSize="30px" />}
+										disabled={messageText ? false : true}
+										// onClick={handleSubmitMessage}
+									/>
+								</Flex>
+							</form>
 						</Flex>
 					</DrawerFooter>
 				</DrawerContent>

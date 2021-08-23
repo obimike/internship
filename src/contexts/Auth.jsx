@@ -49,8 +49,7 @@ export default function Auth({ children }) {
 				//Fetch User data
 				db.collection("users")
 					.doc(user.uid)
-					.get()
-					.then((doc) => {
+					.onSnapshot((doc) => {
 						if (doc.exists) {
 							setuser(doc.data());
 							setLoading(false);

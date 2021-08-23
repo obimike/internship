@@ -51,10 +51,7 @@ const Header = (props) => {
 	const bg = useColorModeValue("white", "gray.800");
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	// console.log(newNotifications);
-
 	useEffect(() => {
-		// console.log("Header effect");
 		if (currentUser === null || isVerifiedEmail === false) {
 			history.push("/signin");
 		}
@@ -177,7 +174,7 @@ const Header = (props) => {
 									<Flex justifyContent="space-between">
 										<Text>Inbox </Text>
 										<Text color="teal" fontWeight="bold">
-											{newMessages}
+											{newMessages === 0 ? "" : newMessages}
 										</Text>
 									</Flex>
 								</MenuItem>

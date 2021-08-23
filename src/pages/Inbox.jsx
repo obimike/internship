@@ -18,12 +18,12 @@ export default function Inbox() {
 							Inbox
 						</Text>
 
-						<InboxContent contacts={userData.contacts} user={userData} />
+						<InboxContent user={userData} />
 					</Flex>
 				) : (
 					<Center flexDir="column" mt={16}>
 						<Image src={NoMessage} width="640" height="320" />
-						<Text textAlign="center">No Message found!</Text>
+						<Text textAlign="center">No inbox message found!</Text>
 					</Center>
 				)}
 			</Flex>

@@ -4,7 +4,8 @@ import ChatBox from "../components/ChatBox";
 
 import { formatDistance } from "date-fns";
 
-const InboxCard = ({ contact, unread, lastMessage, user }) => {
+const InboxCard = ({ unread, lastMessage, user }) => {
+	
 	const grayColor = useColorModeValue("gray.600", "gray.400");
 	const [openInboxDialog, setOpenInboxDialog] = React.useState(false);
 
@@ -21,14 +22,19 @@ const InboxCard = ({ contact, unread, lastMessage, user }) => {
 					setOpenInboxDialog(true);
 				}}
 			>
-				<Avatar size="md" src={contact.cImage} />
+				<Avatar size="md" src={user.photoURL} />
 				<Flex flexDir="column" ml="1.5" w="100%">
 					<Flex justifyContent="space-between">
-						<Text>{contact.cName}</Text>
+						<Text>{user.displayName}</Text>
 						<Text
 							fontSize="sm"
 							fontStyle="italic"
-							color={lastMessage.read === false ? "teal" : grayColor}
+							color={
+								lastMessage.read === false &&
+								lastMessage.receiverID !== user.uid
+									? "teal"
+									: grayColor
+							}
 						>
 							{time}
 						</Text>
@@ -37,11 +43,16 @@ const InboxCard = ({ contact, unread, lastMessage, user }) => {
 						<Text
 							noOfLines={1}
 							fontSize="sm"
-							fontWeight={lastMessage.read === false ? "bold" : ""}
+							fontWeight={
+								lastMessage.read === false &&
+								lastMessage.receiverID !== user.uid
+									? "bold"
+									: ""
+							}
 						>
 							{lastMessage.message}
 						</Text>
-						<Text ml="1.5" color="teal" fontWeight="bold">
+						<Text ml="3.5" color="teal" fontWeight="bold">
 							{unread === 0 ? "" : unread}
 						</Text>
 					</Flex>
@@ -49,7 +60,7 @@ const InboxCard = ({ contact, unread, lastMessage, user }) => {
 			</Flex>
 			<ChatBox
 				user={user}
-				pid={contact.cid}
+				pid={user.uid}
 				openInboxDialog={openInboxDialog}
 				setOpenInboxDialog={setOpenInboxDialog}
 			/>

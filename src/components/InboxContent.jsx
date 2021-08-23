@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/Auth";
 
 import { Flex, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 
-function InboxContent({ contacts, user }) {
+function InboxContent({ user }) {
 	// function _groupBy(key) {
 	// 	return function group(array) {
 	// 		return array.reduce((acc, obj) => {
@@ -19,9 +19,9 @@ function InboxContent({ contacts, user }) {
 
 	return (
 		<>
-			{contacts.map((contact) => (
+			{user.contacts.map((contact) => (
 				<React.Fragment key={contact.cid}>
-					<InboxContacts contact={contact} user={user} />
+					<InboxContacts contact={contact} />
 				</React.Fragment>
 			))}
 		</>
@@ -29,11 +29,12 @@ function InboxContent({ contacts, user }) {
 }
 export default InboxContent;
 
-const InboxContacts = ({ contact, user }) => {
+const InboxContacts = ({ contact}) => {
 	const { currentUser } = useAuth();
 	const [loading, setLoading] = React.useState(true);
 	const [newMessage, setNewMessage] = React.useState(0);
 	const [inboxItems, setInboxItems] = React.useState({});
+	const [userDetails, setUserDetails] = React.useState({});
 
 	const isMounted = React.useRef(false);
 
@@ -54,19 +55,29 @@ const InboxContacts = ({ contact, user }) => {
 					const fetchItem = {
 						...item.data(),
 					};
-					if (fetchItem.read === false) {
+					if (
+						fetchItem.receiverID === currentUser.uid &&
+						fetchItem.read === false
+					) {
 						unread += 1;
 					}
 					fetchMessageItems.push(fetchItem);
 				});
-				if (isMounted.current) {
-					setInboxItems(fetchMessageItems[0]);
-					setNewMessage(unread);
-					// console.log(fetchPostItems);
 
-					//set loading to false
-					setLoading(false);
-				}
+				//Fetch User data
+				db.collection("users")
+					.doc(contact.cid)
+					.get()
+					.then((doc) => {
+						if (isMounted.current) {
+							setUserDetails(doc.data());
+							setInboxItems(fetchMessageItems[0]);
+							setNewMessage(unread);
+
+							//set loading to false
+							setLoading(false);
+						}
+					});
 			});
 
 		return () => {
@@ -79,10 +90,9 @@ const InboxContacts = ({ contact, user }) => {
 			{loading && <InboxCardSkeleton />}
 			{!loading && (
 				<InboxCard
-					contact={contact}
 					unread={newMessage}
 					lastMessage={inboxItems}
-					user={user}
+					user={userDetails}
 				/>
 			)}
 		</>
