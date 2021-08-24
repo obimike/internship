@@ -47,12 +47,6 @@ const InboxMessageCard = ({ pid }) => {
 				}
 			});
 
-		db.collection("messages")
-			.where("combinedID", "in", [currentUser.uid + pid, pid + currentUser.uid])
-			.update({
-				read: true,
-			});
-
 		return () => {
 			isMounted.current = false;
 			setLoading(false);
@@ -93,9 +87,21 @@ const MessageBox = ({ message, currentUser }) => {
 		includeSeconds: true,
 		addSuffix: true,
 	});
+	const isMounted = useRef(false);
+
+	useEffect(() => {
+		isMounted.current = true;
+
+		if (currentUser.uid !== message.senderID)
+			db.collection("messages").doc(message.msgID).update({
+				read: true,
+			});
+		return () => {
+			isMounted.current = false;
+		};
+	}, [message.msgID, currentUser.uid, message.senderID]);
 
 	const handleDelete = (msgID) => {
-		// console.log(msgID);
 		db.collection("messages").doc(msgID).delete();
 	};
 
@@ -153,7 +159,18 @@ const MessageBox = ({ message, currentUser }) => {
 					color="black"
 					flexWrap="wrap"
 				>
-					<Text style={{ wordBreak: "break-word" }}>{message.message}</Text>
+					<Menu>
+						<MenuButton>
+							<Text textAlign="left" style={{ wordBreak: "break-word" }}>
+								{message.message}
+							</Text>
+						</MenuButton>
+						<MenuList>
+							<MenuItem onClick={() => handleDelete(message.msgID)}>
+								Delete
+							</MenuItem>
+						</MenuList>
+					</Menu>
 					<Text
 						fontSize="xs"
 						fontStyle="italic"
