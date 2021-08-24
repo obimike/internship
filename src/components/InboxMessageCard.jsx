@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef } from "react"; // useState, useEffect, useRefs
-import { Flex, Text, useColorModeValue, Center, Image } from "@chakra-ui/react";
+import {
+	Flex,
+	Text,
+	useColorModeValue,
+	Center,
+	Image,
+	Menu,
+	MenuButton,
+	MenuList,
+	MenuItem,
+} from "@chakra-ui/react";
 
 import { db } from "../firebase/Config";
 import { useAuth } from "../contexts/Auth";
@@ -35,6 +45,12 @@ const InboxMessageCard = ({ pid }) => {
 					//set loading to false
 					setLoading(false);
 				}
+			});
+
+		db.collection("messages")
+			.where("combinedID", "in", [currentUser.uid + pid, pid + currentUser.uid])
+			.update({
+				read: true,
 			});
 
 		return () => {
@@ -78,6 +94,11 @@ const MessageBox = ({ message, currentUser }) => {
 		addSuffix: true,
 	});
 
+	const handleDelete = (msgID) => {
+		// console.log(msgID);
+		db.collection("messages").doc(msgID).delete();
+	};
+
 	return (
 		<>
 			{currentUser.uid === message.senderID ? (
@@ -94,7 +115,18 @@ const MessageBox = ({ message, currentUser }) => {
 					justifyContent="flex-end"
 					color="black"
 				>
-					<Text style={{ wordBreak: "break-word" }}>{message.message}</Text>
+					<Menu>
+						<MenuButton>
+							<Text textAlign="left" style={{ wordBreak: "break-word" }}>
+								{message.message}
+							</Text>
+						</MenuButton>
+						<MenuList>
+							<MenuItem onClick={() => handleDelete(message.msgID)}>
+								Delete
+							</MenuItem>
+						</MenuList>
+					</Menu>
 					<Text
 						fontSize="xs"
 						fontStyle="italic"
