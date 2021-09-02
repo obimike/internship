@@ -23,9 +23,12 @@ const InboxMessageCard = ({ pid }) => {
 	const { currentUser } = useAuth();
 
 	const isMounted = useRef(false);
+	const divRef = useRef();
 
 	useEffect(() => {
 		isMounted.current = true;
+
+		divRef.current.scrollIntoView({ behavior: "smooth" });
 
 		db.collection("messages")
 			.where("combinedID", "in", [currentUser.uid + pid, pid + currentUser.uid])
@@ -58,13 +61,19 @@ const InboxMessageCard = ({ pid }) => {
 	return (
 		<Flex flexDir="column">
 			{!loading && (
-				<Flex flexDir="column-reverse" mx={{ base: 0, md: 12, lg: 32 }}>
+				<Flex
+					flexDir="column-reverse"
+					mx={{ base: 0, md: 12, lg: 32 }}
+					ref={divRef}
+				>
 					{messageItems.length > 0 ? (
 						<>
 							{messageItems.map((message) => (
-								<React.Fragment key={message.msgID}>
-									<MessageBox message={message} currentUser={currentUser} />
-								</React.Fragment>
+								<MessageBox
+									key={message.msgID}
+									message={message}
+									currentUser={currentUser}
+								/>
 							))}
 						</>
 					) : (

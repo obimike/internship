@@ -13,6 +13,7 @@ import UserProfile from "./pages/UserProfile";
 import Administrator from "./pages/Administrator";
 import Splash from "./pages/Splash";
 import ForgetPassword from "./pages/ForgetPassword";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
 	return (
@@ -20,6 +21,7 @@ function App() {
 			<Auth>
 				<Switch>
 					<Route path="/" exact component={Splash} />
+					<Route path="/home" exact component={LandingPage} />
 					<Route path="/signin" exact component={SignIn} />
 					<Route path="/signup" exact component={SignUp} />
 					<Route path="/forget_password" exact component={ForgetPassword} />

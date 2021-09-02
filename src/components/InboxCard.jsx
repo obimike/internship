@@ -21,6 +21,7 @@ const InboxCard = ({ unread, lastMessage, user }) => {
 				onClick={() => {
 					setOpenInboxDialog(true);
 				}}
+				style={{cursor: 'pointer'}}
 			>
 				<Avatar size="md" src={user.photoURL} />
 				<Flex flexDir="column" ml="1.5" w="100%">
