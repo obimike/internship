@@ -70,7 +70,7 @@ function ChatBox({ pid, user, openInboxDialog, setOpenInboxDialog }) {
 	return (
 		<>
 			{/* Left Drawer for chat */}
-			<Drawer placement="left" isOpen={openInboxDialog} size="full">
+			<Drawer placement="left" isOpen={openInboxDialog} size="full" h="100%">
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerHeader borderBottomWidth="1px">

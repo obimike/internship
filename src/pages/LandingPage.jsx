@@ -28,8 +28,6 @@ import Group from "../assets/images/group.svg";
 import Classes from "../assets/images/classes.svg";
 import Material from "../assets/images/material.svg";
 
-//links
-import Signup from "./Signup";
 
 import { useAuth } from "../contexts/Auth";
 
