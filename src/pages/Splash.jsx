@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import {  useColorModeValue, Text, Center } from "@chakra-ui/react";
+import { useColorModeValue, Text, Center } from "@chakra-ui/react";
 import { IoIosSchool } from "react-icons/io";
 import "../Style.css";
-import Signin from "./Signin";
+import LandingPage from "./LandingPage";
 
 function Splash() {
 	const grayColor = useColorModeValue("gray.600", "gray.400");
@@ -32,7 +32,7 @@ function Splash() {
 			</Center>
 		);
 	} else {
-		return <Signin />;
+		return <LandingPage />;
 	}
 }
 export default Splash;

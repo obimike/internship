@@ -17,8 +17,8 @@ import LandingPage from "./pages/LandingPage";
 
 function App() {
 	return (
-		<Router>
-			<Auth>
+		<Auth>
+			<Router>
 				<Switch>
 					<Route path="/" exact component={Splash} />
 					<Route path="/home" exact component={LandingPage} />
@@ -37,10 +37,10 @@ function App() {
 					<Route path="/admin" exact component={Administrator} />
 					<Route path="/inbox" exact component={Inbox} />
 
-					<Route path="*" component={SignIn} />
+					<Route path="*" component={LandingPage} />
 				</Switch>
-			</Auth>
-		</Router>
+			</Router>
+		</Auth>
 	);
 }
 
